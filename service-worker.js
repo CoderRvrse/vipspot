@@ -1,44 +1,53 @@
-// service-worker.js
-
-const CACHE_NAME = 'vipspot-cache-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/favicon.ico',
-  '/manifest.json',
-  '/robots.txt',
-  '/static/css/main.e6c13ad2.css',
-  '/static/js/bundle.min.js',
-  '/static/js/453.8ab44547.chunk.js',
-];
-
-// Install Service Worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
-  console.log('Service Worker Installed');
+    self.skipWaiting(); // Immediately activate the new service worker
+    event.waitUntil(
+        caches.open('static-v1').then((cache) => {
+            return cache.addAll([
+                '/',
+                '/index.html',
+                '/static/js/main.16fb2fc7.js',
+                '/logo192.png',
+                '/favicon.ico'
+            ]);
+        }).catch((err) => {
+            console.error('Cache open failed during install:', err);
+        })
+    );
 });
 
-// Activate Service Worker
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
-  );
-  console.log('Service Worker Activated');
-});
-
-// Fetch Resources
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request);
-    })
-  );
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request).catch(() => {
+                console.error('Fetch error:', event.request.url);
+                return new Response('Offline content not available', {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                });
+            });
+        })
+    );
+});
+
+// Clean old caches
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.filter((cacheName) => cacheName !== 'static-v1')
+                    .map((cacheName) => caches.delete(cacheName))
+            );
+        }).then(() => {
+            return self.clients.claim();
+        }).catch((err) => {
+            console.error('Activation error:', err);
+        })
+    );
+});
+
+// Handle service worker communication
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
