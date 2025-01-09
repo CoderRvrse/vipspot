@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "VIPSPOT Frontend",
   "main": "src/index.js",
-  "homepage": "https://yourusername.github.io/vipspot",
+  "homepage": "https://vipspot.net",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -38,10 +38,7 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
-=======
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
->>>>>>> fbc775b (Reinitialize repository for deployment)
     "gh-pages": "^6.3.0"
   }
 }
