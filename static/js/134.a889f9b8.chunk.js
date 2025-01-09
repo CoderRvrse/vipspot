@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkfrontend=self.webpackChunkfrontend||[]).push([[134],{134:(e,t,s)=>{s.r(t),s.d(t,{default:()=>r});var c=s(43),n=s(91),a=s(579);const r=()=>{const[e,t]=(0,c.useState)("");return(0,c.useEffect)((()=>{n.A.get("https://vipspot-backend-47b6a431fc5d.herokuapp.com/").then((e=>t(e.data))).catch((e=>console.error(e)))}),[]),(0,a.jsxs)("p",{children:["Message from Backend: ",e]})}}}]);
+//# sourceMappingURL=134.a889f9b8.chunk.js.map
