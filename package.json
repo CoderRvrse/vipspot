@@ -7,9 +7,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:critical": "critical ./build/index.html --base ./build/ --inline --css ./build/static/css/main.e6c13ad2.css",
+    "minify-html": "html-minifier --input-dir ./build --output-dir ./build --collapse-whitespace --remove-comments --minify-css true --minify-js true --file-ext html",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && npm run minify-html",
     "deploy": "gh-pages -d build"
   },
   "keywords": [],
@@ -20,6 +22,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.0",
+    "firebase": "^11.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
@@ -39,6 +42,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "gh-pages": "^6.3.0"
+    "critical": "^7.2.1",
+    "gh-pages": "^6.3.0",
+    "html-minifier": "^4.0.0"
   }
 }

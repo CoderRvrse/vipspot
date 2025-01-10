@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { Suspense, lazy } from "react";
+import Login from "./Login";
+
+// Lazy load the Message component
+const Message = lazy(() => import("./components/Message"));
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('https://vipspot-backend-47b6a431fc5d.herokuapp.com/')
-      .then(response => setMessage(response.data))
-      .catch(err => console.error(err));
-  }, []);
-
   return (
     <div>
-      <h1>VIPSPOT Frontend</h1>
-      <p>Message from Backend: {message}</p>
+      <h1 style={{ textAlign: "center" }}>VIPSPOT Frontend</h1>
+      {/* Include the Login Component */}
+      <Login />
+      {/* Wrap the lazy-loaded Message component with Suspense */}
+      <Suspense fallback={<p>Loading message from backend...</p>}>
+        <Message />
+      </Suspense>
     </div>
   );
 }
