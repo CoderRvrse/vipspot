@@ -1,18 +1,17 @@
 // Import the necessary Firebase functions
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-// If you are using analytics, import it; otherwise, you can omit it.
-import { getAnalytics } from "firebase/analytics";
 
-// Firebase configuration for your web app
+// Firebase configuration using environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCIxnopNqYWDR66WQwxBt0dqPs1Ma9M_JY",
-  authDomain: "vipspot-web-page.firebaseapp.com",
-  projectId: "vipspot-web-page",
-  storageBucket: "vipspot-web-page.appspot.com", // Fixed the storage bucket URL
-  messagingSenderId: "894947411062",
-  appId: "1:894947411062:web:f1b376e038dab9f6d00b57",
-  measurementId: "G-6CCCTC0NNE",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  // Remove measurementId if Firebase Analytics is not used
+  // measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase App
@@ -20,9 +19,6 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and export it
 export const auth = getAuth(app);
-
-// Optional: Initialize Firebase Analytics (only if you need it)
-const analytics = getAnalytics(app);
 
 // Export Firebase App (optional if you need access to it elsewhere)
 export default app;
