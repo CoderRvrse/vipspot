@@ -11,8 +11,7 @@
     "minify-html": "html-minifier --input-dir ./build --output-dir ./build --collapse-whitespace --remove-comments --minify-css true --minify-js true --file-ext html",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build && npm run minify-html",
-    "deploy": "gh-pages -d build"
+    "deploy": "npm run build && npm run minify-html && rmdir /S /Q docs && mkdir docs && xcopy build docs /E /H /I"
   },
   "keywords": [],
   "author": "",
@@ -44,7 +43,6 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "critical": "^7.2.1",
-    "gh-pages": "^6.3.0",
     "html-minifier": "^4.0.0"
   }
 }
