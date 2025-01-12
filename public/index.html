@@ -10,13 +10,27 @@
       name="description"
       content="Web site created using create-react-app"
     />
-    <!-- If you have a favicon, reference it here -->
+    <!-- Favicon (optional) -->
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <!-- PWA/manifest references (optional) -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- The page title that appears in the browser tab -->
-    <title>React App</title>
+    <!-- Page title -->
+    <title>VIPSPOT Frontend</title>
+
+    <!-- Content Security Policy:
+         This example whitelists Google Tag Manager, Firebase domains, and self.
+         Adjust or remove it entirely if you don't want a strict CSP. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' https://www.gstatic.com https://www.googletagmanager.com 'unsafe-inline';
+        connect-src 'self' https://*.firebaseio.com https://firebaseinstallations.googleapis.com https://firebaseremoteconfig.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://www.googletagmanager.com;
+        img-src 'self' https://www.google-analytics.com data:;
+        style-src 'self' 'unsafe-inline';
+      "
+    />
   </head>
   <body>
     <!-- Fallback message if JavaScript is disabled -->
@@ -25,3 +39,4 @@
     <div id="root"></div>
   </body>
 </html>
+
