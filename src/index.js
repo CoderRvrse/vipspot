@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './firebaseConfig'; // Import Firebase initialization
+import './firebaseConfig'; // Ensure Firebase initialization is imported before App is rendered
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   <React.StrictMode>
     <App />
@@ -13,4 +14,4 @@ root.render(
 );
 
 // Measure performance
-reportWebVitals();
+reportWebVitals(console.log); // You can remove or customize the callback
