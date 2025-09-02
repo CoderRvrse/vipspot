@@ -37,8 +37,7 @@ vipspot/
 │   └── main.js             # JavaScript functionality
 ├── assets/                 # Images and media files
 ├── server.py              # Development server (optional)
-├── README.md              # This file
-└── vipspot.html           # Reference implementation
+└── README.md              # This file
 ```
 
 ## 🛠️ Technologies Used
