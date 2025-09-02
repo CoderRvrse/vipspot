@@ -1,8 +1,18 @@
 name: Deploy VIPSpot to GitHub Pages
+
 on:
   push:
     branches: [ main ]
-permissions: { contents: read, pages: write, id-token: write }
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,17 +22,26 @@ jobs:
         with: { node-version: 20 }
       - run: npm ci || npm i
       - run: npm run build:css
-      - name: Prepare static site
+      - name: Prepare static site (from repo root)
         run: |
           mkdir _site
-          cp -r vipspot/* _site/
-          echo  > _site/CNAME
+          rsync -a \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "node_modules/" \
+            --exclude "_site/" \
+            --exclude "*-remote-backup-*.git/" \
+            ./ _site/
+          echo "vipspot.net" > _site/CNAME
       - uses: actions/upload-pages-artifact@v3
         with: { path: _site }
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment: { name: github-pages }
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
