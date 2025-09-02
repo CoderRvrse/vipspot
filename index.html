@@ -122,13 +122,14 @@
                     
                     <p class="text-xl md:text-2xl mb-8 text-neonGreen font-orbitron">The Future of Code, Development, and Games</p>
                     <p class="text-lg md:text-xl mb-10 text-gray-300" id="typewriter-text">Freelance Developer | Full-Stack Web | Game Dev | Advanced AI Architect</p>
-                    <button 
-                        class="cta-button px-8 py-4 bg-transparent border-2 border-neonBlue text-neonBlue rounded-lg text-lg font-orbitron hover:bg-neonBlue hover:text-darkBg transition-all duration-500 transform hover:scale-105 animate-glow"
+                    <a 
+                        id="cta-build"
+                        href="#contact"
+                        class="cta-button px-8 py-4 bg-transparent border-2 border-neonBlue text-neonBlue rounded-lg text-lg font-orbitron hover:bg-neonBlue hover:text-darkBg transition-all duration-500 transform hover:scale-105 animate-glow inline-block text-center"
                         aria-label="Contact me to build the future together"
-                        onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })"
                     >
                         Let's Build The Future Together
-                    </button>
+                    </a>
                 </div>
             </div>
         </section>
@@ -367,29 +368,32 @@
                     <div id="form-status" class="mt-4 text-center" role="status" aria-live="polite"></div>
                 </form>
                 
-                <div class="flex justify-center gap-6 mt-12" role="list" aria-label="Social media links">
-                    <a
-                      href="https://github.com/CoderRvrse"
-                      class="text-3xl text-gray-400 hover-neon transition-all duration-300"
-                      target="_blank"
-                      rel="me noopener noreferrer"
-                      aria-label="GitHub — CoderRvrse"
-                      title="GitHub — CoderRvrse"
-                      role="listitem"
-                    >
-                      <span aria-hidden="true">🐙</span>
-                      <span class="sr-only">GitHub: CoderRvrse</span>
-                    </a>
-                    <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="LinkedIn profile" role="listitem">
-                        <span aria-hidden="true">💼</span>
-                    </a>
-                    <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="Twitter profile" role="listitem">
-                        <span aria-hidden="true">🐦</span>
-                    </a>
-                    <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="CodePen profile" role="listitem">
-                        <span aria-hidden="true">📝</span>
-                    </a>
-                </div>
+                <ul class="social" role="list" aria-label="Social links">
+                    <li>
+                        <a href="https://github.com/CoderRvrse" class="social-link" target="_blank" rel="noopener" aria-label="GitHub — CoderRvrse" title="GitHub — CoderRvrse">
+                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#github"></use></svg>
+                            <span class="sr-only">GitHub</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.linkedin.com/in/YOUR-HANDLE" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#linkedin"></use></svg>
+                            <span class="sr-only">LinkedIn</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://twitter.com/YOUR-HANDLE" class="social-link" target="_blank" rel="noopener" aria-label="Twitter">
+                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#twitter"></use></svg>
+                            <span class="sr-only">Twitter</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://codepen.io/YOUR-HANDLE" class="social-link" target="_blank" rel="noopener" aria-label="CodePen">
+                            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#codepen"></use></svg>
+                            <span class="sr-only">CodePen</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </section>
     </main>

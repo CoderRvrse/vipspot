@@ -1084,6 +1084,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // Smooth scroll for internal anchors (CTA and any # links)
+    const scrollToId = (hash) => {
+        const el = document.querySelector(hash);
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a[href^="#"]');
+        if (!a) return;
+        e.preventDefault();
+        scrollToId(a.getAttribute('href'));
+    });
+
+    // Guard: ensure CTA has the right hash even if HTML was out of sync
+    const cta = document.getElementById('cta-build');
+    if (cta && cta.getAttribute('href') !== '#contact') cta.setAttribute('href', '#contact');
+    
     // Register service worker for PWA functionality
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js").catch(()=>{});

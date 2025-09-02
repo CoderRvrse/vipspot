@@ -793,3 +793,46 @@ select:focus {
   pointer-events: none;
   font: 12px/1 system-ui;
 }
+
+/* Social icons styling */
+.social { 
+    display: flex; 
+    gap: 1.25rem; 
+    align-items: center; 
+    justify-content: center; 
+    margin-top: 3rem;
+}
+
+.social .icon { 
+    width: 28px; 
+    height: 28px; 
+    fill: #9ca3af; 
+    display: block; 
+    transition: transform 0.12s ease, fill 0.12s ease; 
+}
+
+.social-link:hover .icon,
+.social-link:focus-visible .icon { 
+    fill: var(--neon-blue); 
+    transform: translateY(-1px) scale(1.05); 
+}
+
+.social-link { 
+    outline: none; 
+}
+
+.social-link:focus-visible { 
+    box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.35); 
+    border-radius: 0.5rem; 
+}
+
+.sr-only { 
+    position: absolute; 
+    width: 1px; 
+    height: 1px; 
+    padding: 0; 
+    margin: -1px; 
+    overflow: hidden; 
+    clip: rect(0,0,0,0); 
+    border: 0; 
+}
