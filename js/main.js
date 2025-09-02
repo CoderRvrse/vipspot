@@ -1077,6 +1077,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(()=>{});
     }
     
+    // CSP violation debugging (dev only)
+    if (location.search.includes('debug-csp=1')) {
+        addEventListener('securitypolicyviolation', e => {
+            console.warn('[CSP]', e.violatedDirective, '→', e.blockedURI);
+        });
+    }
+    
     // Register service worker for PWA functionality
     if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("/sw.js").catch(()=>{});
