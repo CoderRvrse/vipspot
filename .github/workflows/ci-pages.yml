@@ -54,6 +54,7 @@ jobs:
           cache: npm
       - run: npm ci || npm i
       - run: npm run build:css
+      - uses: actions/configure-pages@v5
       - name: Prepare static site artifact (from repo root)
         run: |
           mkdir _site
@@ -66,8 +67,7 @@ jobs:
             ./ _site/
           echo "vipspot.net" > _site/CNAME
       - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
+        with: { path: _site }
 
   deploy:
     if: github.event_name != 'pull_request'
