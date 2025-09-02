@@ -40,9 +40,9 @@ try {
   must(/style-src[^"]*'self'/.test(html), "CSP must include style-src 'self'");
   must(!/unsafe-inline/.test(html), "CSP should not contain 'unsafe-inline'");
 
-  // Explicit elem directive for external sheets (Google Fonts only)
-  must(/style-src-elem[^"]*https:\/\/fonts\.googleapis\.com/.test(html),
-       "CSP must allow Google Fonts via style-src-elem");
+  // No external origins in CSP (all self-hosted)
+  must(!/https:\/\/fonts\.googleapis\.com/.test(html), "CSP should not reference external font origins");
+  must(!/fonts\.gstatic\.com/.test(html), "CSP should not reference external font file origins");
 
   // Ensure no cdnjs references exist
   must(!/cdnjs\.cloudflare\.com/.test(html), "No cdnjs references should exist");
@@ -53,6 +53,10 @@ try {
 
   // Check for JS-created style tags (coarse check)
   must(!/createElement\(\s*['"]style['"]\s*\)/i.test(html), "JS creates <style> at runtime");
+
+  // Ensure fonts are self-hosted
+  must(/<link[^>]+href=["']css\/fonts\.css["']/.test(html), "Local fonts.css must be linked");
+  must(!/googleapis\.com/.test(html), "No Google Fonts references should exist in HTML");
 
   console.log("✅ VIPSpot DOM markers OK @", ORIGIN);
   process.exit(0);

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     
     <!-- Content Security Policy MUST come before any stylesheet/script -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; connect-src 'self'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; style-src 'self'; style-src-elem 'self' https://fonts.googleapis.com; style-src-attr 'none'; script-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; connect-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -55,12 +55,10 @@
     <!-- External Stylesheets -->
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     
-    <!-- Font Preconnect (optimized) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Self-hosted fonts (no external dependencies) -->
+    <link rel="stylesheet" href="css/fonts.css">
     
-    <!-- Font Awesome removed - using local icons or inline SVG -->
+    <!-- Application stylesheets -->
     <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="css/styles.css">
     
