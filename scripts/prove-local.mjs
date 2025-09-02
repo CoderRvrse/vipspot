@@ -29,7 +29,12 @@ try {
 
   // CSP tests - ensure exactly one CSP meta and strict policy
   must((html.match(/http-equiv=["']Content-Security-Policy["']/gi) || []).length === 1,
-       "Expected exactly one CSP <meta> tag");
+       "CSP meta must appear exactly once");
+
+  // CSP before first stylesheet
+  const iCSP = html.search(/<meta[^>]+http-equiv=["']Content-Security-Policy/i);
+  const iCSS = html.search(/<link[^>]+rel=["']stylesheet/i);
+  must(iCSP > -1 && (iCSS === -1 || iCSP < iCSS), "CSP must precede all stylesheets");
 
   // style-src present & strict (no unsafe-inline)
   must(/style-src[^"]*'self'/.test(html), "CSP must include style-src 'self'");
@@ -42,10 +47,12 @@ try {
   // Ensure no cdnjs references exist
   must(!/cdnjs\.cloudflare\.com/.test(html), "No cdnjs references should exist");
 
-  // Block inline styles
-  must(!/<style[^>]*>/.test(html), "No inline <style> blocks allowed");
-  must(!/\sstyle=/.test(html.replace(/<[^>]*assets\//g, "")),
-       "No inline style=\"...\" attributes allowed");
+  // Block inline styles (strict)
+  must(!/<style[\s>]/i.test(html), "Inline <style> block found in HTML");
+  must(!/\sstyle\s*=/i.test(html), "Inline style=\"...\" attribute found");
+
+  // Check for JS-created style tags (coarse check)
+  must(!/createElement\(\s*['"]style['"]\s*\)/i.test(html), "JS creates <style> at runtime");
 
   console.log("✅ VIPSpot DOM markers OK @", ORIGIN);
   process.exit(0);

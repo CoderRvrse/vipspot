@@ -24,7 +24,12 @@
       "Bash(taskkill:*)",
       "Bash(git checkout:*)",
       "WebFetch(domain:cdnjs.com)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:vipspot.net)",
+      "Bash(git grep:*)"
     ],
     "deny": [],
     "ask": []
