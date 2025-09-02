@@ -493,7 +493,7 @@ class ModalSystem {
         this.closeButton.focus();
         
         // Prevent body scroll
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('body-overflow-hidden');
 
         // Announce to screen readers
         this.announceModalOpen(project.title);
@@ -505,7 +505,8 @@ class ModalSystem {
         this.isOpen = false;
 
         // Restore body scroll
-        document.body.style.overflow = 'auto';
+        document.body.classList.remove('body-overflow-hidden');
+        document.body.classList.add('body-overflow-auto');
 
         // Return focus to trigger element
         const activeButton = document.activeElement;
@@ -677,7 +678,13 @@ class ContactForm {
         const errorElement = document.getElementById(`${field.id}-error`);
         if (errorElement) {
             errorElement.textContent = message;
-            errorElement.style.display = message ? 'block' : 'none';
+            if (message) {
+                errorElement.classList.remove('element-hidden');
+                errorElement.classList.add('element-block');
+            } else {
+                errorElement.classList.remove('element-block');
+                errorElement.classList.add('element-hidden');
+            }
         }
 
         // Visual feedback
@@ -709,7 +716,13 @@ class ContactForm {
         }
 
         countElement.textContent = `${current}/${max} characters`;
-        countElement.style.color = remaining < 100 ? '#ff4444' : '#9ca3af';
+        if (remaining < 100) {
+            countElement.classList.remove('text-neutral');
+            countElement.classList.add('text-warning');
+        } else {
+            countElement.classList.remove('text-warning');
+            countElement.classList.add('text-neutral');
+        }
     }
 
     async handleSubmit() {
@@ -774,14 +787,17 @@ class ContactForm {
         const spinner = this.submitButton.querySelector('.loading-spinner');
 
         if (isSubmitting) {
-            buttonText.style.display = 'none';
-            spinner.style.display = 'inline-block';
+            buttonText.classList.add('element-hidden');
+            spinner.classList.remove('element-hidden');
+            spinner.classList.add('element-inline-block');
             spinner.classList.remove('hidden');
             this.submitButton.disabled = true;
             this.submitButton.setAttribute('aria-busy', 'true');
         } else {
-            buttonText.style.display = 'inline-block';
-            spinner.style.display = 'none';
+            buttonText.classList.remove('element-hidden');
+            buttonText.classList.add('element-inline-block');
+            spinner.classList.remove('element-inline-block');
+            spinner.classList.add('element-hidden');
             spinner.classList.add('hidden');
             this.submitButton.disabled = false;
             this.submitButton.setAttribute('aria-busy', 'false');
@@ -934,8 +950,7 @@ class AccessibilityEnhancer {
     setupReducedMotion() {
         // Respect user's motion preferences
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.documentElement.style.setProperty('--animation-duration', '0.01ms');
-            document.documentElement.style.setProperty('--transition-duration', '0.01ms');
+            document.documentElement.classList.add('animation-duration-fast');
         }
     }
 
@@ -1058,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch("assets/ok.json").then(r=>r.json()).then(j=>{
             stampHost.hidden = false;
             stampHost.textContent = `OK • ${j.generatedAt}`;
-            stampHost.style.cssText = "position:fixed;right:12px;bottom:10px;padding:6px 10px;border-radius:10px;background:#fff;color:#111;opacity:.8;user-select:none;pointer-events:none;font:12px/1 system-ui";
+            stampHost.className = 'build-stamp';
         }).catch(()=>{});
     }
     

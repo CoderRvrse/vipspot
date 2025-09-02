@@ -737,3 +737,59 @@ select:focus {
   outline-offset: 3px;
   border-radius: .5rem;
 }
+
+/* ============================================
+   CSP-SAFE UTILITY CLASSES (no inline styles)
+   ============================================ */
+
+/* Body overflow control for modals */
+.body-overflow-hidden {
+  overflow: hidden !important;
+}
+
+.body-overflow-auto {
+  overflow: auto !important;
+}
+
+/* Element visibility controls */
+.element-hidden {
+  display: none !important;
+}
+
+.element-block {
+  display: block !important;
+}
+
+.element-inline-block {
+  display: inline-block !important;
+}
+
+/* Text color for character count */
+.text-warning {
+  color: #ff4444 !important;
+}
+
+.text-neutral {
+  color: #9ca3af !important;
+}
+
+/* Reduced motion animations */
+.animation-duration-fast {
+  --animation-duration: 0.01ms;
+  --transition-duration: 0.01ms;
+}
+
+/* Build stamp styling */
+.build-stamp {
+  position: fixed;
+  right: 12px;
+  bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  opacity: 0.8;
+  user-select: none;
+  pointer-events: none;
+  font: 12px/1 system-ui;
+}

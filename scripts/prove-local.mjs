@@ -27,6 +27,25 @@ try {
   must(/<img[^>]+src=["']assets\/me-(512|768|1024)\.png["']/i.test(html), "Avatar image not found in DOM");
   must(/https:\/\/github\.com\/CoderRvrse/.test(html), "Footer GitHub link not set to CoderRvrse");
 
+  // CSP tests - ensure exactly one CSP meta and strict policy
+  must((html.match(/http-equiv=["']Content-Security-Policy["']/gi) || []).length === 1,
+       "Expected exactly one CSP <meta> tag");
+
+  // style-src present & strict (no unsafe-inline)
+  must(/style-src[^"]*'self'/.test(html), "CSP must include style-src 'self'");
+  must(!/style-src[^"]*'unsafe-inline'/.test(html), "CSP must NOT include 'unsafe-inline'");
+
+  // Explicit elem directive for external sheets
+  must(/style-src-elem[^"]*https:\/\/fonts\.googleapis\.com/.test(html),
+       "CSP must allow Google Fonts via style-src-elem");
+  must(/style-src-elem[^"]*https:\/\/cdnjs\.cloudflare\.com/.test(html),
+       "CSP must allow cdnjs via style-src-elem");
+
+  // Block inline styles
+  must(!/<style[^>]*>/.test(html), "No inline <style> blocks allowed");
+  must(!/\sstyle=/.test(html.replace(/<[^>]*assets\//g, "")),
+       "No inline style=\"...\" attributes allowed");
+
   console.log("✅ VIPSpot DOM markers OK @", ORIGIN);
   process.exit(0);
 } catch (e) {
