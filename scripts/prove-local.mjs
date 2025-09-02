@@ -31,6 +31,10 @@ try {
   must(!/<link[^>]+href=["']https?:\/\//.test(html), "External stylesheet detected");
   must(!/<script[^>]+src=["']https?:\/\//.test(html), "External script detected");
 
+  // Block font preloads (not needed with font-display: swap + self-hosted)
+  must(!/<link[^>]+rel=["']preload["'][^>]+as=["']font["']/i.test(html),
+       "Avoid <link rel=\"preload\" as=\"font\"> – not needed and triggers console warnings");
+
   // One and only one CSP, self-only policy verified
   must((html.match(/http-equiv=["']Content-Security-Policy["']/gi)||[]).length===1, "CSP meta missing or duplicated");
   must(/font-src\s+'self'(\s+data:)?;/.test(html), "font-src must be self (and optionally data:)");
