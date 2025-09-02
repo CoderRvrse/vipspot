@@ -1,0 +1,19 @@
+name: Verify VIPSpot
+on:
+  pull_request:
+    branches: [ main ]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci || npm i
+      - run: npm run build:css
+      - run: node vipspot/server.js & echo $! > server.pid
+      - run: |
+          for i in {1..40}; do curl -fsS http://localhost:8000 >/dev/null && break; sleep 0.5; done
+      - run: node scripts/prove-local.mjs
+      - if: always()
+        run: kill  || true

@@ -1,0 +1,4 @@
+/* Tailwind build input for production */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

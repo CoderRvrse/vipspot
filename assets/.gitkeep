@@ -1,0 +1,7 @@
+# Assets folder
+Place images, icons, and other media files here.
+
+Recommended structure:
+- /images/ - for photos and graphics
+- /icons/ - for favicons and icon files
+- /media/ - for videos and audio files

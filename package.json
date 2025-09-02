@@ -1,0 +1,42 @@
+{
+  "name": "vipspot-2025",
+  "version": "1.0.0",
+  "description": "VIPSpot 2025 - Futuristic Developer Portfolio",
+  "type": "module",
+  "scripts": {
+    "ok": "node scripts/generate-ok.mjs",
+    "prove": "node scripts/prove-local.mjs",
+    "dev": "python -m http.server 8000",
+    "test": "npm run ok && npm run prove",
+    "build:css": "npx tailwindcss -c tailwind.config.js -i css/input.css -o css/tailwind.css --minify",
+    "prod": "npm run build:css && python -m http.server 8000",
+    "serve": "node server.js",
+    "start": "node server.js",
+    "poststart": "node scripts/open-browser.mjs",
+    "start:watch": "node --watch server.js",
+    "poststart:watch": "node scripts/open-browser.mjs",
+    "dev:py": "python -m http.server 8000",
+    "postdev:py": "node scripts/open-browser.mjs",
+    "open": "node scripts/open-browser.mjs",
+    "kill-sw": "node scripts/kill-sw.mjs",
+    "fresh": "npm run start && npm run kill-sw"
+  },
+  "keywords": [
+    "portfolio",
+    "developer",
+    "freelance",
+    "web-development",
+    "game-development",
+    "ai-solutions"
+  ],
+  "author": "VIPSpot",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "express": "^5.1.0"
+  }
+}

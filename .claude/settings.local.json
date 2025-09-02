@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(python:*)",
+      "Bash(node:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(curl:*)",
+      "Bash(npm run serve:*)",
+      "Bash(grep:*)",
+      "Bash(powershell:*)",
+      "Bash(VIP_ORIGIN=http://localhost:8080 npm run prove)",
+      "Bash(npm run:*)",
+      "Bash(VIP_ORIGIN=http://localhost:8080 npm run test)",
+      "Bash(git --version)",
+      "Bash(npm i)",
+      "Bash(pwsh scripts/fresh-reset.ps1)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

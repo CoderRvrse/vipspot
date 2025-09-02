@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VIPSpot 2025 - Freelance Developer specializing in Full-Stack Web Development, Game Development with Lua/Roblox, and AI Solutions. Let's build the future together.">
+    <title>VIPSpot 2025 | Future of Code, Development, and Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neonBlue: '#00f3ff',
+                        neonGreen: '#39ff14',
+                        neonPurple: '#b967ff',
+                        darkBg: '#0a0a1a',
+                        darkCard: '#12122a'
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        robotoMono: ['Roboto Mono', 'monospace']
+                    },
+                    animation: {
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    keyframes: {
+                        glow: {
+                            'from': { boxShadow: '0 0 5px #fff, 0 0 10px #fff, 0 0 15px #00f3ff, 0 0 20px #00f3ff' },
+                            'to': { boxShadow: '0 0 10px #fff, 0 0 15px #00f3ff, 0 0 20px #00f3ff, 0 0 25px #00f3ff, 0 0 30px #00f3ff' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a1a;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+        
+        /* Code matrix background animation */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        
+        /* Typewriter effect */
+        .typewriter h1 {
+            overflow: hidden;
+            border-right: .15em solid #00f3ff;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #00f3ff; }
+        }
+        
+        /* Glitch effect */
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            animation: glitch-effect 3s infinite;
+            color: #ff00ff;
+            z-index: -1;
+        }
+        
+        .glitch::after {
+            animation: glitch-effect 2s infinite;
+            color: #00ffff;
+            z-index: -2;
+        }
+        
+        @keyframes glitch-effect {
+            0% { transform: translate(0) }
+            20% { transform: translate(-5px, 5px) }
+            40% { transform: translate(-5px, -5px) }
+            60% { transform: translate(5px, 5px) }
+            80% { transform: translate(5px, -5px) }
+            100% { transform: translate(0) }
+        }
+        
+        /* Project card flip */
+        .project-card {
+            perspective: 1000px;
+        }
+        
+        .project-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .project-card:hover .project-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .project-card-front, .project-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        
+        .project-card-back {
+            transform: rotateY(180deg);
+        }
+        
+        /* Floating elements */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* Form styling */
+        .form-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 0.5rem;
+            color: white;
+            font-family: 'Roboto Mono', monospace;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #00f3ff;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+        
+        .form-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            padding: 0 0.5rem;
+            background: #0a0a1a;
+            color: rgba(255, 255, 255, 0.7);
+            transition: 0.3s;
+            pointer-events: none;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .form-input:focus ~ .form-label,
+        .form-input:not(:placeholder-shown) ~ .form-label {
+            top: -0.5rem;
+            color: #00f3ff;
+            font-size: 0.8rem;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #12122a;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00f3ff;
+            border-radius: 4px;
+        }
+
+        /* Modal styles */
+        [id$="Modal"] {
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .split-screen {
+                flex-direction: column;
+            }
+            
+            .hero-content {
+                text-align: center;
+                padding: 2rem 1rem;
+            }
+            
+            .tech-icons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="font-robotoMono">
+    <!-- Matrix background animation -->
+    <canvas id="matrix-bg"></canvas>
+    
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="container mx-auto px-4 z-10">
+            <div class="hero-content max-w-4xl mx-auto text-center">
+                <h1 class="glitch text-4xl md:text-6xl font-bold font-orbitron mb-6" data-text="Welcome to VIPSpot">
+                    <span class="typewriter">Welcome to VIPSpot</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-neonGreen font-orbitron">The Future of Code, Development, and Games</p>
+                <p class="text-lg md:text-xl mb-10 text-gray-300" id="typewriter-text">Freelance Developer | Full-Stack Web | Game Dev | Advanced AI Architect</p>
+                <button class="px-8 py-4 bg-transparent border-2 border-neonBlue text-neonBlue rounded-lg text-lg font-orbitron hover:bg-neonBlue hover:text-darkBg transition-all duration-500 transform hover:scale-105 animate-glow"
+                        aria-label="Let's build the future together - Contact me">
+                    Let's Build The Future Together
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Me Section -->
+    <section class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonPurple">The Developer's Universe</h2>
+            
+            <div class="split-screen flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
+                <div class="w-full md:w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-64 h-64 md:w-80 md:h-80 bg-neonBlue rounded-full opacity-20 floating"></div>
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                             alt="Developer" 
+                             class="absolute top-0 rounded-full w-64 h-64 md:w-80 md:h-80 object-cover border-4 border-neonBlue">
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2">
+                    <h3 class="text-2xl font-orbitron mb-4 text-neonGreen">About My Journey</h3>
+                    <p class="text-lg mb-8 leading-relaxed">
+                        I'm a freelance developer with a vision: to create impactful code, sleek websites, and immersive game experiences. From building lightning-fast full-stack apps to designing complex AI-driven game mechanics, I thrive on solving problems and innovating the web.
+                    </p>
+                    
+                    <div class="grid grid-cols-3 gap-4 tech-icons">
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fab fa-js-square text-4xl mb-2 text-yellow-400"></i>
+                            <span class="text-sm">JavaScript</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fab fa-react text-4xl mb-2 text-blue-400"></i>
+                            <span class="text-sm">React</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fab fa-node-js text-4xl mb-2 text-green-500"></i>
+                            <span class="text-sm">Node.js</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fab fa-python text-4xl mb-2 text-blue-500"></i>
+                            <span class="text-sm">Python</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fas fa-robot text-4xl mb-2 text-purple-500"></i>
+                            <span class="text-sm">AI</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300">
+                            <i class="fas fa-gamepad text-4xl mb-2 text-red-500"></i>
+                            <span class="text-sm">Game Dev</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section class="py-20 px-4 bg-darkCard">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonGreen">Work That Speaks for Itself</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Project 1 -->
+                <div class="project-card h-80">
+                    <div class="project-card-inner">
+                        <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
+                            <i class="fas fa-gamepad text-6xl text-neonPurple mb-4"></i>
+                            <h3 class="text-xl font-bold font-orbitron mb-2">Roblox Game Development</h3>
+                            <p class="text-center text-gray-400">Immersive gaming experiences with Lua</p>
+                        </div>
+                        <div class="project-card-back bg-darkBg border border-neonPurple rounded-lg p-6 flex flex-col justify-center">
+                            <h3 class="text-xl font-bold font-orbitron mb-4">Roblox Adventure Game</h3>
+                            <p class="text-sm mb-4">Created an immersive multiplayer game with custom Lua scripts, AI enemies, and interactive environments.</p>
+                            <div class="flex justify-center gap-2 mb-4">
+                                <span class="px-2 py-1 bg-neonPurple text-darkBg text-xs rounded">Lua</span>
+                                <span class="px-2 py-1 bg-neonPurple text-darkBg text-xs rounded">Roblox Studio</span>
+                                <span class="px-2 py-1 bg-neonPurple text-darkBg text-xs rounded">Multiplayer</span>
+                            </div>
+                            <a href="#" class="text-neonPurple hover:underline text-sm">View Project →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="project-card h-80">
+                    <div class="project-card-inner">
+                        <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
+                            <i class="fas fa-laptop-code text-6xl text-neonGreen mb-4"></i>
+                            <h3 class="text-xl font-bold font-orbitron mb-2">React E-Commerce App</h3>
+                            <p class="text-center text-gray-400">Full-stack shopping experience</p>
+                        </div>
+                        <div class="project-card-back bg-darkBg border border-neonGreen rounded-lg p-6 flex flex-col justify-center">
+                            <h3 class="text-xl font-bold font-orbitron mb-4">React E-Commerce Platform</h3>
+                            <p class="text-sm mb-4">Built a responsive e-commerce solution with React frontend, Node.js backend, and MongoDB database.</p>
+                            <div class="flex justify-center gap-2 mb-4">
+                                <span class="px-2 py-1 bg-neonGreen text-darkBg text-xs rounded">React</span>
+                                <span class="px-2 py-1 bg-neonGreen text-darkBg text-xs rounded">Node.js</span>
+                                <span class="px-2 py-1 bg-neonGreen text-darkBg text-xs rounded">MongoDB</span>
+                            </div>
+                            <a href="#" class="text-neonGreen hover:underline text-sm">View Project →</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="project-card h-80">
+                    <div class="project-card-inner">
+                        <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
+                            <i class="fas fa-brain text-6xl text-neonBlue mb-4"></i>
+                            <h3 class="text-xl font-bold font-orbitron mb-2">AI Prediction System</h3>
+                            <p class="text-center text-gray-400">Machine learning for data analysis</p>
+                        </div>
+                        <div class="project-card-back bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center">
+                            <h3 class="text-xl font-bold font-orbitron mb-4">AI Prediction System</h3>
+                            <p class="text-sm mb-4">Developed a machine learning model for predictive analytics with Python, TensorFlow, and data visualization.</p>
+                            <div class="flex justify-center gap-2 mb-4">
+                                <span class="px-2 py-1 bg-neonBlue text-darkBg text-xs rounded">Python</span>
+                                <span class="px-2 py-1 bg-neonBlue text-darkBg text-xs rounded">TensorFlow</span>
+                                <span class="px-2 py-1 bg-neonBlue text-darkBg text-xs rounded">Data Science</span>
+                            </div>
+                            <a href="#" class="text-neonBlue hover:underline text-sm">View Project →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section class="py-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonPurple">Services I Offer</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
+                    <i class="fas fa-code text-4xl text-neonPurple mb-4"></i>
+                    <h3 class="text-xl font-bold font-orbitron mb-4">Full-Stack Web Development</h3>
+                    <p class="text-gray-300">Cutting-edge apps, from front-end interfaces to robust back-end APIs with modern frameworks and technologies.</p>
+                </div>
+                
+                <div class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
+                    <i class="fas fa-gamepad text-4xl text-neonPurple mb-4"></i>
+                    <h3 class="text-xl font-bold font-orbitron mb-4">Game Development</h3>
+                    <p class="text-gray-300">Using Lua for Roblox or designing interactive game mechanics with AI, physics, and multiplayer systems.</p>
+                </div>
+                
+                <div class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
+                    <i class="fas fa-robot text-4xl text-neonPurple mb-4"></i>
+                    <h3 class="text-xl font-bold font-orbitron mb-4">Custom AI Solutions</h3>
+                    <p class="text-gray-300">Creating intelligent bots, predictive systems, and data-driven automation for various applications.</p>
+                </div>
+                
+                <div class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
+                    <i class="fas fa-tachometer-alt text-4xl text-neonPurple mb-4"></i>
+                    <h3 class="text-xl font-bold font-orbitron mb-4">Web & App Optimization</h3>
+                    <p class="text-gray-300">Make your code fast and light with advanced performance tuning and optimization techniques.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="py-20 px-4 bg-darkCard">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonBlue">Ready to Build the Future?</h2>
+            
+            <form class="bg-darkBg p-8 rounded-lg border border-neonBlue">
+                <div class="form-group">
+                    <input type="text" id="name" class="form-input" placeholder=" ">
+                    <label for="name" class="form-label">Your Name</label>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" id="email" class="form-input" placeholder=" ">
+                    <label for="email" class="form-label">Your Email</label>
+                </div>
+                
+                <div class="form-group">
+                    <textarea id="message" class="form-input h-32" placeholder=" "></textarea>
+                    <label for="message" class="form-label">Your Message</label>
+                </div>
+                
+                <button type="submit" class="w-full py-3 bg-neonBlue text-darkBg font-bold font-orbitron rounded-lg hover:bg-transparent hover:text-neonBlue border border-neonBlue transition-all duration-300"
+                        aria-label="Send your message">
+                    Send Message
+                </button>
+            </form>
+            
+            <div class="flex justify-center gap-6 mt-12">
+                <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300">
+                    <i class="fab fa-codepen"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Project Modals -->
+    <!-- Roblox Modal -->
+    <div id="robloxModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard p-8 rounded-lg max-w-2xl w-full mx-4 border border-neonPurple">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-orbitron text-neonPurple">Roblox Adventure Game</h3>
+                <button onclick="closeModal('robloxModal')" class="text-white text-2xl" aria-label="Close modal">×</button>
+            </div>
+            <p class="mb-4">Created an immersive multiplayer game with custom Lua scripts, AI enemies, and interactive environments. This project featured:</p>
+            <ul class="list-disc list-inside mb-4 text-gray-300">
+                <li>Custom enemy AI behavior systems</li>
+                <li>Multiplayer synchronization</li>
+                <li>Interactive game environment</li>
+                <li>Player progression system</li>
+            </ul>
+            <div class="flex gap-4 mt-6">
+                <a href="#" class="px-4 py-2 bg-neonPurple text-darkBg rounded hover:bg-transparent hover:text-neonPurple border border-neonPurple transition-colors" aria-label="View live demo">Live Demo</a>
+                <a href="#" class="px-4 py-2 border border-neonPurple text-neonPurple rounded hover:bg-neonPurple hover:text-darkBg transition-colors" aria-label="View GitHub repository">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- React Modal -->
+    <div id="reactModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard p-8 rounded-lg max-w-2xl w-full mx-4 border border-neonGreen">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-orbitron text-neonGreen">React E-Commerce Platform</h3>
+                <button onclick="closeModal('reactModal')" class="text-white text-2xl" aria-label="Close modal">×</button>
+            </div>
+            <p class="mb-4">Built a responsive e-commerce solution with React frontend, Node.js backend, and MongoDB database. Key features include:</p>
+            <ul class="list-disc list-inside mb-4 text-gray-300">
+                <li>User authentication and authorization</li>
+                <li>Payment integration with Stripe</li>
+                <li>Product search and filtering</li>
+                <li>Admin dashboard for inventory management</li>
+            </ul>
+            <div class="flex gap-4 mt-6">
+                <a href="#" class="px-4 py-2 bg-neonGreen text-darkBg rounded hover:bg-transparent hover:text-neonGreen border border-neonGreen transition-colors" aria-label="View live demo">Live Demo</a>
+                <a href="#" class="px-4 py-2 border border-neonGreen text-neonGreen rounded hover:bg-neonGreen hover:text-darkBg transition-colors" aria-label="View GitHub repository">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Modal -->
+    <div id="aiModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard p-8 rounded-lg max-w-2xl w-full mx-4 border border-neonBlue">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-orbitron text-neonBlue">AI Prediction System</h3>
+                <button onclick="closeModal('aiModal')" class="text-white text-2xl" aria-label="Close modal">×</button>
+            </div>
+            <p class="mb-4">Developed a machine learning model for predictive analytics with Python, TensorFlow, and data visualization. This project included:</p>
+            <ul class="list-disc list-inside mb-4 text-gray-300">
+                <li>Data preprocessing and feature engineering</li>
+                <li>Neural network model training and optimization</li>
+                <li>Real-time prediction API</li>
+                <li>Interactive data visualization dashboard</li>
+            </ul>
+            <div class="flex gap-4 mt-6">
+                <a href="#" class="px-4 py-2 bg-neonBlue text-darkBg rounded hover:bg-transparent hover:text-neonBlue border border-neonBlue transition-colors" aria-label="View live demo">Live Demo</a>
+                <a href="#" class="px-4 py-2 border border-neonBlue text-neonBlue rounded hover:bg-neonBlue hover:text-darkBg transition-colors" aria-label="View GitHub repository">GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 text-center border-t border-gray-800">
+        <p class="text-gray-400 font-orbitron">© 2025 VIPSpot | Crafting the Future of Code</p>
+    </footer>
+    
+    <script>
+        // Matrix background effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const letters = '01010101010101010101010101010101VIPSPOT2025CODE{}[]<>()/*-+&$#@!~';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        
+        const drops = [];
+        for(let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = `${fontSize}px monospace`;
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 60);
+        
+        // Typewriter effect for subtitle
+        const typewriterText = document.getElementById('typewriter-text');
+        const text = typewriterText.textContent;
+        typewriterText.textContent = '';
+        
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                typewriterText.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+        
+        // Start typewriter after a delay
+        setTimeout(typeWriter, 2000);
+        
+        // Responsive canvas
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Form submission effect
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const button = form.querySelector('button');
+            button.textContent = 'Message Sent!';
+            button.classList.add('bg-neonGreen', 'text-darkBg', 'border-neonGreen');
+            
+            setTimeout(() => {
+                button.textContent = 'Send Message';
+                button.classList.remove('bg-neonGreen', 'text-darkBg', 'border-neonGreen');
+                form.reset();
+            }, 3000);
+        });
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const modals = document.querySelectorAll('[id$="Modal"]');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('[id$="Modal"]');
+                modals.forEach(modal => {
+                    if (!modal.classList.contains('hidden')) {
+                        closeModal(modal.id);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
