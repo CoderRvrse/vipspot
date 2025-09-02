@@ -193,7 +193,7 @@ select:focus {
 /* ============================================
    MATRIX BACKGROUND ANIMATION
    ============================================ */
-#matrix-bg {
+#matrix-canvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -699,7 +699,7 @@ select:focus {
         color: black;
     }
     
-    #matrix-bg,
+    #matrix-canvas,
     .floating,
     .modal {
         display: none !important;

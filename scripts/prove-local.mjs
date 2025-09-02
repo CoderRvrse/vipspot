@@ -18,7 +18,7 @@ try {
   must(/<title>[^<]*VIPSpot 2025/i.test(html), "Missing or wrong <title>");
   must(/<link[^>]+href=["']css\/styles\.css["'][^>]*>/i.test(html), "styles.css not linked");
   must(/<script[^>]+src=["']js\/main\.js["'][^>]*defer/i.test(html), "main.js missing or not defer");
-  must(/<canvas[^>]+id=["']matrix-bg["'][^>]*>/i.test(html), "#matrix-bg canvas missing");
+  must(/<canvas[^>]+id=["']matrix-canvas["'][^>]*>/i.test(html), "#matrix-canvas canvas missing");
   must(/<main[^>]+id=["']main-content["'][^>]*>/i.test(html), "<main id='main-content'> missing");
   must(/id=["']projects["']/.test(html), "#projects section missing");
   must(/id=["']contact["']/.test(html), "#contact section missing");

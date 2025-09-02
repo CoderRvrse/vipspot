@@ -35,12 +35,6 @@
 // CONFIGURATION & CONSTANTS
 // ============================================
 const CONFIG = {
-    matrix: {
-        fontSize: 14,
-        characters: '01010101010101010101010101010101VIPSPOT2025CODE{}[]<>()/*-+&$#@!~',
-        animationInterval: 60,
-        fadeOpacity: 0.05
-    },
     typewriter: {
         delay: 100,
         startDelay: 2000
@@ -195,91 +189,6 @@ const Utils = {
     }
 };
 
-// ============================================
-// MATRIX BACKGROUND ANIMATION
-// ============================================
-class MatrixBackground {
-    constructor() {
-        this.canvas = document.getElementById('matrix-bg');
-        this.ctx = this.canvas.getContext('2d');
-        
-        // Reduced motion guard
-        const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (prefersReduce) return; // Respect user's OS setting
-        
-        this.drops = [];
-        this.init();
-        this.animate();
-        this.setupEventListeners();
-    }
-
-    init() {
-        this.resizeCanvas();
-        this.initDrops();
-    }
-
-    resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.columns = Math.floor(this.canvas.width / CONFIG.matrix.fontSize);
-    }
-
-    initDrops() {
-        this.drops = [];
-        for (let i = 0; i < this.columns; i++) {
-            this.drops[i] = 1;
-        }
-    }
-
-    draw() {
-        // Clear canvas with fade effect
-        this.ctx.fillStyle = `rgba(10, 10, 26, ${CONFIG.matrix.fadeOpacity})`;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Set text properties
-        this.ctx.fillStyle = '#00f3ff';
-        this.ctx.font = `${CONFIG.matrix.fontSize}px monospace`;
-
-        // Draw characters
-        for (let i = 0; i < this.drops.length; i++) {
-            const char = CONFIG.matrix.characters[Math.floor(Math.random() * CONFIG.matrix.characters.length)];
-            const x = i * CONFIG.matrix.fontSize;
-            const y = this.drops[i] * CONFIG.matrix.fontSize;
-
-            this.ctx.fillText(char, x, y);
-
-            // Reset drop to top with random chance
-            if (y > this.canvas.height && Math.random() > 0.975) {
-                this.drops[i] = 0;
-            }
-
-            this.drops[i]++;
-        }
-    }
-
-    animate() {
-        this.draw();
-        setTimeout(() => {
-            requestAnimationFrame(() => this.animate());
-        }, CONFIG.matrix.animationInterval);
-        
-        // CPU guard: pause when tab is hidden
-        document.addEventListener("visibilitychange", () => {
-            if (document.hidden) {
-                // pause trick: no-op for a frame; browser will idle RAF anyway
-            } else {
-                requestAnimationFrame(() => this.animate());
-            }
-        });
-    }
-
-    setupEventListeners() {
-        window.addEventListener('resize', Utils.debounce(() => {
-            this.resizeCanvas();
-            this.initDrops();
-        }, 250));
-    }
-}
 
 // ============================================
 // TYPEWRITER EFFECT
@@ -989,7 +898,6 @@ class VIPSpotApp {
     initializeComponents() {
         try {
             // Initialize core components
-            this.components.matrix = new MatrixBackground();
             this.components.navigation = new Navigation();
             this.components.modal = new ModalSystem();
             this.components.form = new ContactForm();
