@@ -76,6 +76,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-sprite {
+    display: none;
+}
+
 /* Ensure early font usage for headers and force font loading */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Orbitron', 'Roboto Mono', system-ui, sans-serif;
