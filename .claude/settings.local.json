@@ -17,7 +17,12 @@
       "Bash(VIP_ORIGIN=http://localhost:8080 npm run test)",
       "Bash(git --version)",
       "Bash(npm i)",
-      "Bash(pwsh scripts/fresh-reset.ps1)"
+      "Bash(pwsh scripts/fresh-reset.ps1)",
+      "Bash(git branch:*)",
+      "Bash(git fetch:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
