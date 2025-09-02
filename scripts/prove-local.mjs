@@ -33,13 +33,14 @@ try {
 
   // style-src present & strict (no unsafe-inline)
   must(/style-src[^"]*'self'/.test(html), "CSP must include style-src 'self'");
-  must(!/style-src[^"]*'unsafe-inline'/.test(html), "CSP must NOT include 'unsafe-inline'");
+  must(!/unsafe-inline/.test(html), "CSP should not contain 'unsafe-inline'");
 
-  // Explicit elem directive for external sheets
+  // Explicit elem directive for external sheets (Google Fonts only)
   must(/style-src-elem[^"]*https:\/\/fonts\.googleapis\.com/.test(html),
        "CSP must allow Google Fonts via style-src-elem");
-  must(/style-src-elem[^"]*https:\/\/cdnjs\.cloudflare\.com/.test(html),
-       "CSP must allow cdnjs via style-src-elem");
+
+  // Ensure no cdnjs references exist
+  must(!/cdnjs\.cloudflare\.com/.test(html), "No cdnjs references should exist");
 
   // Block inline styles
   must(!/<style[^>]*>/.test(html), "No inline <style> blocks allowed");

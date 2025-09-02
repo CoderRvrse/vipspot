@@ -37,6 +37,12 @@ jobs:
             curl -fsS http://localhost:8000 >/dev/null && break
             sleep 0.5
           done
+      - name: Verify CSP precedes stylesheets
+        run: |
+          CSP=$(grep -n 'http-equiv="Content-Security-Policy"' index.html | cut -d: -f1 | head -1)
+          LINK=$(grep -n '<link[^>]*rel="stylesheet"' index.html | cut -d: -f1 | head -1)
+          echo "CSP=$CSP LINK=$LINK"
+          test -n "$CSP" && test -n "$LINK" && [ "$CSP" -lt "$LINK" ]
       - name: Prove DOM markers
         run: node scripts/prove-local.mjs
       - name: Stop server

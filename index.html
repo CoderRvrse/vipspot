@@ -2,6 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
+    <!-- Content Security Policy MUST come before any stylesheet/script -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        base-uri 'self';
+        form-action 'self';
+        object-src 'none';
+        connect-src 'self';
+        img-src 'self' data: https:;
+        font-src 'self' https://fonts.gstatic.com data:;
+        style-src 'self';
+        style-src-elem 'self' https://fonts.googleapis.com;
+        style-src-attr 'none';
+        script-src 'self';
+    ">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
@@ -30,8 +46,6 @@
     
     <title>VIPSpot 2025 | Future of Code, Development, and Games</title>
     
-    <!-- Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; connect-src 'self'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; style-src 'self'; style-src-elem 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com; style-src-attr 'none'; script-src 'self';">
     
     <!-- JSON-LD Person Schema -->
     <script type="application/ld+json">
@@ -58,11 +72,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer">
+    <!-- Font Awesome removed - using local icons or inline SVG -->
     <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="css/styles.css">
     
@@ -98,7 +108,7 @@
                     aria-label="Toggle mobile menu"
                     aria-expanded="false"
                 >
-                    <i class="fas fa-bars text-white"></i>
+                    <span class="text-white text-xl">☰</span>
                 </button>
             </div>
             
@@ -170,27 +180,27 @@
                         
                         <div class="grid grid-cols-3 gap-4 tech-icons" role="list" aria-label="Technology stack">
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fab fa-js-square text-4xl mb-2 text-yellow-400" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-yellow-400" aria-hidden="true">JS</span>
                                 <span class="text-sm">JavaScript</span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fab fa-react text-4xl mb-2 text-blue-400" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-blue-400" aria-hidden="true">⚛</span>
                                 <span class="text-sm">React</span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fab fa-node-js text-4xl mb-2 text-green-500" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-green-500" aria-hidden="true">⬢</span>
                                 <span class="text-sm">Node.js</span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fab fa-python text-4xl mb-2 text-blue-500" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-blue-500" aria-hidden="true">🐍</span>
                                 <span class="text-sm">Python</span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fas fa-robot text-4xl mb-2 text-purple-500" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-purple-500" aria-hidden="true">🤖</span>
                                 <span class="text-sm">AI</span>
                             </div>
                             <div class="flex flex-col items-center p-4 bg-darkCard rounded-lg hover:bg-neonBlue hover:text-darkBg transition-all duration-300" role="listitem">
-                                <i class="fas fa-gamepad text-4xl mb-2 text-red-500" aria-hidden="true"></i>
+                                <span class="text-4xl mb-2 text-red-500" aria-hidden="true">🎮</span>
                                 <span class="text-sm">Game Dev</span>
                             </div>
                         </div>
@@ -209,7 +219,7 @@
                     <article class="project-card h-80" role="listitem">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
-                                <i class="fas fa-gamepad text-6xl text-neonPurple mb-4" aria-hidden="true"></i>
+                                <span class="text-6xl text-neonPurple mb-4" aria-hidden="true">🎮</span>
                                 <h3 class="text-xl font-bold font-orbitron mb-2">Roblox Game Development</h3>
                                 <p class="text-center text-gray-400">Immersive gaming experiences with Lua</p>
                             </div>
@@ -232,7 +242,7 @@
                     <article class="project-card h-80" role="listitem">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
-                                <i class="fas fa-laptop-code text-6xl text-neonGreen mb-4" aria-hidden="true"></i>
+                                <span class="text-6xl text-neonGreen mb-4" aria-hidden="true">💻</span>
                                 <h3 class="text-xl font-bold font-orbitron mb-2">React E-Commerce App</h3>
                                 <p class="text-center text-gray-400">Full-stack shopping experience</p>
                             </div>
@@ -255,7 +265,7 @@
                     <article class="project-card h-80" role="listitem">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
-                                <i class="fas fa-brain text-6xl text-neonBlue mb-4" aria-hidden="true"></i>
+                                <span class="text-6xl text-neonBlue mb-4" aria-hidden="true">🧠</span>
                                 <h3 class="text-xl font-bold font-orbitron mb-2">AI Prediction System</h3>
                                 <p class="text-center text-gray-400">Machine learning for data analysis</p>
                             </div>
@@ -284,25 +294,25 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto" role="list" aria-label="Services offered">
                     <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
-                        <i class="fas fa-code text-4xl text-neonPurple mb-4" aria-hidden="true"></i>
+                        <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">⌨️</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Full-Stack Web Development</h3>
                         <p class="text-gray-300">Cutting-edge apps, from front-end interfaces to robust back-end APIs with modern frameworks and technologies.</p>
                     </article>
                     
                     <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
-                        <i class="fas fa-gamepad text-4xl text-neonPurple mb-4" aria-hidden="true"></i>
+                        <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">🎮</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Game Development</h3>
                         <p class="text-gray-300">Using Lua for Roblox or designing interactive game mechanics with AI, physics, and multiplayer systems.</p>
                     </article>
                     
                     <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
-                        <i class="fas fa-robot text-4xl text-neonPurple mb-4" aria-hidden="true"></i>
+                        <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">🤖</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Custom AI Solutions</h3>
                         <p class="text-gray-300">Creating intelligent bots, predictive systems, and data-driven automation for various applications.</p>
                     </article>
                     
                     <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
-                        <i class="fas fa-tachometer-alt text-4xl text-neonPurple mb-4" aria-hidden="true"></i>
+                        <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">⚡</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Web & App Optimization</h3>
                         <p class="text-gray-300">Make your code fast and light with advanced performance tuning and optimization techniques.</p>
                     </article>
@@ -382,17 +392,17 @@
                       title="GitHub — CoderRvrse"
                       role="listitem"
                     >
-                      <i class="fab fa-github" aria-hidden="true"></i>
+                      <span aria-hidden="true">🐙</span>
                       <span class="sr-only">GitHub: CoderRvrse</span>
                     </a>
                     <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="LinkedIn profile" role="listitem">
-                        <i class="fab fa-linkedin" aria-hidden="true"></i>
+                        <span aria-hidden="true">💼</span>
                     </a>
                     <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="Twitter profile" role="listitem">
-                        <i class="fab fa-twitter" aria-hidden="true"></i>
+                        <span aria-hidden="true">🐦</span>
                     </a>
                     <a href="#" class="text-3xl text-gray-400 hover:text-neonBlue transition-all duration-300" aria-label="CodePen profile" role="listitem">
-                        <i class="fab fa-codepen" aria-hidden="true"></i>
+                        <span aria-hidden="true">📝</span>
                     </a>
                 </div>
             </div>

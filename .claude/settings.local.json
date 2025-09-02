@@ -22,7 +22,9 @@
       "Bash(git fetch:*)",
       "Bash(pkill:*)",
       "Bash(taskkill:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "WebFetch(domain:cdnjs.com)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
