@@ -1,5 +1,6 @@
 // scripts/prove-local.mjs
 // Fetches http://localhost:8000 and asserts critical markers exist.
+import fs from 'fs';
 const ORIGIN = process.env.VIP_ORIGIN || "http://localhost:8000";
 
 function must(cond, msg) {
@@ -14,9 +15,10 @@ try {
   must(res.ok, `Server not OK (${res.status}) at ${ORIGIN}`);
   const html = await res.text();
   
-  // Fetch JS file for API checks
+  // Fetch JS and CSS files for validation
   const jsRes = await fetch(`${ORIGIN}/js/matrix-bg.js`);
   const js = jsRes.ok ? await jsRes.text() : '';
+  const css = fs.readFileSync("css/styles.css", "utf8");
 
   // Minimal hard checks (no external libs)
   must(/<title>[^<]*VIPSpot 2025/i.test(html), "Missing or wrong <title>");
@@ -79,7 +81,38 @@ try {
   must(!/googleapis\.com/.test(html), "No Google Fonts references should exist in HTML");
   must(!/cdnjs\.cloudflare\.com/.test(html), "No cdnjs references should exist");
 
-  console.log("✅ VIPSpot DOM markers OK @", ORIGIN);
+  // --- Mobile CTA Guards (bulletproof touch) ---
+  
+  // CTA must be a real anchor to #contact (no inline handlers)
+  must(/<a[^>]+id=["']cta-build["'][^>]*href=["']#contact["'][^>]*>/.test(html),
+    "CTA anchor not linking to #contact");
+  
+  must(!/<a[^>]+id=["']cta-build["'][^>]*onclick=/.test(html),
+    "CTA must not use inline onclick");
+
+  // Matrix canvas cannot steal taps
+  must(/<canvas[^>]+id=["']matrix-(canvas|bg)["'][^>]*>/.test(html),
+    "Matrix canvas with supported ID not found");
+  
+  must(/#matrix-(canvas|bg)[^{]*\{[^}]*pointer-events:\s*none/i.test(css),
+    "Matrix canvas must have pointer-events:none");
+
+  // Stacking context shield
+  must(/\.hero-content[^{]*\{[^}]*isolation:\s*isolate/i.test(css),
+    "CTA wrapper should set isolation:isolate");
+
+  // Native-first smooth scrolling (with accessible fallback)
+  must(/html[^{]*\{[^}]*scroll-behavior:\s*smooth/i.test(css),
+    "Enable native smooth scroll in CSS");
+  
+  must(/@media\s*\(prefers-reduced-motion:\s*reduce\)/i.test(css),
+    "Respect prefers-reduced-motion in CSS");
+
+  // Tap/keyboard UX polish
+  must(/\.cta-button:active/i.test(css), "Pressed (:active) style missing");
+  must(/:focus-visible/i.test(css), "Focus-visible outline missing");
+
+  console.log("✅ VIPSpot DOM + Mobile CTA Guards OK @", ORIGIN);
   process.exit(0);
 } catch (e) {
   console.error("❌ Prove failed:", e?.message || e);
