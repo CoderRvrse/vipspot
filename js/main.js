@@ -1046,27 +1046,90 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // ============================================
-// CONTACT FORM HANDLER
+// PREMIUM CONTACT FORM HANDLER
 // ============================================
 (() => {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
   const status = document.getElementById('contact-status');
-  const btn = document.getElementById('contact-send');
+  const btn = document.getElementById('contact-submit');
+  const messageField = document.querySelector('textarea[name="message"]');
   const API = (window.VIP_API || 'https://vipspot-api-a7ce781e1397.herokuapp.com') + '/contact';
-  form.elements.timestamp.value = Date.now();
-  const say = m => { if (status) status.textContent = m; };
+  
+  // Initialize timestamp
+  const timestampField = form.querySelector('input[name="timestamp"]');
+  if (timestampField) timestampField.value = Date.now();
+  
+  const say = (m, type = 'info') => {
+    if (status) {
+      status.textContent = m;
+      status.className = `status ${type}`;
+    }
+  };
+
+  // Character counter for message field
+  if (messageField) {
+    const maxChars = 4000;
+    let counter = document.getElementById('msg-count');
+    
+    if (!counter) {
+      counter = messageField.parentElement.querySelector('.char-counter');
+      if (!counter) {
+        counter = document.createElement('div');
+        counter.className = 'char-counter';
+        messageField.parentElement.appendChild(counter);
+      }
+    }
+
+    const updateCounter = () => {
+      const current = messageField.value.length;
+      const remaining = maxChars - current;
+      counter.textContent = `${current}/${maxChars}`;
+      
+      if (remaining < 100) {
+        counter.classList.add('warning');
+      } else {
+        counter.classList.remove('warning');
+      }
+      
+      if (current > maxChars) {
+        counter.classList.add('error');
+        messageField.setCustomValidity('Message too long');
+      } else {
+        counter.classList.remove('error');
+        messageField.setCustomValidity('');
+      }
+    };
+
+    messageField.addEventListener('input', updateCounter);
+    updateCounter(); // Initial count
+  }
+
+  // Button loading state helper
+  const setButtonLoading = (loading) => {
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.textContent;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+      btn.classList.add('loading');
+    } else {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.originalText || 'Send Message';
+      btn.classList.remove('loading');
+    }
+  };
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    btn.disabled = true; say('Sending…');
+    setButtonLoading(true);
+    say('Sending your message…', 'info');
 
     const payload = {
       name: form.elements.name.value.trim(),
       email: form.elements.email.value.trim(),
       message: form.elements.message.value.trim(),
-      company: form.elements.company.value,
+      company: form.elements.company.value, // honeypot
       timestamp: Date.now()
     };
 
@@ -1079,17 +1142,47 @@ if (typeof module !== 'undefined' && module.exports) {
       });
       const json = await r.json();
       if (json.ok) {
-        say('Sent! I'll get back to you shortly. ✅');
+        say('Message sent successfully! I'll get back to you shortly. ✅', 'success');
         form.reset();
-        form.elements.timestamp.value = Date.now();
+        if (timestampField) timestampField.value = Date.now();
+        
+        // Update character counter after reset
+        if (messageField) {
+          const counter = document.getElementById('msg-count') || messageField.parentElement.querySelector('.char-counter');
+          if (counter) {
+            counter.textContent = '0 / 4000';
+            counter.classList.remove('warning', 'error');
+          }
+        }
       } else {
-        throw new Error(json.error || 'Failed');
+        throw new Error(json.error || 'Failed to send');
       }
     } catch (err) {
-      console.error(err);
-      say('Sending failed. Please email me at hello@vipspot.net.');
+      console.error('Contact form error:', err);
+      say('Failed to send message. Please try again or email hello@vipspot.net', 'error');
     } finally {
-      btn.disabled = false;
+      setButtonLoading(false);
     }
+  });
+
+  // Enhanced form validation with visual feedback
+  const inputs = form.querySelectorAll('input[required], textarea[required]');
+  inputs.forEach(input => {
+    input.addEventListener('blur', () => {
+      if (input.value.trim()) {
+        input.classList.add('valid');
+        input.classList.remove('invalid');
+      } else {
+        input.classList.add('invalid');
+        input.classList.remove('valid');
+      }
+    });
+
+    input.addEventListener('input', () => {
+      if (input.classList.contains('invalid') && input.value.trim()) {
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+      }
+    });
   });
 })();

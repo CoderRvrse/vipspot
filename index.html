@@ -471,71 +471,58 @@
         <!-- Contact Section -->
         <section id="contact" class="py-20 px-4 bg-darkCard">
             <div class="container mx-auto max-w-4xl">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonBlue">Ready to Build the Future?</h2>
-                
-                <form id="contact-form" class="bg-darkBg p-8 rounded-lg border border-neonBlue" novalidate>
-                    <div class="form-group">
-                        <label for="name" class="form-label">Your Name</label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            name="name" 
-                            class="form-input" 
-                            placeholder=" " 
-                            required 
-                            maxlength="120"
-                            aria-describedby="name-error"
-                            autocomplete="name"
-                        />
-                        <span id="name-error" class="error-message" role="alert" aria-live="polite"></span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email" class="form-label">Your Email</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            class="form-input" 
-                            placeholder=" " 
-                            required 
-                            aria-describedby="email-error"
-                            autocomplete="email"
-                        />
-                        <span id="email-error" class="error-message" role="alert" aria-live="polite"></span>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="message" class="form-label">Your Message</label>
-                        <textarea 
-                            id="message" 
-                            name="message" 
-                            class="form-input h-32" 
-                            placeholder=" " 
-                            required 
-                            maxlength="4000"
-                            aria-describedby="message-error"
-                            rows="4"
-                        ></textarea>
-                        <span id="message-error" class="error-message" role="alert" aria-live="polite"></span>
-                    </div>
+                <div class="contact-card">
+                  <h2 class="contact-title">Ready to Build the Future?</h2>
 
-                    <!-- Anti-spam fields -->
-                    <input type="text" name="company" autocomplete="organization" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;">
-                    <input type="hidden" name="timestamp" value="">
-                    
-                    <button 
-                        type="submit" 
-                        id="contact-send"
-                        class="w-full py-3 bg-neonBlue text-darkBg font-bold font-orbitron rounded-lg hover:bg-transparent hover:text-neonBlue border border-neonBlue transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neonBlue focus:ring-offset-2"
-                        aria-describedby="form-status"
-                    >
-                        <span class="button-text">Send Message</span>
-                        <span class="loading-spinner hidden">Sending...</span>
-                    </button>
-                    
-                    <div id="contact-status" class="mt-4 text-center" role="status" aria-live="polite"></div>
-                </form>
+                  <form id="contact-form" novalidate>
+                    <div class="form-grid">
+                      <!-- Name -->
+                      <div class="field">
+                        <input id="name" name="name" type="text" placeholder=" " autocomplete="name" required maxlength="120" />
+                        <label for="name">Your Name</label>
+                        <p class="help" id="name-help" hidden>Enter your full name (max 120 chars).</p>
+                      </div>
+
+                      <!-- Email -->
+                      <div class="field">
+                        <input id="email" name="email" type="email" placeholder=" " autocomplete="email" required />
+                        <label for="email">Your Email</label>
+                        <p class="help" id="email-help" hidden>We'll reply here. No spam, ever.</p>
+                      </div>
+
+                      <!-- Message -->
+                      <div class="field span-2">
+                        <textarea id="message" name="message" rows="6" placeholder=" " required maxlength="4000"></textarea>
+                        <label for="message">Your Message</label>
+                        <div class="meta">
+                          <span id="msg-count">0 / 4000</span>
+                        </div>
+                        <p class="help" id="message-help" hidden>Tell me about your goals, timeline, and budget.</p>
+                      </div>
+
+                      <!-- Honeypot (hidden correctly) -->
+                      <div class="hp-field" aria-hidden="true">
+                        <label for="company">Company</label>
+                        <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+                      </div>
+
+                      <!-- Hidden timestamp -->
+                      <input type="hidden" name="timestamp" value="">
+
+                      <!-- Actions -->
+                      <div class="actions span-2">
+                        <button id="contact-submit" class="btn-neon" type="submit">
+                          <span class="label">Send Message</span>
+                          <span class="spinner" aria-hidden="true"></span>
+                        </button>
+                        <p class="fineprint">
+                          Response in 1–2 business days. Professional consultation available.
+                        </p>
+                        <div id="contact-status" role="status" aria-live="polite"></div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
                 
                 <ul class="social" role="list" aria-label="Social links">
                     <li>

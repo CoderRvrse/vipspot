@@ -176,7 +176,44 @@ try {
     must(/height=["']\d+["']/.test(imgTag), "Pen images need height attribute");
   });
 
-  console.log("✅ VIPSpot DOM + Mobile CTA + ARIA + Featured Pens Guards OK @", ORIGIN);
+  // --- PREMIUM CONTACT FORM GUARDS ---
+  
+  // Contact form exists with novalidate
+  must(/<form[^>]+id=["']contact-form["'][^>]*novalidate/i.test(html),
+    "#contact-form must exist with novalidate attribute");
+  
+  // Contact submit button exists (not contact-send)
+  must(/<button[^>]+id=["']contact-submit["']/.test(html),
+    "#contact-submit button must be present");
+  
+  // Honeypot field present and properly hidden
+  must(/<div[^>]+class=["'][^"']*\bhp-field\b[^"']*["'][^>]*aria-hidden=["']true["']/.test(html),
+    "Honeypot field must have .hp-field class and aria-hidden='true'");
+  
+  must(/<input[^>]+name=["']company["']/.test(html),
+    "Honeypot company input must be present");
+  
+  // Message field has proper maxlength (≥1200)
+  const msgMaxLength = html.match(/<textarea[^>]+name=["']message["'][^>]*maxlength=["'](\d+)["']/);
+  must(msgMaxLength && parseInt(msgMaxLength[1]) >= 1200,
+    "Message field maxlength must be ≥1200 (found: " + (msgMaxLength ? msgMaxLength[1] : 'none') + ")");
+  
+  // Character counter element exists
+  must(/id=["']msg-count["']/.test(html),
+    "Character counter element #msg-count must exist");
+  
+  // Contact status with aria-live exists  
+  must(/<div[^>]+id=["']contact-status["'][^>]*aria-live=["']polite["']/.test(html),
+    "Contact status with aria-live='polite' must exist");
+  
+  // Verify honeypot is truly hidden in CSS
+  must(/\.hp-field[^{]*\{[^}]*position:\s*absolute[^}]*\!/i.test(css),
+    "Honeypot must have position:absolute!important in CSS");
+  
+  must(/\.hp-field[^{]*\{[^}]*opacity:\s*0/i.test(css),
+    "Honeypot must have opacity:0 in CSS");
+
+  console.log("✅ VIPSpot DOM + Mobile CTA + ARIA + Featured Pens + Premium Contact Form Guards OK @", ORIGIN);
   process.exit(0);
 } catch (e) {
   console.error("❌ Prove failed:", e?.message || e);
