@@ -23,14 +23,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Guard against legacy RAF handle
+        shell: bash
         run: |
-          # Fail if old name ever sneaks back in
-          if grep -R --line-number -E '\banimationId\b' js/; then
-            echo "Found legacy animationId usage"; exit 1
+          set -euo pipefail
+
+          echo "[guard] Checking for legacy 'animationId'…"
+          if grep -R -nE '\banimationId\b' js/; then
+            echo "::error title=Legacy RAF handle found::Rename 'animationId' to 'rafId' and use start()/stopRAF()."
+            exit 1
           fi
-          # Sanity: ensure new API markers exist
-          grep -q 'let rafId' js/matrix-bg.js
-          grep -q 'VIPSpot\\._raf' js/matrix-bg.js
+          echo "[guard] OK: no legacy handle."
+
+          echo "[guard] Verifying new RAF markers…"
+          # Use fixed-string grep (-F) so '.' is treated literally
+          grep -Fq "let rafId" js/matrix-bg.js || { 
+            echo "::error title=Missing marker::Could not find 'let rafId' in js/matrix-bg.js"; exit 1; 
+          }
+          grep -Fq "VIPSpot._raf" js/matrix-bg.js || { 
+            echo "::error title=Missing API::Could not find 'VIPSpot._raf' in js/matrix-bg.js"; exit 1; 
+          }
+          echo "[guard] OK: new markers present."
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -64,14 +76,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Guard against legacy RAF handle
+        shell: bash
         run: |
-          # Fail if old name ever sneaks back in
-          if grep -R --line-number -E '\banimationId\b' js/; then
-            echo "Found legacy animationId usage"; exit 1
+          set -euo pipefail
+
+          echo "[guard] Checking for legacy 'animationId'…"
+          if grep -R -nE '\banimationId\b' js/; then
+            echo "::error title=Legacy RAF handle found::Rename 'animationId' to 'rafId' and use start()/stopRAF()."
+            exit 1
           fi
-          # Sanity: ensure new API markers exist
-          grep -q 'let rafId' js/matrix-bg.js
-          grep -q 'VIPSpot\\._raf' js/matrix-bg.js
+          echo "[guard] OK: no legacy handle."
+
+          echo "[guard] Verifying new RAF markers…"
+          # Use fixed-string grep (-F) so '.' is treated literally
+          grep -Fq "let rafId" js/matrix-bg.js || { 
+            echo "::error title=Missing marker::Could not find 'let rafId' in js/matrix-bg.js"; exit 1; 
+          }
+          grep -Fq "VIPSpot._raf" js/matrix-bg.js || { 
+            echo "::error title=Missing API::Could not find 'VIPSpot._raf' in js/matrix-bg.js"; exit 1; 
+          }
+          echo "[guard] OK: new markers present."
       - uses: actions/setup-node@v4
         with:
           node-version: 20
