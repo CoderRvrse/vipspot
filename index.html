@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     
     <!-- CSP (single line, strict) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; connect-src 'self'; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://api.vipspot.net; object-src 'none'; connect-src 'self' https://api.vipspot.net; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -483,6 +483,7 @@
                             class="form-input" 
                             placeholder=" " 
                             required 
+                            maxlength="120"
                             aria-describedby="name-error"
                             autocomplete="name"
                         />
@@ -512,14 +513,20 @@
                             class="form-input h-32" 
                             placeholder=" " 
                             required 
+                            maxlength="4000"
                             aria-describedby="message-error"
                             rows="4"
                         ></textarea>
                         <span id="message-error" class="error-message" role="alert" aria-live="polite"></span>
                     </div>
+
+                    <!-- Anti-spam fields -->
+                    <input type="text" name="company" autocomplete="organization" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;">
+                    <input type="hidden" name="timestamp" value="">
                     
                     <button 
                         type="submit" 
+                        id="contact-send"
                         class="w-full py-3 bg-neonBlue text-darkBg font-bold font-orbitron rounded-lg hover:bg-transparent hover:text-neonBlue border border-neonBlue transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-neonBlue focus:ring-offset-2"
                         aria-describedby="form-status"
                     >
@@ -527,7 +534,7 @@
                         <span class="loading-spinner hidden">Sending...</span>
                     </button>
                     
-                    <div id="form-status" class="mt-4 text-center" role="status" aria-live="polite"></div>
+                    <div id="contact-status" class="mt-4 text-center" role="status" aria-live="polite"></div>
                 </form>
                 
                 <ul class="social" role="list" aria-label="Social links">

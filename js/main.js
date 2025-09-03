@@ -1044,3 +1044,52 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { VIPSpotApp, Utils };
 }
+
+// ============================================
+// CONTACT FORM HANDLER
+// ============================================
+(() => {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+
+  const status = document.getElementById('contact-status');
+  const btn = document.getElementById('contact-send');
+  const API = (window.VIP_API || 'https://api.vipspot.net') + '/contact';
+  form.elements.timestamp.value = Date.now();
+  const say = m => { if (status) status.textContent = m; };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true; say('Sending…');
+
+    const payload = {
+      name: form.elements.name.value.trim(),
+      email: form.elements.email.value.trim(),
+      message: form.elements.message.value.trim(),
+      company: form.elements.company.value,
+      timestamp: Date.now()
+    };
+
+    try {
+      const r = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        mode: 'cors', credentials: 'omit'
+      });
+      const json = await r.json();
+      if (json.ok) {
+        say('Sent! I'll get back to you shortly. ✅');
+        form.reset();
+        form.elements.timestamp.value = Date.now();
+      } else {
+        throw new Error(json.error || 'Failed');
+      }
+    } catch (err) {
+      console.error(err);
+      say('Sending failed. Please email me at hello@vipspot.net.');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
