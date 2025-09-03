@@ -628,6 +628,85 @@ select:focus {
     box-shadow: 0 0 18px rgba(95, 160, 78, 0.2);
 }
 
+/* ============================================
+   3D TILT & SHINE FOR TECH CHIPS
+   ============================================ */
+.tech-grid[data-tilt] {
+    perspective: 900px;
+}
+
+.tech-grid[data-tilt] .tech-pill {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    /* driven by CSS vars set in JS */
+    transform:
+        translateZ(var(--elev, 0px))
+        rotateX(var(--rx, 0deg))
+        rotateY(var(--ry, 0deg));
+    box-shadow:
+        0 0 0 rgba(0,0,0,0),
+        0 0 calc(20px + var(--glow, 0px)) rgba(0, 237, 255, 0.12);
+    will-change: transform;
+}
+
+/* subtle rim + internal glow that reacts to tilt */
+.tech-grid[data-tilt] .tech-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    background:
+        radial-gradient(120% 120% at calc(50% + var(--glow-x,0px)) calc(0% + var(--glow-y,0px)),
+          rgba(0, 237, 255, .18), transparent 55%);
+    transform: translateZ(1px);
+    opacity: .6;
+}
+
+/* reflective sheen sweep on hover/focus */
+.tech-grid[data-tilt] .tech-pill::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: 12px;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,.06) 47%,
+        rgba(255,255,255,.22) 50%,
+        rgba(255,255,255,.06) 53%,
+        transparent 100%);
+    transform: translateZ(2px) translateX(var(--shine-x, -160%))
+               rotate(var(--shine-rot, 0deg));
+    opacity: var(--shine-o, 0);
+    transition: opacity 0.18s ease;
+    mix-blend-mode: screen; /* pretty on dark */
+}
+
+.tech-grid[data-tilt] .tech-pill:hover::after,
+.tech-grid[data-tilt] .tech-pill:focus-visible::after {
+    animation: tech-shine 900ms ease;
+    opacity: .8;
+}
+
+@keyframes tech-shine {
+    0%   { --shine-x: -160%; opacity: 0; }
+    30%  { opacity: .7; }
+    100% { --shine-x: 160%;  opacity: 0; }
+}
+
+/* Accessibility & performance */
+@media (prefers-reduced-motion: reduce) {
+    .tech-grid[data-tilt] .tech-pill {
+        transform: none !important;
+    }
+    .tech-grid[data-tilt] .tech-pill::after {
+        animation: none;
+        opacity: 0;
+    }
+}
+
 .loading-spinner {
     display: inline-block;
 }
