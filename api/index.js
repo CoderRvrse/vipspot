@@ -6,6 +6,9 @@ import { Resend } from 'resend';
 
 const app = express();
 
+// Trust Heroku proxy for rate limiting
+app.set('trust proxy', 1);
+
 // ----- Config -----
 const ALLOWED = (process.env.ALLOWED_ORIGINS || '')
   .split(',').map(s => s.trim()).filter(Boolean);
