@@ -466,6 +466,13 @@ select:focus {
     scroll-margin-top: 80px;
 }
 
+/* Subtle "arrived" focus/target cue for sighted users */
+#contact:target h2,
+#contact:focus-within h2 {
+    outline: 2px solid var(--neon-blue);
+    outline-offset: .25rem;
+}
+
 /* Tactile feedback for touch devices */
 .cta-button:active {
     transform: translateY(1px) scale(0.995);
