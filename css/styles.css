@@ -483,6 +483,151 @@ select:focus {
     outline-offset: 4px;
 }
 
+/* ============================================
+   TECH STACK GRID
+   ============================================ */
+
+/* Hidden sprite container */
+.tech-sprite-container {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.tech-sprite-container svg {
+    display: none;
+}
+
+/* ============================================
+   TECH GRID STYLES
+   ============================================ */
+.tech-grid {
+    --gap: 0.9rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--gap);
+    margin-block: 1.25rem 2rem;
+    padding: 0;
+    list-style: none;
+}
+
+.tech-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    background: var(--dark-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s ease;
+    color: var(--white);
+    cursor: pointer;
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+}
+
+.tech-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.tech-pill:hover {
+    transform: translateY(-2px);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 18px rgba(0, 237, 255, 0.18);
+}
+
+.tech-pill:hover::before {
+    left: 100%;
+}
+
+.tech-ico {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    color: currentColor;
+}
+
+/* Brand accent colors on hover */
+.tech-pill[aria-label="React"]:hover {
+    color: #61DAFB;
+    border-color: #61DAFB;
+    box-shadow: 0 0 18px rgba(97, 218, 251, 0.2);
+}
+
+.tech-pill[aria-label="TypeScript"]:hover {
+    color: #3178C6;
+    border-color: #3178C6;
+    box-shadow: 0 0 18px rgba(49, 120, 198, 0.2);
+}
+
+.tech-pill[aria-label="JavaScript"]:hover {
+    color: #F7DF1E;
+    border-color: #F7DF1E;
+    box-shadow: 0 0 18px rgba(247, 223, 30, 0.2);
+}
+
+.tech-pill[aria-label="WordPress"]:hover {
+    color: #21759B;
+    border-color: #21759B;
+    box-shadow: 0 0 18px rgba(33, 117, 155, 0.2);
+}
+
+.tech-pill[aria-label="Angular"]:hover {
+    color: #DD0031;
+    border-color: #DD0031;
+    box-shadow: 0 0 18px rgba(221, 0, 49, 0.2);
+}
+
+.tech-pill[aria-label="Tailwind CSS"]:hover {
+    color: #38BDF8;
+    border-color: #38BDF8;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.2);
+}
+
+.tech-pill[aria-label="Vue.js"]:hover {
+    color: #4FC08D;
+    border-color: #4FC08D;
+    box-shadow: 0 0 18px rgba(79, 192, 141, 0.2);
+}
+
+.tech-pill[aria-label="Nuxt"]:hover {
+    color: #00DC82;
+    border-color: #00DC82;
+    box-shadow: 0 0 18px rgba(0, 220, 130, 0.2);
+}
+
+.tech-pill[aria-label="Next.js"]:hover {
+    color: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.2);
+}
+
+.tech-pill[aria-label="Laravel"]:hover {
+    color: #FF2D20;
+    border-color: #FF2D20;
+    box-shadow: 0 0 18px rgba(255, 45, 32, 0.2);
+}
+
+.tech-pill[aria-label="Node.js"]:hover {
+    color: #5FA04E;
+    border-color: #5FA04E;
+    box-shadow: 0 0 18px rgba(95, 160, 78, 0.2);
+}
+
 .loading-spinner {
     display: inline-block;
 }
