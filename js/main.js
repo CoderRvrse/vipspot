@@ -1054,7 +1054,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
   const status = document.getElementById('contact-status');
   const btn = document.getElementById('contact-send');
-  const API = (window.VIP_API || 'https://api.vipspot.net') + '/contact';
+  const API = (window.VIP_API || 'https://vipspot-api-a7ce781e1397.herokuapp.com') + '/contact';
   form.elements.timestamp.value = Date.now();
   const say = m => { if (status) status.textContent = m; };
 
