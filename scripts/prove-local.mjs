@@ -112,7 +112,24 @@ try {
   must(/\.cta-button:active/i.test(css), "Pressed (:active) style missing");
   must(/:focus-visible/i.test(css), "Focus-visible outline missing");
 
-  console.log("✅ VIPSpot DOM + Mobile CTA Guards OK @", ORIGIN);
+  // --- ARIA Semantic Guards (prevent Lighthouse violations) ---
+  
+  // Articles must NOT carry overriding roles or tabindex
+  must(!/<article[^>]*\srole=["'](?!article)/.test(html),
+    "Do not assign ARIA roles to <article> (use link/button inside)");
+  
+  must(!/<article[^>]*\stabindex=/.test(html),
+    "<article> must not be focusable; put focus on a child link/button");
+
+  // Each project card must expose a real control
+  must(/<article[\s\S]*?(<button[^>]*data-project=)/i.test(html),
+    "Each project card needs a real <button> with data-project");
+
+  // Modal container remains proper dialog
+  must(/role=["']dialog["'][^>]*aria-modal=["']true["']/.test(html),
+    "ARIA-compliant modal not found");
+
+  console.log("✅ VIPSpot DOM + Mobile CTA + ARIA Guards OK @", ORIGIN);
   process.exit(0);
 } catch (e) {
   console.error("❌ Prove failed:", e?.message || e);

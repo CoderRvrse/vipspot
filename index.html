@@ -205,14 +205,14 @@
             <div class="container mx-auto">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonGreen">Work That Speaks for Itself</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" role="list" aria-label="Portfolio projects">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     <!-- Project 1: Roblox Game -->
-                    <article class="project-card h-80" role="listitem">
+                    <article class="project-card h-80" aria-labelledby="roblox-title" aria-describedby="roblox-desc">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
                                 <span class="text-6xl text-neonPurple mb-4" aria-hidden="true">🎮</span>
-                                <h3 class="text-xl font-bold font-orbitron mb-2">Roblox Game Development</h3>
-                                <p class="text-center text-gray-400">Immersive gaming experiences with Lua</p>
+                                <h3 id="roblox-title" class="text-xl font-bold font-orbitron mb-2">Roblox Game Development</h3>
+                                <p id="roblox-desc" class="text-center text-gray-400">Immersive gaming experiences with Lua</p>
                             </div>
                             <div class="project-card-back bg-darkBg border border-neonPurple rounded-lg p-6 flex flex-col justify-center">
                                 <h3 class="text-xl font-bold font-orbitron mb-4">Roblox Adventure Game</h3>
@@ -230,12 +230,12 @@
                     </article>
                     
                     <!-- Project 2: React E-Commerce -->
-                    <article class="project-card h-80" role="listitem">
+                    <article class="project-card h-80" aria-labelledby="react-title" aria-describedby="react-desc">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
                                 <span class="text-6xl text-neonGreen mb-4" aria-hidden="true">💻</span>
-                                <h3 class="text-xl font-bold font-orbitron mb-2">React E-Commerce App</h3>
-                                <p class="text-center text-gray-400">Full-stack shopping experience</p>
+                                <h3 id="react-title" class="text-xl font-bold font-orbitron mb-2">React E-Commerce App</h3>
+                                <p id="react-desc" class="text-center text-gray-400">Full-stack shopping experience</p>
                             </div>
                             <div class="project-card-back bg-darkBg border border-neonGreen rounded-lg p-6 flex flex-col justify-center">
                                 <h3 class="text-xl font-bold font-orbitron mb-4">React E-Commerce Platform</h3>
@@ -253,12 +253,12 @@
                     </article>
                     
                     <!-- Project 3: AI System -->
-                    <article class="project-card h-80" role="listitem">
+                    <article class="project-card h-80" aria-labelledby="ai-title" aria-describedby="ai-desc">
                         <div class="project-card-inner">
                             <div class="project-card-front bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center items-center">
                                 <span class="text-6xl text-neonBlue mb-4" aria-hidden="true">🧠</span>
-                                <h3 class="text-xl font-bold font-orbitron mb-2">AI Prediction System</h3>
-                                <p class="text-center text-gray-400">Machine learning for data analysis</p>
+                                <h3 id="ai-title" class="text-xl font-bold font-orbitron mb-2">AI Prediction System</h3>
+                                <p id="ai-desc" class="text-center text-gray-400">Machine learning for data analysis</p>
                             </div>
                             <div class="project-card-back bg-darkBg border border-neonBlue rounded-lg p-6 flex flex-col justify-center">
                                 <h3 class="text-xl font-bold font-orbitron mb-4">AI Prediction System</h3>
@@ -283,26 +283,26 @@
             <div class="container mx-auto">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonPurple">Services I Offer</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto" role="list" aria-label="Services offered">
-                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
                         <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">⌨️</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Full-Stack Web Development</h3>
                         <p class="text-gray-300">Cutting-edge apps, from front-end interfaces to robust back-end APIs with modern frameworks and technologies.</p>
                     </article>
                     
-                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
+                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
                         <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">🎮</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Game Development</h3>
                         <p class="text-gray-300">Using Lua for Roblox or designing interactive game mechanics with AI, physics, and multiplayer systems.</p>
                     </article>
                     
-                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
+                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
                         <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">🤖</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Custom AI Solutions</h3>
                         <p class="text-gray-300">Creating intelligent bots, predictive systems, and data-driven automation for various applications.</p>
                     </article>
                     
-                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105" role="listitem">
+                    <article class="bg-darkCard p-8 rounded-lg border border-neonPurple hover:border-neonGreen transition-all duration-300 hover:transform hover:scale-105">
                         <span class="text-4xl text-neonPurple mb-4" aria-hidden="true">⚡</span>
                         <h3 class="text-xl font-bold font-orbitron mb-4">Web & App Optimization</h3>
                         <p class="text-gray-300">Make your code fast and light with advanced performance tuning and optimization techniques.</p>
