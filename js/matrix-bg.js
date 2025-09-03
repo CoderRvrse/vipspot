@@ -74,8 +74,38 @@
   let debugHUD = null;
   let debugEnabled = false;
 
+  // --- Manual theme override ---
+  let themeAuto = true, themeForced = null;
+
+  function themeVars(){
+    const cs = getComputedStyle(document.documentElement);
+    return {
+      color: cs.getPropertyValue('--matrix-color').trim() || 'rgba(0,255,170,.85)',
+      trail: parseFloat(cs.getPropertyValue('--matrix-trail')) || 0.08
+    };
+  }
+
+  function getCurrentTheme(){
+    if (!themeAuto && themeForced && THEMES[themeForced]) {
+      return THEMES[themeForced];
+    }
+    return getTimeTheme();
+  }
+
+  function applyTheme(themeName = null){
+    const name = themeName || (themeAuto ? Object.keys(THEMES).find(k => THEMES[k] === getTimeTheme()) : themeForced);
+    if (name) {
+      document.documentElement.setAttribute('data-matrix-theme', name);
+      buildAtlas(); // Rebuild with new colors
+    }
+  }
+
   function createDebugHUD(){
     if (debugHUD) return;
+    // HUD safety: ensure it's dev-only  
+    const isDebug = new URLSearchParams(location.search).get('debug') === '1';
+    if (!isDebug) return;
+    
     debugHUD = document.createElement('div');
     debugHUD.id = 'matrix-debug-hud';
     debugHUD.style.cssText = `
@@ -119,7 +149,7 @@
     const octx = off.getContext('2d', { alpha: true });
     octx.font = ctx.font;
     octx.textBaseline = 'top';
-    octx.fillStyle = getTimeTheme().color;
+    octx.fillStyle = themeVars().color;
 
     // render each glyph once
     for (let i = 0; i < CHARS.length; i++){
@@ -233,11 +263,12 @@
   }
 
   function checkThemeChange(now){
+    if (!themeAuto) return; // Skip auto-theme if manually overridden
     if (!lastThemeCheck) lastThemeCheck = now;
     // Check theme every 5 minutes (themes change by hour)
     if (now - lastThemeCheck < 5 * 60 * 1000) return;
     lastThemeCheck = now;
-    buildAtlas(); // Rebuild with new theme colors
+    applyTheme(); // Apply time-based theme and rebuild atlas
   }
 
   function scheduleNextBurst(now){
@@ -301,8 +332,8 @@
     maybeStartBurst(currentTime);
 
     // Clear canvas with theme-based trail alpha
-    const theme = getTimeTheme();
-    ctx.fillStyle = `rgba(5, 12, 24, ${theme.trail})`;
+    const { trail } = themeVars();
+    ctx.fillStyle = `rgba(5, 12, 24, ${trail})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw characters
@@ -435,6 +466,22 @@
       debugEnabled = true;
       createDebugHUD();
     }
+
+    // Manual theme override
+    if (qs.has('theme')) {
+      const themeName = qs.get('theme');
+      if (themeName === 'auto') {
+        themeAuto = true;
+        applyTheme();
+      } else if (THEMES[themeName]) {
+        themeAuto = false;
+        themeForced = themeName;
+        applyTheme(themeName);
+      }
+    } else {
+      // Apply initial time-based theme
+      applyTheme();
+    }
   }
 
   // Auto-initialize
@@ -476,7 +523,22 @@
     }
   };
   window.VIPSpot.getThemes = () => ({ ...THEMES });
-  window.VIPSpot.getCurrentTheme = () => getTimeTheme();
+  window.VIPSpot.getCurrentTheme = () => getCurrentTheme();
+  window.VIPSpot.setTheme = (name) => {
+    if (!THEMES[name]) return false;
+    themeAuto = false; 
+    themeForced = name; 
+    applyTheme(name);
+    return true;
+  };
+  window.VIPSpot.setThemeAuto = (on=true) => {
+    themeAuto = !!on;
+    if (themeAuto) {
+      themeForced = null;
+      applyTheme();
+    }
+  };
+  window.VIPSpot._applyTheme = applyTheme;
 
   // Dev hotkey: Ctrl/Cmd+B to trigger burst
   document.addEventListener('keydown', (e) => {

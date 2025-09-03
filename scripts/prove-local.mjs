@@ -27,12 +27,15 @@ try {
       "Matrix canvas missing or duplicated");
 
   // Matrix API and features present in JS
-  must(/VIPSpot\.triggerBurst/.test(js), "Matrix API triggerBurst missing");
-  must(/VIPSpot\.setMatrix/.test(js), "Matrix API setMatrix missing");
+  must(/VIPSpot\.setMatrix/.test(js) && /VIPSpot\.triggerBurst/.test(js) && /VIPSpot\.setTheme/.test(js),
+      "Matrix API incomplete (setMatrix/triggerBurst/setTheme)");
   must(/ORDER\s*=\s*\[/.test(js), "Glyph rotation not detected");
   must(/buildAtlas\s*\(/.test(js) && /drawGlyph\s*\(/.test(js),
       "Matrix glyph atlas functions not found (buildAtlas/drawGlyph)");
   must(/disposeAtlas\s*\(/.test(js), "Atlas lifecycle management missing");
+  
+  // No debug HUD visible by default
+  must(!/debug=1/.test(html), "Remove hardcoded debug HUD query");
   must(/<main[^>]+id=["']main-content["'][^>]*>/i.test(html), "<main id='main-content'> missing");
   must(/id=["']projects["']/.test(html), "#projects section missing");
   must(/id=["']contact["']/.test(html), "#contact section missing");
