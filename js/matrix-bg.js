@@ -48,7 +48,16 @@
   // --- Glyph atlas cache ---
   let atlas = null, atlasCols = [], atlasCharW = 0, atlasCharH = 0;
 
+  // --- Idle sleep variables ---
+  let idleT, idleMs = 30000, asleep = false;
+
+  function disposeAtlas(){
+    if (atlas && 'close' in atlas) { try { atlas.close(); } catch {} } // ImageBitmap.close()
+    atlas = null; atlasCols = [];
+  }
+
   async function buildAtlas(){
+    disposeAtlas();
     const fontPx = parseInt(ctx.font, 10) || 16;
     atlasCharW = fontPx;
     atlasCharH = Math.ceil(fontPx * 1.2);
@@ -342,6 +351,23 @@
     // Start the animation
     setupIntersectionObserver();
     start();
+
+    // Idle sleep - auto-pause after inactivity
+    const wake = () => {
+      if (asleep) { start(); asleep = false; }
+      clearTimeout(idleT);
+      idleT = setTimeout(() => { stop(); asleep = true; }, idleMs);
+    };
+    ['mousemove','keydown','wheel','touchstart','pointerdown'].forEach(ev =>
+      addEventListener(ev, wake, { passive: true })
+    );
+    wake();
+
+    // URL tuning for demos and debugging
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('matrix') === 'off') stop();
+    if (qs.has('fps')) CFG.fps = Math.max(16, +qs.get('fps') || CFG.fps), interval = 1000/CFG.fps;
+    if (qs.has('density')) CFG.density = Math.max(CFG.minDensity, Math.min(1, +qs.get('density') || CFG.density));
   }
 
   // Auto-initialize
@@ -365,8 +391,13 @@
   };
   window.VIPSpot.destroyMatrix = () => {
     stop();
+    disposeAtlas();
     window.removeEventListener('resize', resizeCanvas);
     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  };
+  window.VIPSpot.setIdleTimeout = (ms=30000) => { 
+    idleMs = ms; 
+    wake(); 
   };
 
   // Dev hotkey: Ctrl/Cmd+B to trigger burst
