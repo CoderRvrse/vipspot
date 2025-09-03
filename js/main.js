@@ -992,7 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Bulletproof smooth scroll for internal anchors (CTA and any # links)
+    // Super-safe smooth scroll fallback (only when native isn't available)
     document.addEventListener('click', (e) => {
         const link = e.target.closest('a[href^="#"]');
         if (!link) return;
@@ -1001,18 +1001,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!id || id === '#') return;
 
         const target = document.querySelector(id);
-        if (!target) return; // don't block default when no target
+        if (!target) return; // let default happen if target missing
 
-        // If native smooth-scroll is supported, don't interfere
+        // If native smooth-scroll exists, don't interfere
         if ('scrollBehavior' in document.documentElement.style) return;
 
-        // JS fallback for older browsers
+        // JS fallback for older browsers only
         e.preventDefault();
-        try {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } catch {
-            // Last resort: allow default anchor behavior
-            location.hash = id;
+        try { 
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+        } catch { 
+            location.hash = id; // last-resort fallback
         }
     });
 

@@ -76,6 +76,13 @@ html {
     scroll-padding-top: 4rem;
 }
 
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
 body {
     background-color: var(--dark-bg);
     color: var(--white);
@@ -447,9 +454,26 @@ select:focus {
     touch-action: manipulation;
 }
 
+/* CTA wrapper isolation for stacking context safety */
+.hero-content {
+    isolation: isolate;
+    z-index: 5;
+    position: relative;
+}
+
 /* Ensure contact anchor lands correctly below header */
 #contact {
     scroll-margin-top: 80px;
+}
+
+/* Tactile feedback for touch devices */
+.cta-button:active {
+    transform: translateY(1px) scale(0.995);
+}
+
+.cta-button:focus-visible {
+    outline: 2px solid var(--neon-blue);
+    outline-offset: 4px;
 }
 
 .loading-spinner {
