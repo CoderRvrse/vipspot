@@ -393,10 +393,18 @@ class ModalSystem {
         const project = PROJECTS_DATA[projectId];
         if (!project) return;
 
+        // Store reference to the triggering button for focus return
+        this.triggeringButton = document.querySelector(`[data-project="${projectId}"]`);
+
         this.renderModalContent(project);
         this.modal.classList.remove('hidden');
         this.modal.setAttribute('aria-hidden', 'false');
         this.isOpen = true;
+
+        // Update aria-expanded on the triggering button
+        if (this.triggeringButton) {
+            this.triggeringButton.setAttribute('aria-expanded', 'true');
+        }
 
         // Focus management
         this.closeButton.focus();
@@ -413,15 +421,22 @@ class ModalSystem {
         this.modal.setAttribute('aria-hidden', 'true');
         this.isOpen = false;
 
+        // Update aria-expanded on the triggering button
+        if (this.triggeringButton) {
+            this.triggeringButton.setAttribute('aria-expanded', 'false');
+        }
+
         // Restore body scroll
         document.body.classList.remove('body-overflow-hidden');
         document.body.classList.add('body-overflow-auto');
 
-        // Return focus to trigger element
-        const activeButton = document.activeElement;
-        if (activeButton && activeButton.classList.contains('project-btn')) {
-            activeButton.focus();
+        // Return focus to the triggering button
+        if (this.triggeringButton) {
+            this.triggeringButton.focus();
         }
+        
+        // Clear reference
+        this.triggeringButton = null;
     }
 
     renderModalContent(project) {

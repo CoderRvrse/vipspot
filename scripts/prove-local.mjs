@@ -114,20 +114,45 @@ try {
 
   // --- ARIA Semantic Guards (prevent Lighthouse violations) ---
   
+  // Collect all IDs for validation
+  const ids = Array.from(html.matchAll(/\sid=["']([^"']+)["']/g)).map(m => m[1]);
+  const idSet = new Set(ids);
+  
   // Articles must NOT carry overriding roles or tabindex
-  must(!/<article[^>]*\srole=["'](?!article)/.test(html),
-    "Do not assign ARIA roles to <article> (use link/button inside)");
+  must(!/<article[^>]*\srole=/.test(html), 
+    "<article> must not override roles");
   
   must(!/<article[^>]*\stabindex=/.test(html),
-    "<article> must not be focusable; put focus on a child link/button");
+    "<article> must not have tabindex");
 
   // Each project card must expose a real control
-  must(/<article[\s\S]*?(<button[^>]*data-project=)/i.test(html),
-    "Each project card needs a real <button> with data-project");
+  must(/<article[\s\S]*?(<(button|a)[^>]*data-project=)/i.test(html),
+    "Each project card needs a real <button>/<a> with data-project");
 
   // Modal container remains proper dialog
   must(/role=["']dialog["'][^>]*aria-modal=["']true["']/.test(html),
     "ARIA-compliant modal not found");
+    
+  // aria-labelledby / aria-describedby targets must exist
+  for (const [, fullAttr, , val] of html.matchAll(/\s(aria-(labelledby|describedby))=["']([^"']+)["']/g)) {
+    for (const ref of val.trim().split(/\s+/)) {
+      must(idSet.has(ref), `Missing target id for ${fullAttr}: ${ref}`);
+    }
+  }
+
+  // Buttons must have discernible text (non-empty)
+  must(!/<button[^>]*>\s*<\/button>/i.test(html), 
+    "Buttons must have discernible text");
+    
+  // Modal controls must have proper ARIA attributes
+  must(/<button[^>]*data-project=[^>]*aria-haspopup=["']dialog["']/.test(html),
+    "Project buttons must have aria-haspopup='dialog'");
+    
+  must(/<button[^>]*data-project=[^>]*aria-controls=/.test(html),
+    "Project buttons must have aria-controls");
+    
+  must(/<button[^>]*data-project=[^>]*aria-expanded=["']false["']/.test(html),
+    "Project buttons must have aria-expanded='false' initially");
 
   console.log("✅ VIPSpot DOM + Mobile CTA + ARIA Guards OK @", ORIGIN);
   process.exit(0);

@@ -201,9 +201,9 @@
         </section>
         
         <!-- Projects Section -->
-        <section id="projects" class="py-20 px-4 bg-darkCard">
+        <section id="projects" class="py-20 px-4 bg-darkCard" aria-labelledby="projects-title">
             <div class="container mx-auto">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonGreen">Work That Speaks for Itself</h2>
+                <h2 id="projects-title" class="text-3xl md:text-4xl font-bold text-center mb-16 font-orbitron text-neonGreen">Work That Speaks for Itself</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     <!-- Project 1: Roblox Game -->
@@ -222,7 +222,12 @@
                                     <span class="px-2 py-1 bg-neonPurple text-darkBg text-xs rounded">Roblox Studio</span>
                                     <span class="px-2 py-1 bg-neonPurple text-darkBg text-xs rounded">Multiplayer</span>
                                 </div>
-                                <button class="project-btn text-neonPurple hover:underline text-sm" data-project="roblox" aria-label="View Roblox project details">
+                                <button class="project-btn text-neonPurple hover:underline text-sm" 
+                                        data-project="roblox" 
+                                        aria-haspopup="dialog" 
+                                        aria-controls="project-modal" 
+                                        aria-expanded="false"
+                                        aria-label="View Roblox project details">
                                     View Project →
                                 </button>
                             </div>
@@ -245,7 +250,12 @@
                                     <span class="px-2 py-1 bg-neonGreen text-darkBg text-xs rounded">Node.js</span>
                                     <span class="px-2 py-1 bg-neonGreen text-darkBg text-xs rounded">MongoDB</span>
                                 </div>
-                                <button class="project-btn text-neonGreen hover:underline text-sm" data-project="react" aria-label="View React e-commerce project details">
+                                <button class="project-btn text-neonGreen hover:underline text-sm" 
+                                        data-project="react" 
+                                        aria-haspopup="dialog" 
+                                        aria-controls="project-modal" 
+                                        aria-expanded="false"
+                                        aria-label="View React e-commerce project details">
                                     View Project →
                                 </button>
                             </div>
@@ -268,7 +278,12 @@
                                     <span class="px-2 py-1 bg-neonBlue text-darkBg text-xs rounded">TensorFlow</span>
                                     <span class="px-2 py-1 bg-neonBlue text-darkBg text-xs rounded">Data Science</span>
                                 </div>
-                                <button class="project-btn text-neonBlue hover:underline text-sm" data-project="ai" aria-label="View AI prediction system project details">
+                                <button class="project-btn text-neonBlue hover:underline text-sm" 
+                                        data-project="ai" 
+                                        aria-haspopup="dialog" 
+                                        aria-controls="project-modal" 
+                                        aria-expanded="false"
+                                        aria-label="View AI prediction system project details">
                                     View Project →
                                 </button>
                             </div>
