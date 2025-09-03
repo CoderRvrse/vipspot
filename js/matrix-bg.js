@@ -5,26 +5,45 @@
 (() => {
   'use strict';
 
-  let canvas, ctx;
-  let animationId = null;
-  let isVisible = true;
-  let lastTime = 0;
-  const TARGET_FPS = 28;
-  const FRAME_TIME = 1000 / TARGET_FPS;
+  const CFG = {
+    fps: 28,
+    density: 0.9,
+    minDensity: 0.5,
+    trailAlpha: 0.08,
+    rotateSeconds: 20,          // rotate glyph set every N seconds
+    burstMinMs: 12000,          // min time between bursts
+    burstMaxMs: 28000           // max time between bursts
+  };
 
-  // Performance monitoring
-  let frameCount = 0;
-  let lastFpsCheck = 0;
-  let currentFps = TARGET_FPS;
+  // Rotating glyph sets (UTF-8 source file)
+  const SETS = {
+    jp:  'アイウエオカキクケコサシスセソタチツテトナニヌネノﾊﾋﾌﾍﾎ0123456789',
+    ru:  'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ0123456789',
+    lat: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+    num: '0123456789'
+  };
+  const ORDER = ['jp','ru','lat','num'];
+  let setIndex = 0;
+  let CHARS = SETS[ORDER[setIndex]].split('');
 
-  // Matrix configuration
+  let canvas, ctx, w, h, dpr = 1;
+  let cols = 0, drops = [];
+  let raf = 0, last = 0, interval = 1000 / CFG.fps;
+  let inView = true, visible = true;
+  let lastRotate = 0;
+  let burst = null, nextBurstAt = 0;
+
+  // Legacy variables for compatibility
   let columns = [];
   let columnCount = 0;
   let fontSize = 14;
   let baseDropSpeed = 1;
   let densityMultiplier = 1;
-
-  const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  
+  // Performance monitoring
+  let frameCount = 0;
+  let lastFpsCheck = 0;
+  let currentFps = CFG.fps;
 
   function initCanvas() {
     const IDS = ['matrix-canvas', 'matrix-bg']; // prefer new name, still support old
@@ -41,34 +60,83 @@
 
   function resizeCanvas() {
     const rect = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR to prevent excessive memory usage
+    dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR to prevent excessive memory usage
     
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    w = rect.width;
+    h = rect.height;
+    
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
     
     ctx.scale(dpr, dpr);
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
 
     // Recalculate columns on resize
-    columnCount = Math.floor(rect.width / fontSize);
+    cols = Math.floor(w / fontSize);
+    columnCount = cols; // legacy compatibility
     initColumns();
   }
 
   function initColumns() {
     columns = [];
+    drops = [];
     for (let i = 0; i < columnCount; i++) {
       // Stagger initial positions to avoid synchronized drops
-      columns[i] = Math.floor(Math.random() * canvas.height / fontSize);
+      columns[i] = Math.floor(Math.random() * h / fontSize);
+      drops[i] = -Math.random() * h * 0.25;
     }
   }
 
   function adjustDensity() {
     // Adaptive density based on performance
-    if (currentFps < TARGET_FPS * 0.8) {
-      densityMultiplier = Math.max(0.3, densityMultiplier * 0.9);
-    } else if (currentFps > TARGET_FPS * 0.95 && densityMultiplier < 1) {
-      densityMultiplier = Math.min(1, densityMultiplier * 1.05);
+    if (currentFps < CFG.fps * 0.8) {
+      densityMultiplier = Math.max(CFG.minDensity, densityMultiplier * 0.9);
+    } else if (currentFps > CFG.fps * 0.95 && densityMultiplier < CFG.density) {
+      densityMultiplier = Math.min(CFG.density, densityMultiplier * 1.05);
+    }
+  }
+
+  function rotateSet(now){
+    if (!lastRotate) lastRotate = now;
+    if (now - lastRotate < CFG.rotateSeconds * 1000) return;
+    setIndex = (setIndex + 1) % ORDER.length;
+    CHARS = SETS[ORDER[setIndex]].split('');
+    lastRotate = now;
+  }
+
+  function scheduleNextBurst(now){
+    const rnd = CFG.burstMinMs + Math.random()*(CFG.burstMaxMs - CFG.burstMinMs);
+    nextBurstAt = now + rnd;
+  }
+
+  function maybeStartBurst(now){
+    if (burst || !nextBurstAt || now < nextBurstAt) return;
+    const fontPx = fontSize;
+    const text = 'VIPSPOT.NET';
+    const neededCols = text.length;
+    const startCol = Math.max(0, Math.floor(Math.random()*(Math.max(1, cols - neededCols))));
+    const y = Math.floor(h*0.25 + Math.random()*h*0.5); // mid band
+    burst = { text, startCol, y, frames: 16, fontPx };
+  }
+
+  function renderBurst(){
+    if (!burst) return;
+    const { text, startCol, y, frames, fontPx } = burst;
+    // subtle glow without heavy shadow
+    const x0 = startCol * fontPx;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(0,255,220,0.95)';
+    // draw once bold, once slightly offset for glow effect
+    ctx.fillText(text, x0, y);
+    ctx.fillStyle = 'rgba(0,255,220,0.35)';
+    ctx.fillText(text, x0+1, y+1);
+    ctx.restore();
+    burst.frames--;
+    if (burst.frames <= 0){
+      burst = null;
+      scheduleNextBurst(performance.now());
     }
   }
 
@@ -93,8 +161,11 @@
     const deltaTime = currentTime - lastTime;
     lastTime = currentTime;
 
+    rotateSet(currentTime);
+    maybeStartBurst(currentTime);
+
     // Clear canvas
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillStyle = `rgba(5, 12, 24, ${CFG.trailAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw characters
@@ -109,7 +180,7 @@
       // Skip some columns based on density
       if (Math.random() > densityMultiplier) continue;
 
-      const char = chars[Math.floor(Math.random() * chars.length)];
+      const char = CHARS[Math.floor(Math.random() * CHARS.length)];
       const x = i * fontSize + fontSize / 2;
       const y = columns[i] * fontSize;
 
@@ -122,6 +193,8 @@
         columns[i] += effectiveSpeed;
       }
     }
+
+    renderBurst();
 
     animationId = requestAnimationFrame(drawMatrix);
   }
@@ -137,6 +210,7 @@
     if (!initCanvas()) return; // Canvas not ready
 
     lastTime = performance.now();
+    scheduleNextBurst(performance.now());
     animationId = requestAnimationFrame(drawMatrix);
   }
 
@@ -213,4 +287,11 @@
   window.VIPSpot.pauseMatrix = stop;
   window.VIPSpot.resumeMatrix = start;
   window.VIPSpot.matrixCanvasId = () => canvas?.id || null;
+  window.VIPSpot.triggerBurst = (txt='VIPSPOT.NET') => {
+    const fontPx = fontSize;
+    const neededCols = txt.length;
+    const startCol = Math.max(0, Math.floor(Math.random()*(Math.max(1, cols - neededCols))));
+    const y = Math.floor(h*0.25 + Math.random()*h*0.5);
+    burst = { text: txt.toUpperCase(), startCol, y, frames: 18, fontPx };
+  };
 })();
