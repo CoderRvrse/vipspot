@@ -22,6 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against legacy RAF handle
+        run: |
+          # Fail if old name ever sneaks back in
+          if grep -R --line-number -E '\banimationId\b' js/; then
+            echo "Found legacy animationId usage"; exit 1
+          fi
+          # Sanity: ensure new API markers exist
+          grep -q 'let rafId' js/matrix-bg.js
+          grep -q 'VIPSpot\\._raf' js/matrix-bg.js
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -54,6 +63,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against legacy RAF handle
+        run: |
+          # Fail if old name ever sneaks back in
+          if grep -R --line-number -E '\banimationId\b' js/; then
+            echo "Found legacy animationId usage"; exit 1
+          fi
+          # Sanity: ensure new API markers exist
+          grep -q 'let rafId' js/matrix-bg.js
+          grep -q 'VIPSpot\\._raf' js/matrix-bg.js
       - uses: actions/setup-node@v4
         with:
           node-version: 20
