@@ -32,6 +32,7 @@
   let inView = true, visible = true;
   let lastRotate = 0;
   let burst = null, nextBurstAt = 0;
+  let lastThemeCheck = 0;
 
   // Legacy variables for compatibility
   let columns = [];
@@ -51,6 +52,55 @@
   // --- Idle sleep variables ---
   let idleT, idleMs = 30000, asleep = false;
 
+  // --- Theme cycles (time-of-day) ---
+  const THEMES = {
+    dawn:     { color: 'rgba(255,192,203,0.85)', trail: 0.06 }, // soft pink
+    morning:  { color: 'rgba(0,255,170,0.85)', trail: 0.08 },  // classic cyan
+    afternoon: { color: 'rgba(135,206,235,0.85)', trail: 0.07 }, // sky blue
+    evening:  { color: 'rgba(255,215,0,0.85)', trail: 0.06 },  // warm gold
+    night:    { color: 'rgba(138,43,226,0.85)', trail: 0.08 }  // deep purple
+  };
+
+  function getTimeTheme(){
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 8) return THEMES.dawn;
+    if (hour >= 8 && hour < 12) return THEMES.morning;
+    if (hour >= 12 && hour < 17) return THEMES.afternoon;
+    if (hour >= 17 && hour < 21) return THEMES.evening;
+    return THEMES.night;
+  }
+
+  // --- Debug HUD ---
+  let debugHUD = null;
+  let debugEnabled = false;
+
+  function createDebugHUD(){
+    if (debugHUD) return;
+    debugHUD = document.createElement('div');
+    debugHUD.id = 'matrix-debug-hud';
+    debugHUD.style.cssText = `
+      position: fixed; top: 10px; right: 10px; z-index: 9999;
+      background: rgba(0,0,0,0.7); color: #0f0; padding: 8px;
+      font: 11px "Roboto Mono", monospace; border-radius: 4px;
+      pointer-events: none; user-select: none; white-space: pre-line;
+    `;
+    document.body.appendChild(debugHUD);
+  }
+
+  function updateDebugHUD(){
+    if (!debugHUD || !debugEnabled) return;
+    const theme = getTimeTheme();
+    const themeName = Object.keys(THEMES).find(key => THEMES[key] === theme) || 'custom';
+    debugHUD.textContent = `FPS: ${currentFps}\nDensity: ${(densityMultiplier * 100).toFixed(0)}%\nTheme: ${themeName}\nChars: ${CHARS.length}`;
+  }
+
+  function removeDebugHUD(){
+    if (debugHUD) {
+      debugHUD.remove();
+      debugHUD = null;
+    }
+  }
+
   function disposeAtlas(){
     if (atlas && 'close' in atlas) { try { atlas.close(); } catch {} } // ImageBitmap.close()
     atlas = null; atlasCols = [];
@@ -69,7 +119,7 @@
     const octx = off.getContext('2d', { alpha: true });
     octx.font = ctx.font;
     octx.textBaseline = 'top';
-    octx.fillStyle = 'rgba(0,255,170,0.85)';
+    octx.fillStyle = getTimeTheme().color;
 
     // render each glyph once
     for (let i = 0; i < CHARS.length; i++){
@@ -182,6 +232,14 @@
     buildAtlas();
   }
 
+  function checkThemeChange(now){
+    if (!lastThemeCheck) lastThemeCheck = now;
+    // Check theme every 5 minutes (themes change by hour)
+    if (now - lastThemeCheck < 5 * 60 * 1000) return;
+    lastThemeCheck = now;
+    buildAtlas(); // Rebuild with new theme colors
+  }
+
   function scheduleNextBurst(now){
     const rnd = CFG.burstMinMs + Math.random()*(CFG.burstMaxMs - CFG.burstMinMs);
     nextBurstAt = now + rnd;
@@ -239,10 +297,12 @@
     lastTime = currentTime;
 
     rotateSet(currentTime);
+    checkThemeChange(currentTime);
     maybeStartBurst(currentTime);
 
-    // Clear canvas
-    ctx.fillStyle = `rgba(5, 12, 24, ${CFG.trailAlpha})`;
+    // Clear canvas with theme-based trail alpha
+    const theme = getTimeTheme();
+    ctx.fillStyle = `rgba(5, 12, 24, ${theme.trail})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw characters
@@ -269,6 +329,7 @@
     }
 
     renderBurst();
+    updateDebugHUD();
 
     animationId = requestAnimationFrame(drawMatrix);
   }
@@ -368,6 +429,12 @@
     if (qs.get('matrix') === 'off') stop();
     if (qs.has('fps')) CFG.fps = Math.max(16, +qs.get('fps') || CFG.fps), interval = 1000/CFG.fps;
     if (qs.has('density')) CFG.density = Math.max(CFG.minDensity, Math.min(1, +qs.get('density') || CFG.density));
+    
+    // Debug HUD
+    if (qs.get('debug') === '1') {
+      debugEnabled = true;
+      createDebugHUD();
+    }
   }
 
   // Auto-initialize
@@ -392,6 +459,7 @@
   window.VIPSpot.destroyMatrix = () => {
     stop();
     disposeAtlas();
+    removeDebugHUD();
     window.removeEventListener('resize', resizeCanvas);
     document.removeEventListener('visibilitychange', handleVisibilityChange);
   };
@@ -399,6 +467,16 @@
     idleMs = ms; 
     wake(); 
   };
+  window.VIPSpot.toggleDebug = () => {
+    debugEnabled = !debugEnabled;
+    if (debugEnabled) {
+      createDebugHUD();
+    } else {
+      removeDebugHUD();
+    }
+  };
+  window.VIPSpot.getThemes = () => ({ ...THEMES });
+  window.VIPSpot.getCurrentTheme = () => getTimeTheme();
 
   // Dev hotkey: Ctrl/Cmd+B to trigger burst
   document.addEventListener('keydown', (e) => {
