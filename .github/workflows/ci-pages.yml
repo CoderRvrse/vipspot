@@ -75,6 +75,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: API healthcheck
+        run: curl -fsS https://vipspot-api-a7ce781e1397.herokuapp.com/healthz
       - name: Guard against legacy RAF handle
         shell: bash
         run: |

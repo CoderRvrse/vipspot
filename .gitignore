@@ -7,6 +7,8 @@ _site/
 .claude/
 *.local.json
 server.pid
+.env
+.env.*
 # OS/IDE
 .DS_Store
 Thumbs.db
