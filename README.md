@@ -1,5 +1,7 @@
 # VIPSpot 2025 - Futuristic Developer Portfolio
 
+[![VIPSpot CI + Pages](https://github.com/CoderRvrse/vipspot/actions/workflows/ci-pages.yml/badge.svg?branch=main)](https://github.com/CoderRvrse/vipspot/actions/workflows/ci-pages.yml)
+
 A modern, responsive portfolio website showcasing a freelance developer's expertise in full-stack web development, game development with Lua/Roblox, and AI solutions.
 
 ## 🚀 Features
