@@ -18,6 +18,8 @@ if (!fs.existsSync(ASSETS_DIR)) {
 
 // Slugs to include (simple-icons names). Adjust freely.
 const WANTED = [
+  'codepen',       // Social link
+  'github',        // Social link
   'laravel',
   'react',
   'typescript',

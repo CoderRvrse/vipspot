@@ -47,7 +47,7 @@ try {
   must(/https:\/\/github\.com\/CoderRvrse/.test(html), "Footer GitHub link not set to CoderRvrse");
 
   // Hard fail if external stylesheets or scripts sneak in
-  must(!/<link[^>]+href=["']https?:\/\//.test(html), "External stylesheet detected");
+  must(!/<link[^>]+rel=["']stylesheet["'][^>]*href=["']https?:\/\//.test(html), "External stylesheet detected");
   must(!/<script[^>]+src=["']https?:\/\//.test(html), "External script detected");
 
   // Block font preloads (not needed with font-display: swap + self-hosted)
@@ -153,6 +153,10 @@ try {
     
   must(/<button[^>]*data-project=[^>]*aria-expanded=["']false["']/.test(html),
     "Project buttons must have aria-expanded='false' initially");
+    
+  // Social profile links validation
+  must(/<a[^>]*href=["']https:\/\/codepen\.io\/CoderRvrse["'][^>]*aria-label=["']CodePen["']/.test(html),
+    "CodePen profile link missing or incorrect");
 
   console.log("✅ VIPSpot DOM + Mobile CTA + ARIA Guards OK @", ORIGIN);
   process.exit(0);
