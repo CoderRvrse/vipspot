@@ -28,11 +28,22 @@
 
   let canvas, ctx, w, h, dpr = 1;
   let cols = 0, drops = [];
-  let raf = 0, last = 0, interval = 1000 / CFG.fps;
+  let last = 0, interval = 1000 / CFG.fps;
   let inView = true, visible = true;
   let lastRotate = 0;
   let burst = null, nextBurstAt = 0;
   let lastThemeCheck = 0;
+
+  // Animation frame handle – must exist before any function references it
+  let rafId = null;
+  let running = false;
+
+  function stopRAF() {
+    if (rafId !== null) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
 
   // Legacy variables for compatibility
   let columns = [];
@@ -306,12 +317,12 @@
     }
   }
 
-  function drawMatrix(currentTime) {
-    if (!isVisible) return;
+  function loop(currentTime) {
+    if (!running || !inView) return;
 
     // FPS capping
-    if (currentTime - lastTime < FRAME_TIME) {
-      animationId = requestAnimationFrame(drawMatrix);
+    if (currentTime - last < interval) {
+      rafId = requestAnimationFrame(loop);
       return;
     }
 
@@ -324,8 +335,8 @@
       adjustDensity();
     }
 
-    const deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
+    const deltaTime = currentTime - last;
+    last = currentTime;
 
     rotateSet(currentTime);
     checkThemeChange(currentTime);
@@ -362,11 +373,11 @@
     renderBurst();
     updateDebugHUD();
 
-    animationId = requestAnimationFrame(drawMatrix);
+    rafId = requestAnimationFrame(loop);
   }
 
   function start() {
-    if (animationId) return; // Already running
+    if (running) return; // Already running
     
     // Check for reduced motion preference
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -375,22 +386,22 @@
 
     if (!initCanvas()) return; // Canvas not ready
 
-    lastTime = performance.now();
+    running = true;
+    last = performance.now();
     scheduleNextBurst(performance.now());
-    animationId = requestAnimationFrame(drawMatrix);
+    stopRAF();
+    rafId = requestAnimationFrame(loop);
   }
 
   function stop() {
-    if (animationId) {
-      cancelAnimationFrame(animationId);
-      animationId = null;
-    }
+    running = false;
+    stopRAF();
   }
 
   // Visibility detection
   function handleVisibilityChange() {
-    isVisible = !document.hidden;
-    if (isVisible) {
+    inView = !document.hidden;
+    if (inView) {
       start();
     } else {
       stop();
@@ -403,9 +414,9 @@
 
     const observer = new IntersectionObserver((entries) => {
       const entry = entries[0];
-      isVisible = entry.isIntersecting && !document.hidden;
+      inView = entry.isIntersecting && !document.hidden;
       
-      if (isVisible) {
+      if (inView) {
         start();
       } else {
         stop();
@@ -435,7 +446,7 @@
     reducedMotionQuery.addEventListener('change', (e) => {
       if (e.matches) {
         stop();
-      } else if (isVisible) {
+      } else if (inView) {
         start();
       }
     });
@@ -490,7 +501,7 @@
   // Expose controls for debugging
   window.VIPSpot = window.VIPSpot || {};
   window.VIPSpot.pauseMatrix = stop;
-  window.VIPSpot.resumeMatrix = start;
+  window.VIPSpot.resumeMatrix = () => { running = true; start(); };
   window.VIPSpot.matrixCanvasId = () => canvas?.id || null;
   window.VIPSpot.triggerBurst = (txt='VIPSPOT.NET') => {
     const fontPx = fontSize;
@@ -510,6 +521,7 @@
     window.removeEventListener('resize', resizeCanvas);
     document.removeEventListener('visibilitychange', handleVisibilityChange);
   };
+  window.VIPSpot._raf = () => rafId; // tiny debug helper
   window.VIPSpot.setIdleTimeout = (ms=30000) => { 
     idleMs = ms; 
     wake(); 
