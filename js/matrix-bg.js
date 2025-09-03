@@ -45,10 +45,30 @@
   let lastFpsCheck = 0;
   let currentFps = CFG.fps;
 
+  function applyDatasetOverrides(el){
+    const d = el.dataset;
+    if (d.fps) CFG.fps = Math.max(16, +d.fps|0), interval = 1000/CFG.fps;
+    if (d.density) CFG.density = Math.min(1, Math.max(CFG.minDensity, +d.density));
+    if (d.rotateSeconds) CFG.rotateSeconds = Math.max(8, +d.rotateSeconds|0);
+    if (d.burst === 'off') { CFG.burstMinMs = CFG.burstMaxMs = 0; burst = null; }
+  }
+
   function initCanvas() {
     const IDS = ['matrix-canvas', 'matrix-bg']; // prefer new name, still support old
     canvas = IDS.map(id => document.getElementById(id)).find(Boolean);
     if (!canvas) return false;
+    
+    applyDatasetOverrides(canvas);
+
+    // Battery saver auto-light mode
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+      CFG.density = Math.max(CFG.minDensity, CFG.density - 0.2);
+    }
+    if (navigator.deviceMemory && navigator.deviceMemory <= 4) {
+      CFG.density = Math.max(CFG.minDensity, CFG.density - 0.1);
+      CFG.fps = Math.max(22, CFG.fps - 4); 
+      interval = 1000/CFG.fps;
+    }
 
     ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return false;
@@ -293,5 +313,9 @@
     const startCol = Math.max(0, Math.floor(Math.random()*(Math.max(1, cols - neededCols))));
     const y = Math.floor(h*0.25 + Math.random()*h*0.5);
     burst = { text: txt.toUpperCase(), startCol, y, frames: 18, fontPx };
+  };
+  window.VIPSpot.setMatrix = (opts={}) => {
+    Object.assign(CFG, opts);
+    interval = 1000 / CFG.fps;
   };
 })();

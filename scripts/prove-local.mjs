@@ -13,12 +13,22 @@ try {
   const res = await fetch(ORIGIN, { redirect: "manual" });
   must(res.ok, `Server not OK (${res.status}) at ${ORIGIN}`);
   const html = await res.text();
+  
+  // Fetch JS file for API checks
+  const jsRes = await fetch(`${ORIGIN}/js/matrix-bg.js`);
+  const js = jsRes.ok ? await jsRes.text() : '';
 
   // Minimal hard checks (no external libs)
   must(/<title>[^<]*VIPSpot 2025/i.test(html), "Missing or wrong <title>");
   must(/<link[^>]+href=["']css\/styles\.css["'][^>]*>/i.test(html), "styles.css not linked");
   must(/<script[^>]+src=["']js\/main\.js["'][^>]*defer/i.test(html), "main.js missing or not defer");
-  must(/<canvas[^>]+id=["']matrix-canvas["'][^>]*>/i.test(html), "#matrix-canvas canvas missing");
+  // Matrix canvas present exactly once, id is one of the allowed
+  must((html.match(/<canvas[^>]+id=["']matrix-(?:canvas|bg)["']/gi)||[]).length===1,
+      "Matrix canvas missing or duplicated");
+
+  // Matrix API and features present in JS
+  must(/VIPSpot\.triggerBurst/.test(js), "Matrix API triggerBurst missing");
+  must(/ORDER\s*=\s*\[/.test(js), "Glyph rotation not detected");
   must(/<main[^>]+id=["']main-content["'][^>]*>/i.test(html), "<main id='main-content'> missing");
   must(/id=["']projects["']/.test(html), "#projects section missing");
   must(/id=["']contact["']/.test(html), "#contact section missing");
