@@ -45,6 +45,49 @@
   let lastFpsCheck = 0;
   let currentFps = CFG.fps;
 
+  // --- Glyph atlas cache ---
+  let atlas = null, atlasCols = [], atlasCharW = 0, atlasCharH = 0;
+
+  async function buildAtlas(){
+    const fontPx = parseInt(ctx.font, 10) || 16;
+    atlasCharW = fontPx;
+    atlasCharH = Math.ceil(fontPx * 1.2);
+
+    const off = document.createElement('canvas');
+    off.width  = atlasCharW * CHARS.length;
+    off.height = atlasCharH;
+
+    const octx = off.getContext('2d', { alpha: true });
+    octx.font = ctx.font;
+    octx.textBaseline = 'top';
+    octx.fillStyle = 'rgba(0,255,170,0.85)';
+
+    // render each glyph once
+    for (let i = 0; i < CHARS.length; i++){
+      octx.fillText(CHARS[i], i * atlasCharW, 0);
+    }
+
+    // Convert to ImageBitmap if supported (cheaper to draw)
+    if ('createImageBitmap' in window) {
+      try {
+        atlas = await createImageBitmap(off);
+      } catch {
+        atlas = off; // fallback
+      }
+    } else {
+      atlas = off;
+    }
+
+    atlasCols = CHARS.map((_, i) => i * atlasCharW);
+  }
+
+  function drawGlyph(iCol, y){
+    if (!atlas) return; // first frame before atlas is ready
+    const sx = atlasCols[(Math.random() * CHARS.length) | 0];
+    const dx = iCol * atlasCharW;
+    ctx.drawImage(atlas, sx, 0, atlasCharW, atlasCharH, dx, y, atlasCharW, atlasCharH);
+  }
+
   function applyDatasetOverrides(el){
     const d = el.dataset;
     if (d.fps) CFG.fps = Math.max(16, +d.fps|0), interval = 1000/CFG.fps;
@@ -96,6 +139,10 @@
     cols = Math.floor(w / fontSize);
     columnCount = cols; // legacy compatibility
     initColumns();
+    
+    // Set font and rebuild atlas
+    ctx.font = `${fontSize}px "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+    buildAtlas();
   }
 
   function initColumns() {
@@ -123,6 +170,7 @@
     setIndex = (setIndex + 1) % ORDER.length;
     CHARS = SETS[ORDER[setIndex]].split('');
     lastRotate = now;
+    buildAtlas();
   }
 
   function scheduleNextBurst(now){
@@ -190,8 +238,6 @@
 
     // Draw characters
     ctx.fillStyle = '#0f0';
-    ctx.font = `${fontSize}px monospace`;
-    ctx.textAlign = 'center';
 
     const effectiveSpeed = baseDropSpeed * densityMultiplier;
     const dropChance = 0.975 + (0.02 * densityMultiplier); // Higher density = more drops
@@ -200,11 +246,10 @@
       // Skip some columns based on density
       if (Math.random() > densityMultiplier) continue;
 
-      const char = CHARS[Math.floor(Math.random() * CHARS.length)];
       const x = i * fontSize + fontSize / 2;
       const y = columns[i] * fontSize;
 
-      ctx.fillText(char, x, y);
+      drawGlyph(i, y);
 
       // Move column down
       if (y > canvas.height && Math.random() > dropChance) {
@@ -318,4 +363,14 @@
     Object.assign(CFG, opts);
     interval = 1000 / CFG.fps;
   };
+  window.VIPSpot.destroyMatrix = () => {
+    stop();
+    window.removeEventListener('resize', resizeCanvas);
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  };
+
+  // Dev hotkey: Ctrl/Cmd+B to trigger burst
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'b' && (e.ctrlKey || e.metaKey)) VIPSpot.triggerBurst('RVRSE');
+  });
 })();
