@@ -1120,3 +1120,115 @@ select:focus {
     clip: rect(0,0,0,0); 
     border: 0; 
 }
+
+/* ============================================
+   FEATURED PENS SECTION - PREMIUM 3D EFFECTS
+   ============================================ */
+.pens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Pens inherit the same 3D system as tech chips */
+.pens-grid[data-tilt] { 
+    perspective: 900px; 
+}
+
+.pens-grid .tilt-card {
+    position: relative;
+    display: block;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--dark-card, #12122a);
+    transform-style: preserve-3d;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    transform:
+        translateZ(var(--elev, 0px))
+        rotateX(var(--rx, 0deg))
+        rotateY(var(--ry, 0deg));
+    box-shadow:
+        0 0 0 rgba(0,0,0,0),
+        0 0 calc(20px + var(--glow, 0px)) rgba(0, 237, 255, 0.12);
+}
+
+.pens-grid .tilt-card::before {
+    content: ""; 
+    position: absolute; 
+    inset: 0; 
+    border-radius: 16px; 
+    pointer-events: none;
+    background:
+        radial-gradient(120% 120% at calc(50% + var(--glow-x,0px)) calc(0% + var(--glow-y,0px)),
+        rgba(0, 237, 255, .18), transparent 55%);
+    transform: translateZ(1px);
+    opacity: .55;
+}
+
+.pens-grid .tilt-card::after {
+    content: ""; 
+    position: absolute; 
+    inset: -1px; 
+    border-radius: 16px; 
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 0%,
+        rgba(255,255,255,.06) 47%, rgba(255,255,255,.22) 50%, rgba(255,255,255,.06) 53%, transparent 100%);
+    transform: translateZ(2px) translateX(var(--shine-x,-160%)) rotate(var(--shine-rot,0deg));
+    opacity: var(--shine-o,0);
+    transition: opacity .18s ease;
+    mix-blend-mode: screen;
+}
+
+.pens-grid .tilt-card:hover::after,
+.pens-grid .tilt-card:focus-visible::after { 
+    animation: tech-shine 900ms ease; 
+    opacity: .8; 
+}
+
+.pen-card img { 
+    display: block; 
+    width: 100%; 
+    height: auto; 
+    aspect-ratio: 16/9;
+    object-fit: cover;
+}
+
+.pen-meta {
+    position: absolute; 
+    inset: auto 0 0 0;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.8));
+    color: var(--white);
+    z-index: 3;
+}
+
+.pen-title { 
+    display: block; 
+    font-weight: 700; 
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--neon-green);
+}
+
+.pen-cta { 
+    opacity: 0.8; 
+    font-size: 0.875rem; 
+    color: var(--gray-300);
+}
+
+.pen-card:focus-visible { 
+    outline: 2px solid var(--neon-blue); 
+    outline-offset: 4px; 
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pens-grid .tilt-card { 
+        transform: none !important; 
+    }
+    .pens-grid .tilt-card::after { 
+        animation: none; 
+        opacity: 0; 
+    }
+}

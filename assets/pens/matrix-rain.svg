@@ -1,0 +1,84 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#000000"/>
+  <defs>
+    <filter id="matrix-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Matrix rain effect mockup -->
+  <g font-family="Courier, monospace" font-size="14" fill="#00ff00" filter="url(#matrix-glow)">
+    <!-- Column 1 -->
+    <text x="50" y="30" opacity="0.9">0</text>
+    <text x="50" y="50" opacity="0.8">1</text>
+    <text x="50" y="70" opacity="0.7">0</text>
+    <text x="50" y="90" opacity="0.6">1</text>
+    <text x="50" y="110" opacity="0.5">1</text>
+    <text x="50" y="130" opacity="0.4">0</text>
+    <text x="50" y="150" opacity="0.3">1</text>
+    
+    <!-- Column 2 -->
+    <text x="100" y="60" opacity="0.9">1</text>
+    <text x="100" y="80" opacity="0.8">0</text>
+    <text x="100" y="100" opacity="0.7">0</text>
+    <text x="100" y="120" opacity="0.6">1</text>
+    <text x="100" y="140" opacity="0.5">0</text>
+    <text x="100" y="160" opacity="0.4">1</text>
+    
+    <!-- Column 3 -->
+    <text x="150" y="20" opacity="0.9">1</text>
+    <text x="150" y="40" opacity="0.8">1</text>
+    <text x="150" y="60" opacity="0.7">0</text>
+    <text x="150" y="80" opacity="0.6">0</text>
+    <text x="150" y="100" opacity="0.5">1</text>
+    <text x="150" y="120" opacity="0.4">0</text>
+    <text x="150" y="140" opacity="0.3">1</text>
+    <text x="150" y="160" opacity="0.2">1</text>
+    
+    <!-- More columns -->
+    <text x="200" y="40" opacity="0.9">0</text>
+    <text x="200" y="60" opacity="0.8">1</text>
+    <text x="200" y="80" opacity="0.7">1</text>
+    <text x="200" y="100" opacity="0.6">0</text>
+    
+    <text x="250" y="70" opacity="0.9">1</text>
+    <text x="250" y="90" opacity="0.8">0</text>
+    <text x="250" y="110" opacity="0.7">1</text>
+    <text x="250" y="130" opacity="0.6">0</text>
+    <text x="250" y="150" opacity="0.5">1</text>
+    
+    <text x="300" y="25" opacity="0.9">0</text>
+    <text x="300" y="45" opacity="0.8">0</text>
+    <text x="300" y="65" opacity="0.7">1</text>
+    <text x="300" y="85" opacity="0.6">1</text>
+    <text x="300" y="105" opacity="0.5">0</text>
+    <text x="300" y="125" opacity="0.4">1</text>
+    
+    <!-- Right side columns -->
+    <text x="450" y="30" opacity="0.9">1</text>
+    <text x="450" y="50" opacity="0.8">0</text>
+    <text x="450" y="70" opacity="0.7">0</text>
+    <text x="450" y="90" opacity="0.6">1</text>
+    <text x="450" y="110" opacity="0.5">1</text>
+    
+    <text x="500" y="50" opacity="0.9">0</text>
+    <text x="500" y="70" opacity="0.8">1</text>
+    <text x="500" y="90" opacity="0.7">0</text>
+    <text x="500" y="110" opacity="0.6">1</text>
+    <text x="500" y="130" opacity="0.5">0</text>
+    <text x="500" y="150" opacity="0.4">1</text>
+    
+    <text x="550" y="20" opacity="0.9">1</text>
+    <text x="550" y="40" opacity="0.8">1</text>
+    <text x="550" y="60" opacity="0.7">0</text>
+    <text x="550" y="80" opacity="0.6">0</text>
+    <text x="550" y="100" opacity="0.5">1</text>
+  </g>
+  
+  <!-- Title -->
+  <text x="320" y="320" text-anchor="middle" fill="#00ff88" font-family="Arial, sans-serif" font-size="18" font-weight="bold" opacity="0.9">MATRIX RAIN EFFECT</text>
+  <text x="320" y="340" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="12" opacity="0.7">Animation • Canvas • JavaScript</text>
+</svg>

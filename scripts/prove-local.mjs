@@ -155,10 +155,28 @@ try {
     "Project buttons must have aria-expanded='false' initially");
     
   // Social profile links validation
-  must(/<a[^>]*href=["']https:\/\/codepen\.io\/CoderRvrse["'][^>]*aria-label=["']CodePen["']/.test(html),
+  must(/<a[^>]*href=["']https:\/\/codepen\.io\/CoderRvrse[^"']*["'][^>]*aria-label=["']CodePen["']/.test(html),
     "CodePen profile link missing or incorrect");
 
-  console.log("✅ VIPSpot DOM + Mobile CTA + ARIA Guards OK @", ORIGIN);
+  // Featured Pens presence
+  must(/<section[^>]+id=["']pens["']/.test(html), "Featured Pens section missing");
+  must((html.match(/class=["'][^"']*\bpen-card\b/g)||[]).length >= 3, "At least 3 pen cards required");
+
+  // Pen links (with /pen/ in URL) must include UTM
+  const penLinksWithoutUTM = html.match(/href=["']https?:\/\/codepen\.io\/[^"']*\/pen\/[^"'?]*["'](?![^>]*utm_)/g);
+  must(!penLinksWithoutUTM || penLinksWithoutUTM.length === 0,
+       "Pen links should include UTM parameters");
+
+  // Pen images must be lazy + have dimensions (check each pen image)
+  const penImages = html.match(/<img[^>]+src=["'][^"']*\/pens\/[^"']*["'][^>]*>/g) || [];
+  penImages.forEach(imgTag => {
+    must(/loading=["']lazy["']/.test(imgTag), "Pen images need loading=lazy");
+    must(/decoding=["']async["']/.test(imgTag), "Pen images need decoding=async");  
+    must(/width=["']\d+["']/.test(imgTag), "Pen images need width attribute");
+    must(/height=["']\d+["']/.test(imgTag), "Pen images need height attribute");
+  });
+
+  console.log("✅ VIPSpot DOM + Mobile CTA + ARIA + Featured Pens Guards OK @", ORIGIN);
   process.exit(0);
 } catch (e) {
   console.error("❌ Prove failed:", e?.message || e);

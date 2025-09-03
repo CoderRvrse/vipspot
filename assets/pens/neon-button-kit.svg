@@ -1,0 +1,22 @@
+<svg width="640" height="360" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#0a0a1a"/>
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="translate(320,180)">
+    <!-- Neon button mockup -->
+    <rect x="-120" y="-30" width="240" height="60" rx="30" fill="none" stroke="#39ff14" stroke-width="2" filter="url(#glow)"/>
+    <text x="0" y="8" text-anchor="middle" fill="#39ff14" font-family="Arial, sans-serif" font-size="20" font-weight="bold">NEON BUTTON</text>
+    <!-- Decorative elements -->
+    <circle cx="-200" cy="-100" r="4" fill="#00f3ff" opacity="0.6"/>
+    <circle cx="200" cy="100" r="6" fill="#b967ff" opacity="0.8"/>
+    <circle cx="-150" cy="120" r="3" fill="#39ff14" opacity="0.7"/>
+    <text x="0" y="-120" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" opacity="0.8">UI • CSS • Glow</text>
+  </g>
+</svg>

@@ -37,7 +37,11 @@
       "Bash(if grep -R --line-number -E '\\banimationId\\b' js/)",
       "Bash(then echo \"Found legacy animationId usage\")",
       "Bash(exit 1)",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(test:*)",
+      "Bash(for:*)",
+      "Bash(do test -f \"$f\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
