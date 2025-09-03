@@ -27,7 +27,8 @@
   const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   function initCanvas() {
-    canvas = document.getElementById('matrix-canvas');
+    const IDS = ['matrix-canvas', 'matrix-bg']; // prefer new name, still support old
+    canvas = IDS.map(id => document.getElementById(id)).find(Boolean);
     if (!canvas) return false;
 
     ctx = canvas.getContext('2d', { alpha: false });
@@ -208,10 +209,8 @@
   init();
 
   // Expose controls for debugging
-  window.matrixBg = {
-    start,
-    stop,
-    getDensity: () => densityMultiplier,
-    getFps: () => currentFps
-  };
+  window.VIPSpot = window.VIPSpot || {};
+  window.VIPSpot.pauseMatrix = stop;
+  window.VIPSpot.resumeMatrix = start;
+  window.VIPSpot.matrixCanvasId = () => canvas?.id || null;
 })();
