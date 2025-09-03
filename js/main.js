@@ -992,18 +992,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Smooth scroll for internal anchors (CTA and any # links)
-    const scrollToId = (hash) => {
-        const el = document.querySelector(hash);
-        if (!el) return;
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
+    // Bulletproof smooth scroll for internal anchors (CTA and any # links)
     document.addEventListener('click', (e) => {
-        const a = e.target.closest('a[href^="#"]');
-        if (!a) return;
+        const link = e.target.closest('a[href^="#"]');
+        if (!link) return;
+
+        const id = link.getAttribute('href');
+        if (!id || id === '#') return;
+
+        const target = document.querySelector(id);
+        if (!target) return; // don't block default when no target
+
+        // If native smooth-scroll is supported, don't interfere
+        if ('scrollBehavior' in document.documentElement.style) return;
+
+        // JS fallback for older browsers
         e.preventDefault();
-        scrollToId(a.getAttribute('href'));
+        try {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch {
+            // Last resort: allow default anchor behavior
+            location.hash = id;
+        }
     });
 
     // Guard: ensure CTA has the right hash even if HTML was out of sync

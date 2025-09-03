@@ -431,10 +431,25 @@ select:focus {
         transparent
     );
     transition: left 0.5s;
+    /* Prevent pseudo-element from intercepting taps */
+    pointer-events: none;
 }
 
 .cta-button:hover::before {
     left: 100%;
+}
+
+/* Mobile touch optimization for CTA */
+#cta-build {
+    position: relative;
+    z-index: 5;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Ensure contact anchor lands correctly below header */
+#contact {
+    scroll-margin-top: 80px;
 }
 
 .loading-spinner {
