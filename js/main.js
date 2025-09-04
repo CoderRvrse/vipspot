@@ -1086,8 +1086,17 @@ if (typeof module !== 'undefined' && module.exports) {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  const status = document.getElementById('contact-status');
-  const btn = document.getElementById('contact-submit');
+  // Robust selectors with fallbacks
+  const $ = (sel, root = document) => root.querySelector(sel);
+  
+  const statusEl = document.getElementById('contact-status')
+    || $('[data-contact-status]')
+    || $('#contact-form [role="status"]');
+
+  const submitBtn = document.getElementById('contact-submit')
+    || $('[data-role="contact-submit"]')
+    || $('#contact-form button[type="submit"]');
+    
   const messageField = document.querySelector('textarea[name="message"]');
   const API = (window.VIP_API || 'https://vipspot-api-a7ce781e1397.herokuapp.com') + '/contact';
   
@@ -1095,19 +1104,18 @@ if (typeof module !== 'undefined' && module.exports) {
   const timestampField = form.querySelector('input[name="timestamp"]');
   if (timestampField) timestampField.value = Date.now();
   
-  const say = (m, type = 'info') => {
-    const statusEl = status || document.getElementById('contact-status') || document.querySelector('[role="status"]');
-    if (statusEl) {
-      statusEl.textContent = m;
-      statusEl.className = `status ${type}`;
-    } else {
-      console.warn('[contact] status element not found');
+  const say = (type, msg) => {
+    if (!statusEl) {
+      console.warn('[contact] status element missing; message:', type, msg);
+      return;
     }
+    statusEl.textContent = msg;
+    statusEl.className = ''; // reset classes
+    statusEl.classList.add('status', `is-${type}`); // is-success | is-error | is-info
   };
 
   // CSP-safe error message with mailto link
   const showContactError = () => {
-    const statusEl = status || document.getElementById('contact-status') || document.querySelector('[role="status"]');
     if (!statusEl) {
       console.warn('[contact] status element not found');
       return;
@@ -1163,22 +1171,22 @@ if (typeof module !== 'undefined' && module.exports) {
 
   // Button loading state helper
   const setButtonLoading = (loading) => {
+    if (!submitBtn) return; // graceful no-op
+    submitBtn.disabled = !!loading;
+    submitBtn.classList.toggle('loading', !!loading);
+    submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
     if (loading) {
-      btn.disabled = true;
-      btn.dataset.originalText = btn.textContent;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-      btn.classList.add('loading');
-    } else {
-      btn.disabled = false;
-      btn.textContent = btn.dataset.originalText || 'Send Message';
-      btn.classList.remove('loading');
+      submitBtn.dataset.originalText ||= submitBtn.textContent;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    } else if (submitBtn.dataset.originalText) {
+      submitBtn.textContent = submitBtn.dataset.originalText;
     }
   };
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     setButtonLoading(true);
-    say('Sending your message...', 'info');
+    say('info', 'Sending your message...');
 
     const payload = {
       name: form.elements.name.value.trim(),
@@ -1197,7 +1205,7 @@ if (typeof module !== 'undefined' && module.exports) {
       });
       const json = await r.json();
       if (json.ok) {
-        say('Message sent successfully! I will get back to you shortly. \u2713', 'success');
+        say('success', 'Message sent successfully! I will get back to you shortly. ✓');
         form.reset();
         if (timestampField) timestampField.value = Date.now();
         
