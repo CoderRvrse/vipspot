@@ -252,15 +252,15 @@ Dual-email system with professional templates:
 APP_BASE=api
 RESEND_API_KEY=re_xxxxxxxxx
 CONTACT_FROM="VIPSpot <noreply@vipspot.net>"
-CONTACT_TO=your-email@domain.com
+CONTACT_TO=contact@vipspot.net
 ALLOWED_ORIGINS=https://vipspot.net,http://localhost:8000
 ```
 
 **Optional Variables**:
 ```bash
 COMPANY_NAME=VIPSpot
-CONTACT_REPLY_TO=your-reply@domain.com
-BOOKING_URL=mailto:your-booking@domain.com
+CONTACT_REPLY_TO=contact@vipspot.net
+BOOKING_URL=mailto:contact@vipspot.net
 ```
 
 ### API Testing

@@ -13,11 +13,11 @@ app.set('trust proxy', 1);
 const ALLOWED = (process.env.ALLOWED_ORIGINS || '')
   .split(',').map(s => s.trim()).filter(Boolean);
 const resend = new Resend(process.env.RESEND_API_KEY);
-const CONTACT_TO = process.env.CONTACT_TO;             // e.g. you@vipspot.net
+const CONTACT_TO = process.env.CONTACT_TO || 'contact@vipspot.net';   // goes to Gmail via Cloudflare Routing
 const CONTACT_FROM = process.env.CONTACT_FROM || 'VIPSpot <noreply@vipspot.net>';
 const COMPANY = process.env.COMPANY_NAME || 'VIPSpot';
-const BOOKING_URL = process.env.BOOKING_URL || 'mailto:franciscoechavez1986@gmail.com';
-const CONTACT_REPLY_TO = process.env.CONTACT_REPLY_TO || 'franciscoechavez1986@gmail.com';
+const BOOKING_URL = process.env.BOOKING_URL || 'mailto:contact@vipspot.net';
+const CONTACT_REPLY_TO = process.env.CONTACT_REPLY_TO || null; // keep Reply-To = visitor if present
 
 // ----- Middleware -----
 app.use(helmet({ contentSecurityPolicy: false })); // API-only

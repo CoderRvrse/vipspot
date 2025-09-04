@@ -70,6 +70,17 @@ jobs:
             echo "::error title=Missing API::Could not find 'VIPSpot._raf' in js/matrix-bg.js"; exit 1; 
           }
           echo "[guard] OK: new markers present."
+      - name: Guard against old email addresses
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          echo "[guard] Checking for old email addresses…"
+          if grep -R -nE '(franciscoechavez1986@gmail\.com|hello@vipspot\.net)' -- . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.github; then
+            echo "::error title=Old email addresses found::Replace with contact@vipspot.net"
+            exit 1
+          fi
+          echo "[guard] OK: no old email addresses found."
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -152,6 +163,17 @@ jobs:
             echo "::error title=Missing API::Could not find 'VIPSpot._raf' in js/matrix-bg.js"; exit 1; 
           }
           echo "[guard] OK: new markers present."
+      - name: Guard against old email addresses
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          echo "[guard] Checking for old email addresses…"
+          if grep -R -nE '(franciscoechavez1986@gmail\.com|hello@vipspot\.net)' -- . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.github; then
+            echo "::error title=Old email addresses found::Replace with contact@vipspot.net"
+            exit 1
+          fi
+          echo "[guard] OK: no old email addresses found."
       - uses: actions/setup-node@v4
         with:
           node-version: 20

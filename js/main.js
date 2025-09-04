@@ -84,7 +84,7 @@ const CONFIG = {
 };
 
 // Contact fallback email
-const CONTACT_FALLBACK_EMAIL = 'franciscoechavez1986@gmail.com';
+const CONTACT_FALLBACK_EMAIL = 'contact@vipspot.net';
 
 // Project data for modals
 const PROJECTS_DATA = {
