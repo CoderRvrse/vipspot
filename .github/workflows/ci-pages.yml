@@ -81,6 +81,21 @@ jobs:
             exit 1
           fi
           echo "[guard] OK: no old email addresses found."
+      - name: Guard against stale backend URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          echo "[guard] Ensuring CSP includes current API…"
+          grep -q "vipspot-api-a7ce781e1397\.herokuapp\.com" index.html \
+            || { echo "::error title=CSP missing current API::connect-src/form-action missing current Heroku app"; exit 1; }
+          
+          echo "[guard] Checking for stale backend references…"
+          if grep -R "vipspot-backend-" index.html js/ 2>/dev/null; then
+            echo "::error title=Stale backend host found::Please remove old heroku app name"
+            exit 1
+          fi
+          echo "[guard] OK: no stale backend URLs found."
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -174,6 +189,21 @@ jobs:
             exit 1
           fi
           echo "[guard] OK: no old email addresses found."
+      - name: Guard against stale backend URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          echo "[guard] Ensuring CSP includes current API…"
+          grep -q "vipspot-api-a7ce781e1397\.herokuapp\.com" index.html \
+            || { echo "::error title=CSP missing current API::connect-src/form-action missing current Heroku app"; exit 1; }
+          
+          echo "[guard] Checking for stale backend references…"
+          if grep -R "vipspot-backend-" index.html js/ 2>/dev/null; then
+            echo "::error title=Stale backend host found::Please remove old heroku app name"
+            exit 1
+          fi
+          echo "[guard] OK: no stale backend URLs found."
       - uses: actions/setup-node@v4
         with:
           node-version: 20
