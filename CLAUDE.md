@@ -64,19 +64,7 @@ vipspot/
 Single CSP meta tag that **must precede all stylesheets**:
 
 ```html
-<meta http-equiv="Content-Security-Policy" content="
-  default-src 'self'; 
-  base-uri 'self'; 
-  form-action 'self' https://vipspot-api-*.herokuapp.com https://api.vipspot.net;
-  object-src 'none'; 
-  connect-src 'self' https://vipspot-api-*.herokuapp.com https://api.vipspot.net;
-  img-src 'self' data:; 
-  font-src 'self' data:; 
-  style-src 'self'; 
-  style-src-elem 'self'; 
-  style-src-attr 'none'; 
-  script-src 'self';
-">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; object-src 'none'; connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
 ```
 
 ### CSP Compliance Rules
