@@ -13,20 +13,55 @@
   const params = new URLSearchParams(location.search);
   const kill = params.has("kill-sw");
 
+  // Handle kill-sw parameter on any domain
+  if (kill && "serviceWorker" in navigator) {
+    (async () => {
+      try {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+        console.log("🔧 SW + caches cleared (kill-sw)");
+        // Redirect to clean URL
+        location.replace(location.pathname);
+      } catch (e) {
+        console.warn("Failed to clear SW/caches:", e);
+      }
+    })();
+    return; // Don't register new SW
+  }
+
   if (isLocal) {
     // On localhost: never register SW; also nuke any old one once.
-    if ("serviceWorker" in navigator) {
-      if (kill || !sessionStorage.getItem("vip_sw_cleared")) {
-        navigator.serviceWorker.getRegistrations?.().then(regs => regs.forEach(r => r.unregister()));
-        caches?.keys?.().then(keys => keys.forEach(k => caches.delete(k)));
-        sessionStorage.setItem("vip_sw_cleared", "1");
-        if (kill) console.log("🔧 SW + caches cleared (kill-sw)");
-      }
+    if ("serviceWorker" in navigator && !sessionStorage.getItem("vip_sw_cleared")) {
+      navigator.serviceWorker.getRegistrations?.().then(regs => regs.forEach(r => r.unregister()));
+      caches?.keys?.().then(keys => keys.forEach(k => caches.delete(k)));
+      sessionStorage.setItem("vip_sw_cleared", "1");
     }
   } else {
-    // Production only: register SW
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(()=>{});
+    // Production only: register SW with auto-update and controllerchange handling
+    if ("serviceWorker" in navigator && !params.has("no-sw")) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register("/sw.js?v=__BUILD_VER__");
+          
+          // Periodically check for updates
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') reg.update();
+          });
+          
+          // When a new SW takes control, reload to ensure fresh HTML/CSS
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            // avoid reload loops
+            if (!window.__reloadedForSW) {
+              window.__reloadedForSW = true;
+              location.reload();
+            }
+          });
+        } catch (e) {
+          console.warn('SW registration failed', e);
+        }
+      });
     }
   }
 })();
@@ -1034,10 +1069,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cta = document.getElementById('cta-build');
     if (cta && cta.getAttribute('href') !== '#contact') cta.setAttribute('href', '#contact');
     
-    // Register service worker for PWA functionality
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js").catch(()=>{});
-    }
 });
 
 // Export for potential external use

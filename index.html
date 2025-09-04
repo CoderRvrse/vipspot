@@ -6,6 +6,9 @@
     <!-- CSP (single line, strict) -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; object-src 'none'; connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
     
+    <!-- Cache control for HTML -->
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- SEO Meta Tags -->
@@ -59,11 +62,11 @@
     <!-- All stylesheets are self-hosted for maximum security -->
     
     <!-- Self-hosted fonts (no external dependencies) -->
-    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/fonts.css?v=__BUILD_VER__">
     
     <!-- Application stylesheets -->
-    <link rel="stylesheet" href="css/tailwind.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tailwind.css?v=__BUILD_VER__">
+    <link rel="stylesheet" href="css/styles.css?v=__BUILD_VER__">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.webmanifest">
@@ -590,8 +593,8 @@
     <div id="build-stamp" hidden></div>
     
     <!-- Scripts -->
-    <script src="js/main.js" defer></script>
-    <script src="js/tilt-tech.js" defer></script>
-    <script src="js/matrix-bg.js?v=raffix1" defer></script>
+    <script src="js/main.js?v=__BUILD_VER__" defer></script>
+    <script src="js/tilt-tech.js?v=__BUILD_VER__" defer></script>
+    <script src="js/matrix-bg.js?v=__BUILD_VER__" defer></script>
 </body>
 </html>

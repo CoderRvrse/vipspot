@@ -17,13 +17,26 @@ try {
   
   // Fetch JS and CSS files for validation
   const jsRes = await fetch(`${ORIGIN}/js/matrix-bg.js`);
+  const mainJsRes = await fetch(`${ORIGIN}/js/main.js`);
   const js = jsRes.ok ? await jsRes.text() : '';
+  const mainJs = mainJsRes.ok ? await mainJsRes.text() : '';
   const css = fs.readFileSync("css/styles.css", "utf8");
 
   // Minimal hard checks (no external libs)
   must(/<title>[^<]*VIPSpot 2025/i.test(html), "Missing or wrong <title>");
-  must(/<link[^>]+href=["']css\/styles\.css["'][^>]*>/i.test(html), "styles.css not linked");
-  must(/<script[^>]+src=["']js\/main\.js["'][^>]*defer/i.test(html), "main.js missing or not defer");
+  must(/<link[^>]+href=["']css\/styles\.css(?:\?v=[^"']*)?["'][^>]*>/i.test(html), "styles.css not linked");
+  must(/<script[^>]+src=["']js\/main\.js(?:\?v=[^"']*)?["'][^>]*defer/i.test(html), "main.js missing or not defer");
+  
+  // Version consistency check (if versioned assets are present)
+  const versionMatch = html.match(/\?v=([0-9-]{10,}-[0-9a-f]{7})/);
+  if (versionMatch) {
+    const version = versionMatch[1];
+    const jsVersioned = new RegExp(`js/main\\.js\\?v=${version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(html);
+    const swVersioned = mainJs.includes(`/sw.js?v=${version}`);
+    must(jsVersioned, `main.js not using consistent version: ${version}`);
+    must(swVersioned, `SW registration not using consistent version: ${version}`);
+    console.log(`✓ Consistent versioning: ${version}`);
+  }
   // Matrix canvas present exactly once, id is one of the allowed
   must((html.match(/<canvas[^>]+id=["']matrix-(?:canvas|bg)["']/gi)||[]).length===1,
       "Matrix canvas missing or duplicated");
