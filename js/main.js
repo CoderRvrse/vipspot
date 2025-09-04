@@ -1142,7 +1142,7 @@ if (typeof module !== 'undefined' && module.exports) {
     if (loading) {
       btn.disabled = true;
       btn.dataset.originalText = btn.textContent;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
       btn.classList.add('loading');
     } else {
       btn.disabled = false;
@@ -1154,7 +1154,7 @@ if (typeof module !== 'undefined' && module.exports) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     setButtonLoading(true);
-    say('Sending your message…', 'info');
+    say('Sending your message...', 'info');
 
     const payload = {
       name: form.elements.name.value.trim(),
