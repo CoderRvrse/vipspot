@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Table of Contents
+
+- [Development Commands](#development-commands)
+- [Project Architecture](#project-architecture)
+- [Content Security Policy (CSP)](#content-security-policy-csp)
+- [Matrix Background Engine](#matrix-background-engine)
+- [3D Tilt Effects & Featured Pens](#3d-tilt-effects--featured-pens)
+- [Premium Contact Form](#premium-contact-form)
+- [Backend API (/api)](#backend-api-api)
+- [CI Guardrails](#ci-guardrails)
+- [Contribution Guidelines](#contribution-guidelines)
+
 ## Development Commands
 
 ### Primary Development
