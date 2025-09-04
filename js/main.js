@@ -1096,24 +1096,31 @@ if (typeof module !== 'undefined' && module.exports) {
   if (timestampField) timestampField.value = Date.now();
   
   const say = (m, type = 'info') => {
-    if (status) {
-      status.textContent = m;
-      status.className = `status ${type}`;
+    const statusEl = status || document.getElementById('contact-status') || document.querySelector('[role="status"]');
+    if (statusEl) {
+      statusEl.textContent = m;
+      statusEl.className = `status ${type}`;
+    } else {
+      console.warn('[contact] status element not found');
     }
   };
 
   // CSP-safe error message with mailto link
   const showContactError = () => {
-    if (!status) return;
+    const statusEl = status || document.getElementById('contact-status') || document.querySelector('[role="status"]');
+    if (!statusEl) {
+      console.warn('[contact] status element not found');
+      return;
+    }
     // Clear then rebuild with a mailto link (no innerHTML injection)
-    status.textContent = 'Failed to send message. Please try again or email ';
+    statusEl.textContent = 'Failed to send message. Please try again or email ';
     const link = document.createElement('a');
     link.href = `mailto:${CONTACT_FALLBACK_EMAIL}`;
     link.rel = 'noopener noreferrer';
     link.className = 'link-plain'; // existing link style
     link.textContent = CONTACT_FALLBACK_EMAIL;
-    status.appendChild(link);
-    status.className = 'status error';
+    statusEl.appendChild(link);
+    statusEl.className = 'status error';
   };
 
   // Character counter for message field
