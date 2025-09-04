@@ -83,6 +83,9 @@ const CONFIG = {
     }
 };
 
+// Contact fallback email
+const CONTACT_FALLBACK_EMAIL = 'franciscoechavez1986@gmail.com';
+
 // Project data for modals
 const PROJECTS_DATA = {
     roblox: {
@@ -1099,6 +1102,20 @@ if (typeof module !== 'undefined' && module.exports) {
     }
   };
 
+  // CSP-safe error message with mailto link
+  const showContactError = () => {
+    if (!status) return;
+    // Clear then rebuild with a mailto link (no innerHTML injection)
+    status.textContent = 'Failed to send message. Please try again or email ';
+    const link = document.createElement('a');
+    link.href = `mailto:${CONTACT_FALLBACK_EMAIL}`;
+    link.rel = 'noopener noreferrer';
+    link.className = 'link-plain'; // existing link style
+    link.textContent = CONTACT_FALLBACK_EMAIL;
+    status.appendChild(link);
+    status.className = 'status error';
+  };
+
   // Character counter for message field
   if (messageField) {
     const maxChars = 4000;
@@ -1190,7 +1207,7 @@ if (typeof module !== 'undefined' && module.exports) {
       }
     } catch (err) {
       console.error('Contact form error:', err);
-      say('Failed to send message. Please try again or email hello@vipspot.net', 'error');
+      showContactError();
     } finally {
       setButtonLoading(false);
     }
