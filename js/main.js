@@ -1173,7 +1173,7 @@ if (typeof module !== 'undefined' && module.exports) {
       });
       const json = await r.json();
       if (json.ok) {
-        say('Message sent successfully! I will get back to you shortly.', 'success');
+        say('Message sent successfully! I will get back to you shortly. \u2713', 'success');
         form.reset();
         if (timestampField) timestampField.value = Date.now();
         

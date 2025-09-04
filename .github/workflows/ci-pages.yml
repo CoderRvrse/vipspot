@@ -22,6 +22,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against problematic Unicode in JS
+        run: |
+          # Check for common problematic Unicode characters (exclude safe ones like \u escapes)
+          if grep -rn --include="*.js" '[""''–—…]' js/; then
+            echo "::error title=Problematic Unicode in JS::Replace smart quotes, em-dashes, ellipses with ASCII equivalents."
+            exit 1
+          fi
+          echo "✅ No problematic Unicode characters found in JS files"
+      - name: JS syntax validation
+        run: |
+          for jsfile in js/*.js; do
+            echo "Checking syntax: $jsfile"
+            node --check "$jsfile" || exit 1
+          done
+          echo "✅ All JS files have valid syntax"
       - name: Guard against legacy RAF handle
         shell: bash
         run: |
@@ -75,6 +90,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Guard against problematic Unicode in JS
+        run: |
+          # Check for common problematic Unicode characters (exclude safe ones like \u escapes)
+          if grep -rn --include="*.js" '[""''–—…]' js/; then
+            echo "::error title=Problematic Unicode in JS::Replace smart quotes, em-dashes, ellipses with ASCII equivalents."
+            exit 1
+          fi
+          echo "✅ No problematic Unicode characters found in JS files"
+      - name: JS syntax validation
+        run: |
+          for jsfile in js/*.js; do
+            echo "Checking syntax: $jsfile"
+            node --check "$jsfile" || exit 1
+          done
+          echo "✅ All JS files have valid syntax"
       - name: API healthcheck
         run: curl -fsS https://vipspot-api-a7ce781e1397.herokuapp.com/healthz
       - name: Guard against legacy RAF handle

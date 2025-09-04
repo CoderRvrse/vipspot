@@ -34,7 +34,7 @@
   let burst = null, nextBurstAt = 0;
   let lastThemeCheck = 0;
 
-  // Animation frame handle – must exist before any function references it
+  // Animation frame handle - must exist before any function references it
   let rafId = null;
   let running = false;
 
