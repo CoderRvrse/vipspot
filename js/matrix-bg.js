@@ -5,6 +5,9 @@
 (() => {
   'use strict';
 
+  // Safe lowercase helper
+  const lower = (v) => (typeof v === 'string' ? v.toLowerCase() : '');
+
   const CFG = {
     fps: 28,
     density: 0.9,
@@ -554,6 +557,6 @@
 
   // Dev hotkey: Ctrl/Cmd+B to trigger burst
   document.addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() === 'b' && (e.ctrlKey || e.metaKey)) VIPSpot.triggerBurst('RVRSE');
+    if (lower(e.key) === 'b' && (e.ctrlKey || e.metaKey)) VIPSpot.triggerBurst('RVRSE');
   });
 })();

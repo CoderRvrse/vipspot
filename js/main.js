@@ -1080,46 +1080,52 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 // ============================================
-// PREMIUM CONTACT FORM HANDLER
+// BULLETPROOF CONTACT FORM HANDLER
 // ============================================
-(() => {
-  const form = document.getElementById('contact-form');
-  if (!form) return;
 
-  // --- Contact helpers: bulletproof selectors ---
-  const getFormEl = () => document.querySelector('#contact-form');
+// Tiny helpers
+const $ = (sel, root = document) => root.querySelector(sel);
+const on = (el, evt, fn, opts) => el && el.addEventListener(evt, fn, opts);
 
-  const getSubmitBtn = () => 
-    document.querySelector('#contact-submit, [data-role="contact-submit"], #contact-form button[type="submit"]');
+// LocalStorage safety (prevents exceptions in strict/private modes)
+const storage = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  remove(k) { try { localStorage.removeItem(k); } catch {} },
+};
 
-  function getStatusEl() {
-    // try common selectors
-    let el = document.querySelector('#contact-status, [data-contact-status], #contact-form [role="status"]');
+// ---- Contact form module ----
+const ContactForm = (() => {
+  const COOLDOWN_MS = 30_000;
+  const KEY_LAST_SENT = 'contact:lastSent';
+
+  const findSubmitBtn = () =>
+    $('#contact-submit') ||
+    $('[data-role="contact-submit"]') ||
+    $('#contact-form button[type="submit"]');
+
+  const getStatusEl = () => {
+    let el =
+      $('#contact-status') ||
+      $('[data-contact-status]') ||
+      $('#contact-form [role="status"]');
+
     if (el) return el;
 
-    // lazily create one if missing
-    const form = getFormEl();
-    try {
-      el = document.createElement('div');
-      el.id = 'contact-status';
-      el.setAttribute('role', 'status');
-      el.setAttribute('aria-live', 'polite');
-      el.className = 'contact-status';
-      // insert after the form (or inside as last child if you prefer)
-      if (form && form.parentNode) {
-        form.parentNode.insertBefore(el, form.nextSibling);
-      } else if (form) {
-        form.appendChild(el);
-      } else {
-        document.body.appendChild(el);
-      }
-    } catch (e) {
-      console.warn('[contact] could not create status element', e);
-    }
+    // Lazily create it if missing
+    const form = $('#contact-form');
+    if (!form) return null;
+    el = document.createElement('div');
+    el.id = 'contact-status';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.setAttribute('aria-atomic', 'true');
+    el.className = 'contact-status';
+    form.appendChild(el);
     return el;
-  }
+  };
 
-  function showStatus(msg, kind = 'info') {
+  const showStatus = (msg, kind = 'info') => {
     try {
       const el = getStatusEl();
       if (!el) return;
@@ -1129,176 +1135,146 @@ if (typeof module !== 'undefined' && module.exports) {
     } catch (e) {
       console.warn('[contact] showStatus fallback', e, msg);
     }
-  }
+  };
 
-  function setSubmitState(isLoading) {
-    const btn = getSubmitBtn();
+  const setSubmitState = (loading) => {
+    const btn = findSubmitBtn();
     if (!btn) return;
     try {
-      if (!btn.dataset.originalText) {
-        btn.dataset.originalText = btn.textContent || 'Send Message';
+      if (loading) {
+        btn.dataset.originalText = btn.dataset.originalText || btn.textContent || 'Send Message';
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = 'Sending...';
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        btn.textContent = btn.dataset.originalText || 'Send Message';
       }
-      btn.disabled = !!isLoading;
-      btn.classList.toggle('is-loading', !!isLoading);
-      btn.textContent = isLoading ? 'Sending...' : btn.dataset.originalText;
     } catch (e) {
       console.warn('[contact] setSubmitState fallback', e);
     }
-  }
-    
-  const messageField = document.querySelector('textarea[name="message"]');
-  const API = (window.VIP_API || 'https://vipspot-api-a7ce781e1397.herokuapp.com') + '/contact';
-  
-  // Initialize timestamp
-  const timestampField = form.querySelector('input[name="timestamp"]');
-  if (timestampField) timestampField.value = Date.now();
-  
-
-  // CSP-safe error message with mailto link
-  const showContactError = () => {
-    const el = getStatusEl();
-    if (!el) {
-      console.warn('[contact] status element not found');
-      return;
-    }
-    try {
-      // Clear then rebuild with a mailto link (no innerHTML injection)
-      el.textContent = 'Failed to send message. Please try again or email ';
-      const link = document.createElement('a');
-      link.href = `mailto:${CONTACT_FALLBACK_EMAIL}`;
-      link.rel = 'noopener noreferrer';
-      link.className = 'link-plain'; // existing link style
-      link.textContent = CONTACT_FALLBACK_EMAIL;
-      el.appendChild(link);
-      el.className = 'status error';
-    } catch (e) {
-      console.warn('[Contact] error creating fallback message:', e);
-    }
   };
 
-  // Character counter for message field
-  if (messageField) {
-    const maxChars = 4000;
-    let counter = document.getElementById('msg-count');
-    
-    if (!counter) {
-      counter = messageField.parentElement.querySelector('.char-counter');
-      if (!counter) {
-        counter = document.createElement('div');
-        counter.className = 'char-counter';
-        messageField.parentElement.appendChild(counter);
-      }
-    }
+  const handleSubmit = async (ev) => {
+    ev?.preventDefault?.();
 
-    const updateCounter = () => {
-      const current = messageField.value.length;
-      const remaining = maxChars - current;
-      counter.textContent = `${current}/${maxChars}`;
-      
-      if (remaining < 100) {
-        counter.classList.add('warning');
-      } else {
-        counter.classList.remove('warning');
-      }
-      
-      if (current > maxChars) {
-        counter.classList.add('error');
-        messageField.setCustomValidity('Message too long');
-      } else {
-        counter.classList.remove('error');
-        messageField.setCustomValidity('');
-      }
-    };
-
-    messageField.addEventListener('input', updateCounter);
-    updateCounter(); // Initial count
-  }
-
-
-  async function handleSubmit(ev) {
-    ev.preventDefault();
-    
-    // Client-side cooldown to avoid hitting rate limiter
-    const COOLDOWN_MS = 30_000;
-    const key = 'contact:lastSent';
-    const lastSent = +localStorage.getItem(key) || 0;
-    if (Date.now() - lastSent < COOLDOWN_MS) {
-      showStatus("You're doing that too fast. Please wait 30 seconds and try again.", 'error');
+    // Cooldown guard (prevents 429)
+    const last = +storage.get(KEY_LAST_SENT) || 0;
+    const rem = COOLDOWN_MS - (Date.now() - last);
+    if (rem > 0) {
+      const secs = Math.ceil(rem / 1000);
+      showStatus(`You're doing that too fast. Please wait ${secs} seconds and try again.`, 'error');
       return;
     }
-    
-    setSubmitState(true);
-    showStatus('Sending...', 'info');
 
-    const payload = {
-      name: form.elements.name.value.trim(),
-      email: form.elements.email.value.trim(),
-      message: form.elements.message.value.trim(),
-      company: form.elements.company.value, // honeypot
-      timestamp: Date.now()
-    };
+    const form = $('#contact-form');
+    if (!form) return;
+
+    const name = $('#name')?.value?.trim() || '';
+    const email = $('#email')?.value?.trim() || '';
+    const message = $('#message')?.value?.trim() || '';
+    const company = $('#company')?.value || ''; // honeypot
 
     try {
-      const res = await fetch(API, {
+      setSubmitState(true);
+      showStatus('Sending...', 'info');
+
+      const res = await fetch('https://vipspot-api-a7ce781e1397.herokuapp.com/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        mode: 'cors', credentials: 'omit'
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name, email, message, company, timestamp: Date.now() }),
       });
 
       if (res.status === 429) {
-        showStatus("You're doing that too fast. Please wait 30 seconds and try again.", 'error');
+        const retry = parseInt(res.headers.get('retry-after') || '30', 10);
+        showStatus(`You're doing that too fast. Please wait ${retry} seconds and try again.`, 'error');
         return;
       }
-      
-      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-      
-      const json = await res.json();
-      if (json.ok) {
-        showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
-        localStorage.setItem(key, String(Date.now()));
-        getFormEl()?.reset();
-        if (timestampField) timestampField.value = Date.now();
-        
-        // Update character counter after reset
-        if (messageField) {
-          const counter = document.getElementById('msg-count') || messageField.parentElement.querySelector('.char-counter');
-          if (counter) {
-            counter.textContent = '0 / 4000';
-            counter.classList.remove('warning', 'error');
-          }
-        }
-      } else {
-        throw new Error(json.error || 'Failed to send');
+
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        showStatus(`Failed to send message. ${txt || 'Please try again later.'}`, 'error');
+        return;
       }
-    } catch (err) {
-      console.warn('[Contact] submit error:', err);
+
+      const json = await res.json().catch(() => ({ ok: true }));
+      if (json.ok) {
+        // success
+        storage.set(KEY_LAST_SENT, String(Date.now()));
+        showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
+        form.reset?.();
+        
+        // Reset timestamp field
+        const timestampField = $('#timestamp');
+        if (timestampField) timestampField.value = Date.now();
+      } else {
+        showStatus(`Failed to send message. ${json.error || 'Please try again later.'}`, 'error');
+      }
+    } catch (e) {
+      console.warn('[contact] submit error', e);
       showStatus('Failed to send message. Please try again or email contact@vipspot.net', 'error');
     } finally {
       setSubmitState(false);
     }
-  }
+  };
 
-  form.addEventListener('submit', handleSubmit);
-
-  // Enhanced form validation with visual feedback
-  const inputs = form.querySelectorAll('input[required], textarea[required]');
-  inputs.forEach(input => {
-    input.addEventListener('blur', () => {
-      if (input.value.trim()) {
-        input.classList.add('valid');
-        input.classList.remove('invalid');
-      } else {
-        input.classList.add('invalid');
-        input.classList.remove('valid');
+  const init = () => {
+    const form = $('#contact-form');
+    const btn = findSubmitBtn();
+    on(form, 'submit', handleSubmit);
+    on(btn, 'click', (e) => e?.preventDefault?.()); // avoid double submit if you attach both
+    
+    // Initialize timestamp field
+    const timestampField = $('input[name="timestamp"]');
+    if (timestampField) timestampField.value = Date.now();
+    
+    // Character counter for message field
+    const messageField = $('textarea[name="message"]');
+    if (messageField) {
+      const maxChars = 4000;
+      let counter = $('#msg-count') || messageField.parentElement?.querySelector('.char-counter');
+      
+      if (!counter && messageField.parentElement) {
+        counter = document.createElement('div');
+        counter.className = 'char-counter';
+        counter.id = 'msg-count';
+        messageField.parentElement.appendChild(counter);
       }
-    });
 
-    input.addEventListener('input', () => {
-      if (input.classList.contains('invalid') && input.value.trim()) {
-        input.classList.remove('invalid');
-        input.classList.add('valid');
-      }
-    });
-  });
+      const updateCounter = () => {
+        if (!counter) return;
+        try {
+          const current = messageField.value?.length || 0;
+          counter.textContent = `${current} / ${maxChars}`;
+          
+          if (current > maxChars * 0.9) {
+            counter.classList.add('warning');
+          } else {
+            counter.classList.remove('warning');
+          }
+          
+          if (current > maxChars) {
+            counter.classList.add('error');
+            messageField.setCustomValidity?.('Message too long');
+          } else {
+            counter.classList.remove('error');
+            messageField.setCustomValidity?.('');
+          }
+        } catch (e) {
+          console.warn('[contact] counter update failed', e);
+        }
+      };
+
+      on(messageField, 'input', updateCounter);
+      updateCounter(); // Initial count
+    }
+  };
+
+  return { init };
 })();
+
+// Initialize after DOM is ready (prevents early nulls)
+document.addEventListener('DOMContentLoaded', () => {
+  try { ContactForm.init(); } catch (e) { console.warn('[contact] init', e); }
+});
