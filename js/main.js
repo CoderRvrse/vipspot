@@ -1086,37 +1086,64 @@ if (typeof module !== 'undefined' && module.exports) {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  // ---- Contact helpers: safe selectors ----
-  function getContactForm() {
-    return document.getElementById('contact-form') || document.querySelector('form[data-contact]');
-  }
+  // --- Contact helpers: bulletproof selectors ---
+  const getFormEl = () => document.querySelector('#contact-form');
 
-  function getContactSubmitButton() {
-    return (
-      document.getElementById('contact-submit') ||
-      document.querySelector('[data-role="contact-submit"]') ||
-      document.querySelector('#contact-form button[type="submit"]')
-    );
-  }
+  const getSubmitBtn = () => 
+    document.querySelector('#contact-submit, [data-role="contact-submit"], #contact-form button[type="submit"]');
 
-  // Create status node if missing (so we never operate on null)
-  function getOrCreateStatusEl() {
-    let el =
-      document.getElementById('contact-status') ||
-      document.querySelector('[data-contact-status]') ||
-      document.querySelector('#contact-form [role="status"]');
+  function getStatusEl() {
+    // try common selectors
+    let el = document.querySelector('#contact-status, [data-contact-status], #contact-form [role="status"]');
+    if (el) return el;
 
-    if (!el) {
-      const form = getContactForm();
-      if (!form) return null;
+    // lazily create one if missing
+    const form = getFormEl();
+    try {
       el = document.createElement('div');
       el.id = 'contact-status';
       el.setAttribute('role', 'status');
       el.setAttribute('aria-live', 'polite');
-      el.className = 'status';
-      form.appendChild(el);
+      el.className = 'contact-status';
+      // insert after the form (or inside as last child if you prefer)
+      if (form && form.parentNode) {
+        form.parentNode.insertBefore(el, form.nextSibling);
+      } else if (form) {
+        form.appendChild(el);
+      } else {
+        document.body.appendChild(el);
+      }
+    } catch (e) {
+      console.warn('[contact] could not create status element', e);
     }
     return el;
+  }
+
+  function showStatus(msg, kind = 'info') {
+    try {
+      const el = getStatusEl();
+      if (!el) return;
+      el.textContent = String(msg ?? '');
+      el.classList.remove('ok', 'error', 'info');
+      el.classList.add(kind);
+    } catch (e) {
+      console.warn('[contact] showStatus fallback', e, msg);
+    }
+  }
+
+  function setSubmitState(isLoading) {
+    const btn = getSubmitBtn();
+    if (!btn) return;
+    try {
+      if (!btn.dataset.originalText) {
+        btn.dataset.originalText = btn.textContent || 'Send Message';
+      }
+      btn.disabled = !!isLoading;
+      btn.classList.toggle('is-loading', !!isLoading);
+      btn.textContent = isLoading ? 'Sending...' : btn.dataset.originalText;
+    } catch (e) {
+      console.warn('[contact] setSubmitState fallback', e);
+    }
   }
     
   const messageField = document.querySelector('textarea[name="message"]');
@@ -1126,37 +1153,10 @@ if (typeof module !== 'undefined' && module.exports) {
   const timestampField = form.querySelector('input[name="timestamp"]');
   if (timestampField) timestampField.value = Date.now();
   
-  function setSubmitState(isLoading) {
-    const btn = getContactSubmitButton();
-    if (!btn) { console.warn('[Contact] submit button not found'); return; }
-
-    if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent || 'Send Message';
-
-    btn.disabled = !!isLoading;
-    btn.setAttribute('aria-disabled', String(!!isLoading));
-    btn.setAttribute('aria-busy', String(!!isLoading));
-    try { btn.classList.toggle('is-loading', !!isLoading); } catch {}
-
-    // Optional text swap
-    btn.textContent = isLoading ? 'Sending...' : btn.dataset.originalText;
-  }
-
-  function showStatus(message, type = 'error') {
-    const el = getOrCreateStatusEl();
-    if (!el) { console.warn('[Contact] status element missing:', message); return; }
-
-    try {
-      el.textContent = message;
-      el.classList.remove('ok', 'error', 'info');
-      if (type) el.classList.add(type);
-    } catch (e) {
-      console.warn('[Contact] status update failed:', e, message);
-    }
-  }
 
   // CSP-safe error message with mailto link
   const showContactError = () => {
-    const el = getOrCreateStatusEl();
+    const el = getStatusEl();
     if (!el) {
       console.warn('[contact] status element not found');
       return;
@@ -1217,8 +1217,18 @@ if (typeof module !== 'undefined' && module.exports) {
 
   async function handleSubmit(ev) {
     ev.preventDefault();
+    
+    // Client-side cooldown to avoid hitting rate limiter
+    const COOLDOWN_MS = 30_000;
+    const key = 'contact:lastSent';
+    const lastSent = +localStorage.getItem(key) || 0;
+    if (Date.now() - lastSent < COOLDOWN_MS) {
+      showStatus("You're doing that too fast. Please wait 30 seconds and try again.", 'error');
+      return;
+    }
+    
     setSubmitState(true);
-    showStatus('Sending your message...', 'info');
+    showStatus('Sending...', 'info');
 
     const payload = {
       name: form.elements.name.value.trim(),
@@ -1246,7 +1256,8 @@ if (typeof module !== 'undefined' && module.exports) {
       const json = await res.json();
       if (json.ok) {
         showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
-        getContactForm()?.reset();
+        localStorage.setItem(key, String(Date.now()));
+        getFormEl()?.reset();
         if (timestampField) timestampField.value = Date.now();
         
         // Update character counter after reset
