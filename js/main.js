@@ -932,6 +932,7 @@ if (typeof module !== 'undefined' && module.exports) {
   // === API base (keep in one place) ===
   const API = (window.VIPSpot && VIPSpot.API_BASE) ||
              'https://vipspot-api-a7ce781e1397.herokuapp.com';
+  const PATH = '/contact'; // Single source of truth
 
   // === Hardened fetch with timeout + correlation id ===
   const postJSON = async (path, body, requestId) => {
@@ -994,7 +995,7 @@ if (typeof module !== 'undefined' && module.exports) {
       setBusy(true);
       say('Sending...', 'info');
 
-      const { res, json, textBody } = await postJSON('/contact', payload, id);
+      const { res, json, textBody } = await postJSON(PATH, payload, id);
       dlog(`#${id} response`, res.status, json || textBody);
       debugOut(JSON.stringify({ rid: id, status: res.status, body: json || textBody }, null, 2), 'Contact: response');
 

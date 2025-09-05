@@ -46,6 +46,7 @@ app.use((req, res, next) => {
     res.set('Vary', 'Origin');
     res.set('Access-Control-Allow-Headers', 'Content-Type, X-Request-ID, X-From-Origin');
     res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.set('Access-Control-Expose-Headers', 'X-Request-ID, Retry-After');
   }
   if (req.method === 'OPTIONS') return res.status(204).end();
   next();
@@ -78,10 +79,16 @@ function makeTicketId() {
 }
 
 // ----- Health -----
-app.get('/healthz', (req, res) => res.json({ ok: true }));
+app.get('/healthz', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true });
+});
 
-// ----- Contact -----
-app.post('/contact', async (req, res) => {
+// ----- Contact Endpoint -----
+const contactHandler = async (req, res) => {
+  // Prevent edge caching of dynamic responses
+  res.set('Cache-Control', 'no-store');
+  
   const { name='', email='', message='', company='', timestamp, requestId } = req.body || {};
   
   try {
@@ -183,11 +190,16 @@ app.post('/contact', async (req, res) => {
     console.error('[error]', req.id, err);
     res.status(500).json({ ok: false, code: 'server_error', message: 'Internal error', requestId: req.id });
   }
-});
+};
+
+// Mount on both endpoints for consistency
+app.post('/contact', contactHandler);
+app.post('/booking', contactHandler);
 
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('[error]', req.id, err);
+  res.set('Cache-Control', 'no-store');
   res.status(500).json({ ok: false, code: 'server_error', message: 'Internal error', requestId: req.id });
 });
 
