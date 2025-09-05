@@ -529,262 +529,6 @@ class ModalSystem {
     }
 }
 
-// ============================================
-// FORM VALIDATION & SUBMISSION
-// ============================================
-class ContactForm {
-    constructor() {
-        this.form = document.getElementById('contact-form');
-        this.nameField = document.getElementById('name');
-        this.emailField = document.getElementById('email');
-        this.messageField = document.getElementById('message');
-        this.submitButton = this.form.querySelector('button[type="submit"]');
-        this.statusDiv = document.getElementById('form-status');
-        this.isSubmitting = false;
-        this.init();
-    }
-
-    init() {
-        this.setupEventListeners();
-        this.setupRealTimeValidation();
-    }
-
-    setupEventListeners() {
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleSubmit();
-        });
-
-        // Clear errors on input
-        [this.nameField, this.emailField, this.messageField].forEach(field => {
-            field.addEventListener('input', () => {
-                this.clearFieldError(field);
-            });
-
-            field.addEventListener('blur', () => {
-                this.validateField(field);
-            });
-        });
-    }
-
-    setupRealTimeValidation() {
-        // Email validation on input
-        this.emailField.addEventListener('input', Utils.debounce(() => {
-            if (this.emailField.value.length > 0) {
-                this.validateEmail();
-            }
-        }, 500));
-
-        // Character count for message
-        this.messageField.addEventListener('input', () => {
-            this.updateCharacterCount();
-        });
-    }
-
-    validateField(field) {
-        let isValid = true;
-        let errorMessage = '';
-
-        switch (field.id) {
-            case 'name':
-                if (!field.value.trim()) {
-                    errorMessage = 'Name is required';
-                    isValid = false;
-                } else if (field.value.trim().length < 2) {
-                    errorMessage = 'Name must be at least 2 characters';
-                    isValid = false;
-                }
-                break;
-
-            case 'email':
-                if (!field.value.trim()) {
-                    errorMessage = 'Email is required';
-                    isValid = false;
-                } else if (!Utils.validateEmail(field.value)) {
-                    errorMessage = 'Please enter a valid email address';
-                    isValid = false;
-                }
-                break;
-
-            case 'message':
-                if (!field.value.trim()) {
-                    errorMessage = 'Message is required';
-                    isValid = false;
-                } else if (field.value.trim().length < 10) {
-                    errorMessage = 'Message must be at least 10 characters';
-                    isValid = false;
-                } else if (field.value.length > 2000) {
-                    errorMessage = 'Message must be less than 2000 characters';
-                    isValid = false;
-                }
-                break;
-        }
-
-        this.setFieldError(field, errorMessage);
-        return isValid;
-    }
-
-    validateEmail() {
-        return this.validateField(this.emailField);
-    }
-
-    validateForm() {
-        const nameValid = this.validateField(this.nameField);
-        const emailValid = this.validateField(this.emailField);
-        const messageValid = this.validateField(this.messageField);
-
-        return nameValid && emailValid && messageValid;
-    }
-
-    setFieldError(field, message) {
-        const errorElement = document.getElementById(`${field.id}-error`);
-        if (errorElement) {
-            errorElement.textContent = message;
-            if (message) {
-                errorElement.classList.remove('element-hidden');
-                errorElement.classList.add('element-block');
-            } else {
-                errorElement.classList.remove('element-block');
-                errorElement.classList.add('element-hidden');
-            }
-        }
-
-        // Visual feedback
-        if (message) {
-            field.classList.add('border-red-500');
-            field.setAttribute('aria-invalid', 'true');
-        } else {
-            field.classList.remove('border-red-500');
-            field.setAttribute('aria-invalid', 'false');
-        }
-    }
-
-    clearFieldError(field) {
-        this.setFieldError(field, '');
-    }
-
-    updateCharacterCount() {
-        const current = this.messageField.value.length;
-        const max = 2000;
-        const remaining = max - current;
-
-        // Update character count display if element exists
-        let countElement = document.getElementById('char-count');
-        if (!countElement) {
-            countElement = document.createElement('small');
-            countElement.id = 'char-count';
-            countElement.className = 'text-gray-400 text-sm';
-            this.messageField.parentNode.appendChild(countElement);
-        }
-
-        countElement.textContent = `${current}/${max} characters`;
-        if (remaining < 100) {
-            countElement.classList.remove('text-neutral');
-            countElement.classList.add('text-warning');
-        } else {
-            countElement.classList.remove('text-warning');
-            countElement.classList.add('text-neutral');
-        }
-    }
-
-    async handleSubmit() {
-        if (this.isSubmitting) return;
-
-        // Validate form
-        if (!this.validateForm()) {
-            this.showStatus('Please correct the errors above.', 'error');
-            return;
-        }
-
-        this.isSubmitting = true;
-        this.setSubmitState(true);
-
-        try {
-            const formData = {
-                name: this.nameField.value.trim(),
-                email: this.emailField.value.trim(),
-                message: this.messageField.value.trim(),
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent
-            };
-
-            // Simulate API call for now (replace with actual endpoint)
-            await this.simulateFormSubmission(formData);
-
-            this.showStatus('Message sent successfully! I\'ll get back to you soon.', 'success');
-            this.form.reset();
-            this.clearAllErrors();
-
-        } catch (error) {
-            console.error('Form submission error:', error);
-            this.showStatus('Failed to send message. Please try again later.', 'error');
-        } finally {
-            this.isSubmitting = false;
-            this.setSubmitState(false);
-        }
-    }
-
-    async simulateFormSubmission(formData) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // For demo purposes, we'll just log the data
-        // Replace this with actual API call:
-        // const response = await fetch(CONFIG.form.apiEndpoint, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(formData)
-        // });
-        
-        console.log('Form submitted:', formData);
-        
-        // Simulate occasional failures for testing
-        if (Math.random() > 0.9) {
-            throw new Error('Simulated network error');
-        }
-    }
-
-    setSubmitState(isSubmitting) {
-        const buttonText = this.submitButton.querySelector('.button-text');
-        const spinner = this.submitButton.querySelector('.loading-spinner');
-
-        if (isSubmitting) {
-            buttonText.classList.add('element-hidden');
-            spinner.classList.remove('element-hidden');
-            spinner.classList.add('element-inline-block');
-            spinner.classList.remove('hidden');
-            this.submitButton.disabled = true;
-            this.submitButton.setAttribute('aria-busy', 'true');
-        } else {
-            buttonText.classList.remove('element-hidden');
-            buttonText.classList.add('element-inline-block');
-            spinner.classList.remove('element-inline-block');
-            spinner.classList.add('element-hidden');
-            spinner.classList.add('hidden');
-            this.submitButton.disabled = false;
-            this.submitButton.setAttribute('aria-busy', 'false');
-        }
-    }
-
-    showStatus(message, type) {
-        this.statusDiv.textContent = message;
-        this.statusDiv.className = `mt-4 text-center ${
-            type === 'success' ? 'text-green-400' : 'text-red-400'
-        }`;
-        
-        // Auto-clear status after 5 seconds
-        setTimeout(() => {
-            this.statusDiv.textContent = '';
-            this.statusDiv.className = 'mt-4 text-center';
-        }, 5000);
-    }
-
-    clearAllErrors() {
-        [this.nameField, this.emailField, this.messageField].forEach(field => {
-            this.clearFieldError(field);
-        });
-    }
-}
 
 // ============================================
 // PERFORMANCE & LOADING OPTIMIZATIONS
@@ -953,7 +697,6 @@ class VIPSpotApp {
             // Initialize core components
             this.components.navigation = new Navigation();
             this.components.modal = new ModalSystem();
-            this.components.form = new ContactForm();
             this.components.performance = new PerformanceOptimizer();
             this.components.accessibility = new AccessibilityEnhancer();
 
@@ -1079,23 +822,21 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { VIPSpotApp, Utils };
 }
 
-// ============================================
-// BULLETPROOF CONTACT FORM HANDLER
-// ============================================
+// --- CONTACT FORM (single definition) ---
+(() => {
+  // If already registered (defensive), do nothing.
+  if (window.VIPSpot?.Contact) return;
 
-// Tiny helpers
-const $ = (sel, root = document) => root.querySelector(sel);
-const on = (el, evt, fn, opts) => el && el.addEventListener(evt, fn, opts);
+  const $ = (s, r = document) => r.querySelector(s);
+  const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
 
-// LocalStorage safety (prevents exceptions in strict/private modes)
-const storage = {
-  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
-  remove(k) { try { localStorage.removeItem(k); } catch {} },
-};
+  // Safe localStorage wrapper
+  const storage = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    remove(k) { try { localStorage.removeItem(k); } catch {} },
+  };
 
-// ---- Contact form module ----
-const ContactForm = (() => {
   const COOLDOWN_MS = 30_000;
   const KEY_LAST_SENT = 'contact:lastSent';
 
@@ -1112,7 +853,7 @@ const ContactForm = (() => {
 
     if (el) return el;
 
-    // Lazily create it if missing
+    // Lazily create if missing
     const form = $('#contact-form');
     if (!form) return null;
     el = document.createElement('div');
@@ -1156,25 +897,22 @@ const ContactForm = (() => {
     }
   };
 
-  const handleSubmit = async (ev) => {
+  const submit = async (ev) => {
     ev?.preventDefault?.();
 
-    // Cooldown guard (prevents 429)
     const last = +storage.get(KEY_LAST_SENT) || 0;
-    const rem = COOLDOWN_MS - (Date.now() - last);
-    if (rem > 0) {
-      const secs = Math.ceil(rem / 1000);
-      showStatus(`You're doing that too fast. Please wait ${secs} seconds and try again.`, 'error');
+    const remaining = COOLDOWN_MS - (Date.now() - last);
+    if (remaining > 0) {
+      showStatus(`You're doing that too fast. Please wait ${Math.ceil(remaining / 1000)} seconds and try again.`, 'error');
       return;
     }
 
     const form = $('#contact-form');
     if (!form) return;
-
     const name = $('#name')?.value?.trim() || '';
     const email = $('#email')?.value?.trim() || '';
     const message = $('#message')?.value?.trim() || '';
-    const company = $('#company')?.value || ''; // honeypot
+    const company = $('#company')?.value || '';
 
     try {
       setSubmitState(true);
@@ -1200,13 +938,12 @@ const ContactForm = (() => {
 
       const json = await res.json().catch(() => ({ ok: true }));
       if (json.ok) {
-        // success
         storage.set(KEY_LAST_SENT, String(Date.now()));
         showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
         form.reset?.();
         
-        // Reset timestamp field
-        const timestampField = $('#timestamp');
+        // Reset timestamp
+        const timestampField = $('input[name="timestamp"]');
         if (timestampField) timestampField.value = Date.now();
       } else {
         showStatus(`Failed to send message. ${json.error || 'Please try again later.'}`, 'error');
@@ -1222,10 +959,11 @@ const ContactForm = (() => {
   const init = () => {
     const form = $('#contact-form');
     const btn = findSubmitBtn();
-    on(form, 'submit', handleSubmit);
-    on(btn, 'click', (e) => e?.preventDefault?.()); // avoid double submit if you attach both
+    on(form, 'submit', submit);
+    // Avoid double-submit if button also triggers submit
+    on(btn, 'click', (e) => e?.preventDefault?.());
     
-    // Initialize timestamp field
+    // Initialize timestamp
     const timestampField = $('input[name="timestamp"]');
     if (timestampField) timestampField.value = Date.now();
     
@@ -1271,10 +1009,11 @@ const ContactForm = (() => {
     }
   };
 
-  return { init };
-})();
+  // Export on global namespace to avoid re-declaring consts
+  window.VIPSpot = window.VIPSpot || {};
+  window.VIPSpot.Contact = { init };
 
-// Initialize after DOM is ready (prevents early nulls)
-document.addEventListener('DOMContentLoaded', () => {
-  try { ContactForm.init(); } catch (e) { console.warn('[contact] init', e); }
-});
+  document.addEventListener('DOMContentLoaded', () => {
+    try { window.VIPSpot.Contact.init(); } catch (e) { console.warn('[contact] init', e); }
+  });
+})();
