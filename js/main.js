@@ -1093,9 +1093,13 @@ if (typeof module !== 'undefined' && module.exports) {
     || $('[data-contact-status]')
     || $('#contact-form [role="status"]');
 
-  const submitBtn = document.getElementById('contact-submit')
-    || $('[data-role="contact-submit"]')
-    || $('#contact-form button[type="submit"]');
+  function getContactSubmitButton() {
+    return (
+      document.getElementById('contact-submit') ||
+      document.querySelector('[data-role="contact-submit"]') ||
+      document.querySelector('#contact-form button[type="submit"]')
+    );
+  }
     
   const messageField = document.querySelector('textarea[name="message"]');
   const API = (window.VIP_API || 'https://vipspot-api-a7ce781e1397.herokuapp.com') + '/contact';
@@ -1170,22 +1174,43 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   // Button loading state helper
-  const setButtonLoading = (loading) => {
-    if (!submitBtn) return; // graceful no-op
-    submitBtn.disabled = !!loading;
-    submitBtn.classList.toggle('loading', !!loading);
-    submitBtn.setAttribute('aria-busy', loading ? 'true' : 'false');
-    if (loading) {
-      submitBtn.dataset.originalText ||= submitBtn.textContent;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-    } else if (submitBtn.dataset.originalText) {
-      submitBtn.textContent = submitBtn.dataset.originalText;
+  function setSubmitState(isLoading) {
+    const btn = getContactSubmitButton();
+    if (!btn) {
+      console.warn('[Contact] submit button not found; skipping state toggle.');
+      return;
     }
-  };
+    
+    try {
+      // Toggle loading state safely
+      btn.classList.toggle('is-loading', !!isLoading);
+      btn.disabled = !!isLoading;
+      btn.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+      
+      if (isLoading) {
+        // Store original text if not already stored
+        if (!btn.dataset.originalText) {
+          btn.dataset.originalText = btn.textContent || btn.innerHTML;
+        }
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      } else {
+        // Restore original content
+        if (btn.dataset.originalText) {
+          btn.innerHTML = btn.dataset.originalText;
+        } else {
+          btn.textContent = 'Send Message'; // fallback
+        }
+      }
+    } catch (e) {
+      console.warn('[Contact] Error toggling button state:', e);
+      // Fallback for browsers that might not support classList
+      btn.disabled = !!isLoading;
+    }
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    setButtonLoading(true);
+    setSubmitState(true);
     say('info', 'Sending your message...');
 
     const payload = {
@@ -1224,7 +1249,7 @@ if (typeof module !== 'undefined' && module.exports) {
       console.error('Contact form error:', err);
       showContactError();
     } finally {
-      setButtonLoading(false);
+      setSubmitState(false);
     }
   });
 
