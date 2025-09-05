@@ -822,39 +822,57 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { VIPSpotApp, Utils };
 }
 
-// --- CONTACT FORM (single definition) ---
+// --- CONTACT FORM (bulletproof + debug) ---
 (() => {
   // If already registered (defensive), do nothing.
   if (window.VIPSpot?.Contact) return;
 
-  const $ = (s, r = document) => r.querySelector(s);
-  const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+  // === Debug toggle ===
+  const DEBUG =
+    /(^|[?&])debug=1(&|$)/.test(location.search) ||
+    localStorage.getItem('vipspot:debug') === '1';
 
-  // Safe localStorage wrapper
-  const storage = {
-    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
-    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
-    remove(k) { try { localStorage.removeItem(k); } catch {} },
+  const dlog = (...a) => DEBUG && console.log('[contact]', ...a);
+  const dwarn = (...a) => DEBUG && console.warn('[contact]', ...a);
+  const derr = (...a) => DEBUG && console.error('[contact]', ...a);
+
+  // === Request ID (correlation id) ===
+  const rid = () =>
+    (crypto && crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2)));
+
+  // === Minimal DOM helpers (safe) ===
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const text = (el, t) => { if (el) el.textContent = String(t ?? ''); };
+
+  // === Debug overlay (optional) ===
+  const ensureDebugPanel = () => {
+    if (!DEBUG) return null;
+    let p = $('#contact-debug-panel');
+    if (!p) {
+      const css = 'position:fixed;bottom:8px;left:8px;max-width:min(95vw,700px);max-height:35vh;overflow:auto;padding:8px 10px;border-radius:8px;background:#0b1324;color:#9fe8a8;font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;box-shadow:0 6px 30px rgba(0,0,0,.4);z-index:999999;opacity:.95;';
+      p = document.createElement('pre');
+      p.id = 'contact-debug-panel';
+      p.setAttribute('style', css);
+      document.body.appendChild(p);
+    }
+    return p;
+  };
+  const debugOut = (lines, title='') => {
+    const p = ensureDebugPanel();
+    if (!p) return;
+    p.textContent = (title ? `# ${title}\n` : '') + (Array.isArray(lines) ? lines.join('\n') : String(lines));
   };
 
-  const COOLDOWN_MS = 30_000;
-  const KEY_LAST_SENT = 'contact:lastSent';
-
-  const findSubmitBtn = () =>
-    $('#contact-submit') ||
-    $('[data-role="contact-submit"]') ||
-    $('#contact-form button[type="submit"]');
-
+  // === Button + status handling (safe) ===
+  const getForm = () => $('#contact-form');
+  const getSubmitBtn = () => $('#contact-submit') || $('[data-role="contact-submit"]') || (getForm() && getForm().querySelector('button[type="submit"]'));
   const getStatusEl = () => {
-    let el =
-      $('#contact-status') ||
-      $('[data-contact-status]') ||
-      $('#contact-form [role="status"]');
-
+    let el = $('#contact-status') || $('[data-contact-status]') || (getForm() && getForm().querySelector('[role="status"]'));
+    
     if (el) return el;
 
     // Lazily create if missing
-    const form = $('#contact-form');
+    const form = getForm();
     if (!form) return null;
     el = document.createElement('div');
     el.id = 'contact-status';
@@ -866,102 +884,153 @@ if (typeof module !== 'undefined' && module.exports) {
     return el;
   };
 
-  const showStatus = (msg, kind = 'info') => {
-    try {
-      const el = getStatusEl();
-      if (!el) return;
-      el.textContent = String(msg ?? '');
-      el.classList.remove('ok', 'error', 'info');
-      el.classList.add(kind);
-    } catch (e) {
-      console.warn('[contact] showStatus fallback', e, msg);
-    }
-  };
-
-  const setSubmitState = (loading) => {
-    const btn = findSubmitBtn();
+  const setBusy = (busy) => {
+    const btn = getSubmitBtn();
     if (!btn) return;
     try {
-      if (loading) {
-        btn.dataset.originalText = btn.dataset.originalText || btn.textContent || 'Send Message';
+      if (busy) {
+        btn.dataset.orig = btn.textContent || btn.value || 'Send Message';
+        (btn.classList && btn.classList.add('is-loading'));
         btn.disabled = true;
-        btn.classList.add('loading');
-        btn.textContent = 'Sending...';
+        text(btn, 'Sending...');
       } else {
+        text(btn, btn.dataset.orig || 'Send Message');
+        (btn.classList && btn.classList.remove('is-loading'));
         btn.disabled = false;
-        btn.classList.remove('loading');
-        btn.textContent = btn.dataset.originalText || 'Send Message';
       }
-    } catch (e) {
-      console.warn('[contact] setSubmitState fallback', e);
+    } catch (e) { dwarn('btn state warn', e); }
+  };
+
+  const say = (msg, kind='info') => {
+    const el = getStatusEl();
+    if (!el) return dlog('status:', kind, msg);
+    el.setAttribute('data-kind', kind);
+    text(el, msg);
+    try {
+      el.classList.remove('ok', 'error', 'info');
+      el.classList.add(kind);
+    } catch (e) { dwarn('status class warn', e); }
+  };
+
+  // === Client cooldown (prevents 429 spam) ===
+  const COOLDOWN_MS = 30_000;
+  const cdKey = 'contact:lastSent';
+  
+  // Safe localStorage wrapper
+  const storage = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    remove(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+  
+  const tooSoon = () => {
+    const last = +(storage.get(cdKey) || 0);
+    const remain = COOLDOWN_MS - (Date.now() - last);
+    return remain > 0 ? remain : 0;
+  };
+
+  // === API base (keep in one place) ===
+  const API = (window.VIPSpot && VIPSpot.API_BASE) ||
+             'https://vipspot-api-a7ce781e1397.herokuapp.com';
+
+  // === Hardened fetch with timeout + correlation id ===
+  const postJSON = async (path, body, requestId) => {
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 15000); // 15s
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Request-ID': requestId,
+      'X-From-Origin': location.origin
+    };
+    try {
+      const res = await fetch(API + path, {
+        method: 'POST',
+        mode: 'cors',
+        headers,
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      const textBody = await res.text();
+      let json = {};
+      try { json = textBody ? JSON.parse(textBody) : {}; } catch{ /* keep text in json._ */ json._ = textBody; }
+
+      return { res, json, textBody };
+    } finally {
+      clearTimeout(t);
     }
   };
 
-  const submit = async (ev) => {
+  // === Submit handler ===
+  const onSubmit = async (ev) => {
     ev?.preventDefault?.();
 
-    const last = +storage.get(KEY_LAST_SENT) || 0;
-    const remaining = COOLDOWN_MS - (Date.now() - last);
-    if (remaining > 0) {
-      showStatus(`You're doing that too fast. Please wait ${Math.ceil(remaining / 1000)} seconds and try again.`, 'error');
+    const remain = tooSoon();
+    if (remain > 0) {
+      say(`You're doing that too fast. Please wait ${Math.ceil(remain/1000)} seconds and try again.`, 'error');
       return;
     }
 
-    const form = $('#contact-form');
-    if (!form) return;
-    const name = $('#name')?.value?.trim() || '';
-    const email = $('#email')?.value?.trim() || '';
-    const message = $('#message')?.value?.trim() || '';
-    const company = $('#company')?.value || '';
+    const form = getForm();
+    if (!form) {
+      say('Form not found on page.', 'error');
+      return;
+    }
+
+    const id = rid();
+    const payload = {
+      requestId: id,
+      name: $('#name')?.value?.trim() || '',
+      email: $('#email')?.value?.trim() || '',
+      message: $('#message')?.value?.trim() || '',
+      company: $('#company')?.value || '',
+      timestamp: Date.now(),
+      source: 'vipspot.net/contact'
+    };
+
+    dlog(`#${id} submitting`, payload);
+    debugOut(JSON.stringify({ rid: id, payload }, null, 2), 'Contact: request');
 
     try {
-      setSubmitState(true);
-      showStatus('Sending...', 'info');
+      setBusy(true);
+      say('Sending...', 'info');
 
-      const res = await fetch('https://vipspot-api-a7ce781e1397.herokuapp.com/contact', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name, email, message, company, timestamp: Date.now() }),
-      });
+      const { res, json, textBody } = await postJSON('/contact', payload, id);
+      dlog(`#${id} response`, res.status, json || textBody);
+      debugOut(JSON.stringify({ rid: id, status: res.status, body: json || textBody }, null, 2), 'Contact: response');
 
       if (res.status === 429) {
-        const retry = parseInt(res.headers.get('retry-after') || '30', 10);
-        showStatus(`You're doing that too fast. Please wait ${retry} seconds and try again.`, 'error');
+        const retry = +(res.headers.get('Retry-After') || json?.retryAfter || 30);
+        say(`You're doing that too fast. Please wait ${retry} seconds and try again.`, 'error');
+        return;
+      }
+      if (!res.ok || !json?.ok) {
+        say(json?.message || `Error: ${res.status}`, 'error');
         return;
       }
 
-      if (!res.ok) {
-        const txt = await res.text().catch(() => '');
-        showStatus(`Failed to send message. ${txt || 'Please try again later.'}`, 'error');
-        return;
-      }
+      // success
+      storage.set(cdKey, String(Date.now())); // start cooldown
+      say('Message sent successfully! I will get back to you shortly.', 'ok');
+      form.reset?.();
+      
+      // Reset timestamp
+      const timestampField = $('input[name="timestamp"]');
+      if (timestampField) timestampField.value = Date.now();
 
-      const json = await res.json().catch(() => ({ ok: true }));
-      if (json.ok) {
-        storage.set(KEY_LAST_SENT, String(Date.now()));
-        showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
-        form.reset?.();
-        
-        // Reset timestamp
-        const timestampField = $('input[name="timestamp"]');
-        if (timestampField) timestampField.value = Date.now();
-      } else {
-        showStatus(`Failed to send message. ${json.error || 'Please try again later.'}`, 'error');
-      }
     } catch (e) {
-      console.warn('[contact] submit error', e);
-      showStatus('Failed to send message. Please try again or email contact@vipspot.net', 'error');
+      derr('network error', e);
+      say('Network error. Please check your connection and try again.', 'error');
     } finally {
-      setSubmitState(false);
+      setBusy(false);
     }
   };
 
   const init = () => {
-    const form = $('#contact-form');
-    const btn = findSubmitBtn();
-    on(form, 'submit', submit);
-    // Avoid double-submit if button also triggers submit
-    on(btn, 'click', (e) => e?.preventDefault?.());
+    const form = getForm();
+    const btn = getSubmitBtn();
+    
+    if (form) form.addEventListener('submit', onSubmit);
+    if (btn && !form) btn.addEventListener('click', onSubmit); // fallback
     
     // Initialize timestamp
     const timestampField = $('input[name="timestamp"]');
@@ -1004,9 +1073,11 @@ if (typeof module !== 'undefined' && module.exports) {
         }
       };
 
-      on(messageField, 'input', updateCounter);
+      if (messageField) messageField.addEventListener('input', updateCounter);
       updateCounter(); // Initial count
     }
+
+    dlog('contact init: form=', !!form, 'btn=', !!btn, 'API=', API);
   };
 
   // Export on global namespace to avoid re-declaring consts

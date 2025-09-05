@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import { Resend } from 'resend';
 
@@ -10,7 +12,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ----- Config -----
-const ALLOWED = (process.env.ALLOWED_ORIGINS || '')
+const ALLOWED = (process.env.ALLOWED_ORIGINS || 'https://vipspot.net,https://www.vipspot.net,http://localhost:8000')
   .split(',').map(s => s.trim()).filter(Boolean);
 const resend = new Resend(process.env.RESEND_API_KEY);
 const CONTACT_TO = process.env.CONTACT_TO || 'contact@vipspot.net';   // goes to Gmail via Cloudflare Routing
@@ -21,17 +23,47 @@ const CONTACT_REPLY_TO = process.env.CONTACT_REPLY_TO || null; // keep Reply-To 
 
 // ----- Middleware -----
 app.use(helmet({ contentSecurityPolicy: false })); // API-only
-app.use(express.json({ limit: '20kb' }));
-app.use(cors({
-  origin(origin, cb) {
-    if (!origin) return cb(null, true); // curl/Postman
-    return ALLOWED.includes(origin) ? cb(null, true) : cb(new Error('CORS'));
+app.use(express.json({ limit: '200kb' }));
+
+// Correlation id middleware
+app.use((req, res, next) => {
+  const id = req.get('X-Request-ID') || crypto.randomUUID();
+  req.id = id;
+  res.set('X-Request-ID', id);
+  next();
+});
+
+// Structured access logs
+morgan.token('rid', (req) => req.id);
+morgan.token('origin', (req) => req.get('Origin') || '');
+app.use(morgan(':date[iso] :method :url :status rid=:rid origin=":origin" ua=":user-agent" - :response-time ms'));
+
+// Enhanced CORS with proper headers
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  if (origin && ALLOWED.includes(origin)) {
+    res.set('Access-Control-Allow-Origin', origin);
+    res.set('Vary', 'Origin');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, X-Request-ID, X-From-Origin');
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  }
+  if (req.method === 'OPTIONS') return res.status(204).end();
+  next();
+});
+
+// Rate limit: 1 per 30s per IP per path
+const limiter = rateLimit({
+  windowMs: 30_000,
+  max: 1,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    const retry = Math.ceil((req.rateLimit.resetTime?.getTime?.() - Date.now()) / 1000) || 30;
+    const body = { ok: false, code: 'too_fast', message: 'Too many requests', retryAfter: retry, requestId: req.id };
+    res.set('Retry-After', String(retry));
+    res.status(429).json(body);
   },
-  methods: ['POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  maxAge: 86400
-}));
-const limiter = rateLimit({ windowMs: 60_000, max: 5 });
+});
 app.use('/contact', limiter);
 
 // ----- Utils -----
@@ -50,30 +82,34 @@ app.get('/healthz', (req, res) => res.json({ ok: true }));
 
 // ----- Contact -----
 app.post('/contact', async (req, res) => {
+  const { name='', email='', message='', company='', timestamp, requestId } = req.body || {};
+  
   try {
-    const { name='', email='', message='', company='', timestamp } = req.body || {};
-
     // Honeypot + timing guard (≥3s)
-    if (company) return res.status(200).json({ ok: true });
+    if (company) return res.status(200).json({ ok: true, requestId: req.id });
     if (typeof timestamp === 'number' && Date.now() - timestamp < 3000)
-      return res.status(429).json({ ok: false, error: 'Too fast' });
+      return res.status(429).json({ ok: false, code: 'too_fast', message: 'Too fast', retryAfter: 30, requestId: req.id });
 
     // Validation
     if (!name || !email || !message)
-      return res.status(400).json({ ok: false, error: 'Missing fields' });
+      return res.status(400).json({ ok: false, code: 'bad_input', message: 'Missing fields', requestId: req.id });
     if (name.length > 120 || message.length > 4000)
-      return res.status(400).json({ ok: false, error: 'Too long' });
+      return res.status(400).json({ ok: false, code: 'bad_input', message: 'Too long', requestId: req.id });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      return res.status(400).json({ ok: false, error: 'Invalid email' });
+      return res.status(400).json({ ok: false, code: 'bad_input', message: 'Invalid email', requestId: req.id });
 
     const ticketId = makeTicketId();
     const isoTime = new Date().toISOString();
     const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || 'N/A';
 
+    // Structured logging
+    console.log('[contact] rid=%s name="%s" email="%s" bytes=%d', req.id, name, email, (message||'').length);
+
     // Owner notification
     const ownerSubject = `${COMPANY} contact — ${name}`;
     const ownerText = [
       `New inquiry (ticket ${ticketId})`,
+      `Request ID: ${req.id}`,
       ``,
       `Name: ${name}`,
       `Email: ${email}`,
@@ -128,7 +164,7 @@ app.post('/contact', async (req, res) => {
       reply_to: email,
       subject: ownerSubject,
       text: ownerText,
-      headers: { 'X-Ticket-ID': ticketId }
+      headers: { 'X-Ticket-ID': ticketId, 'X-Request-ID': req.id }
     });
 
     // Send visitor confirmation (only if email validated)
@@ -139,14 +175,20 @@ app.post('/contact', async (req, res) => {
       subject: visitorSubject,
       html,
       text,
-      headers: { 'X-Ticket-ID': ticketId }
+      headers: { 'X-Ticket-ID': ticketId, 'X-Request-ID': req.id }
     });
 
-    res.json({ ok: true, ticketId });
+    res.json({ ok: true, ticketId, requestId: req.id });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ ok: false, error: 'Email failed' });
+    console.error('[error]', req.id, err);
+    res.status(500).json({ ok: false, code: 'server_error', message: 'Internal error', requestId: req.id });
   }
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('[error]', req.id, err);
+  res.status(500).json({ ok: false, code: 'server_error', message: 'Internal error', requestId: req.id });
 });
 
 const port = process.env.PORT || 8080;
