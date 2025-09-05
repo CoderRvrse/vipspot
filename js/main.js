@@ -21,7 +21,7 @@
         await Promise.all(regs.map(r => r.unregister()));
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
-        console.log("🔧 SW + caches cleared (kill-sw)");
+        console.log("SW + caches cleared (kill-sw)");
         // Redirect to clean URL
         location.replace(location.pathname);
       } catch (e) {
@@ -1138,7 +1138,7 @@ if (typeof module !== 'undefined' && module.exports) {
     try { btn.classList.toggle('is-loading', !!isLoading); } catch {}
 
     // Optional text swap
-    btn.textContent = isLoading ? 'Sending…' : btn.dataset.originalText;
+    btn.textContent = isLoading ? 'Sending...' : btn.dataset.originalText;
   }
 
   function showStatus(message, type = 'error') {
@@ -1237,7 +1237,7 @@ if (typeof module !== 'undefined' && module.exports) {
       });
 
       if (res.status === 429) {
-        showStatus('You\'re doing that too fast. Please wait 30 seconds and try again.', 'error');
+        showStatus("You're doing that too fast. Please wait 30 seconds and try again.", 'error');
         return;
       }
       
@@ -1245,7 +1245,7 @@ if (typeof module !== 'undefined' && module.exports) {
       
       const json = await res.json();
       if (json.ok) {
-        showStatus('Message sent successfully! I will get back to you shortly. ✓', 'ok');
+        showStatus('Message sent successfully! I will get back to you shortly.', 'ok');
         getContactForm()?.reset();
         if (timestampField) timestampField.value = Date.now();
         
