@@ -1086,12 +1086,10 @@ if (typeof module !== 'undefined' && module.exports) {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  // Robust selectors with fallbacks
-  const $ = (sel, root = document) => root.querySelector(sel);
-  
-  const statusEl = document.getElementById('contact-status')
-    || $('[data-contact-status]')
-    || $('#contact-form [role="status"]');
+  // ---- Contact helpers: safe selectors ----
+  function getContactForm() {
+    return document.getElementById('contact-form') || document.querySelector('form[data-contact]');
+  }
 
   function getContactSubmitButton() {
     return (
@@ -1099,6 +1097,26 @@ if (typeof module !== 'undefined' && module.exports) {
       document.querySelector('[data-role="contact-submit"]') ||
       document.querySelector('#contact-form button[type="submit"]')
     );
+  }
+
+  // Create status node if missing (so we never operate on null)
+  function getOrCreateStatusEl() {
+    let el =
+      document.getElementById('contact-status') ||
+      document.querySelector('[data-contact-status]') ||
+      document.querySelector('#contact-form [role="status"]');
+
+    if (!el) {
+      const form = getContactForm();
+      if (!form) return null;
+      el = document.createElement('div');
+      el.id = 'contact-status';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      el.className = 'status';
+      form.appendChild(el);
+    }
+    return el;
   }
     
   const messageField = document.querySelector('textarea[name="message"]');
@@ -1108,31 +1126,54 @@ if (typeof module !== 'undefined' && module.exports) {
   const timestampField = form.querySelector('input[name="timestamp"]');
   if (timestampField) timestampField.value = Date.now();
   
-  const say = (type, msg) => {
-    if (!statusEl) {
-      console.warn('[contact] status element missing; message:', type, msg);
-      return;
+  function setSubmitState(isLoading) {
+    const btn = getContactSubmitButton();
+    if (!btn) { console.warn('[Contact] submit button not found'); return; }
+
+    if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent || 'Send Message';
+
+    btn.disabled = !!isLoading;
+    btn.setAttribute('aria-disabled', String(!!isLoading));
+    btn.setAttribute('aria-busy', String(!!isLoading));
+    try { btn.classList.toggle('is-loading', !!isLoading); } catch {}
+
+    // Optional text swap
+    btn.textContent = isLoading ? 'Sending…' : btn.dataset.originalText;
+  }
+
+  function showStatus(message, type = 'error') {
+    const el = getOrCreateStatusEl();
+    if (!el) { console.warn('[Contact] status element missing:', message); return; }
+
+    try {
+      el.textContent = message;
+      el.classList.remove('ok', 'error', 'info');
+      if (type) el.classList.add(type);
+    } catch (e) {
+      console.warn('[Contact] status update failed:', e, message);
     }
-    statusEl.textContent = msg;
-    statusEl.className = ''; // reset classes
-    statusEl.classList.add('status', `is-${type}`); // is-success | is-error | is-info
-  };
+  }
 
   // CSP-safe error message with mailto link
   const showContactError = () => {
-    if (!statusEl) {
+    const el = getOrCreateStatusEl();
+    if (!el) {
       console.warn('[contact] status element not found');
       return;
     }
-    // Clear then rebuild with a mailto link (no innerHTML injection)
-    statusEl.textContent = 'Failed to send message. Please try again or email ';
-    const link = document.createElement('a');
-    link.href = `mailto:${CONTACT_FALLBACK_EMAIL}`;
-    link.rel = 'noopener noreferrer';
-    link.className = 'link-plain'; // existing link style
-    link.textContent = CONTACT_FALLBACK_EMAIL;
-    statusEl.appendChild(link);
-    statusEl.className = 'status error';
+    try {
+      // Clear then rebuild with a mailto link (no innerHTML injection)
+      el.textContent = 'Failed to send message. Please try again or email ';
+      const link = document.createElement('a');
+      link.href = `mailto:${CONTACT_FALLBACK_EMAIL}`;
+      link.rel = 'noopener noreferrer';
+      link.className = 'link-plain'; // existing link style
+      link.textContent = CONTACT_FALLBACK_EMAIL;
+      el.appendChild(link);
+      el.className = 'status error';
+    } catch (e) {
+      console.warn('[Contact] error creating fallback message:', e);
+    }
   };
 
   // Character counter for message field
@@ -1173,45 +1214,11 @@ if (typeof module !== 'undefined' && module.exports) {
     updateCounter(); // Initial count
   }
 
-  // Button loading state helper
-  function setSubmitState(isLoading) {
-    const btn = getContactSubmitButton();
-    if (!btn) {
-      console.warn('[Contact] submit button not found; skipping state toggle.');
-      return;
-    }
-    
-    try {
-      // Toggle loading state safely
-      btn.classList.toggle('is-loading', !!isLoading);
-      btn.disabled = !!isLoading;
-      btn.setAttribute('aria-busy', isLoading ? 'true' : 'false');
-      
-      if (isLoading) {
-        // Store original text if not already stored
-        if (!btn.dataset.originalText) {
-          btn.dataset.originalText = btn.textContent || btn.innerHTML;
-        }
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-      } else {
-        // Restore original content
-        if (btn.dataset.originalText) {
-          btn.innerHTML = btn.dataset.originalText;
-        } else {
-          btn.textContent = 'Send Message'; // fallback
-        }
-      }
-    } catch (e) {
-      console.warn('[Contact] Error toggling button state:', e);
-      // Fallback for browsers that might not support classList
-      btn.disabled = !!isLoading;
-    }
-  }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  async function handleSubmit(ev) {
+    ev.preventDefault();
     setSubmitState(true);
-    say('info', 'Sending your message...');
+    showStatus('Sending your message...', 'info');
 
     const payload = {
       name: form.elements.name.value.trim(),
@@ -1222,16 +1229,24 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 
     try {
-      const r = await fetch(API, {
+      const res = await fetch(API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         mode: 'cors', credentials: 'omit'
       });
-      const json = await r.json();
+
+      if (res.status === 429) {
+        showStatus('You\'re doing that too fast. Please wait 30 seconds and try again.', 'error');
+        return;
+      }
+      
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      
+      const json = await res.json();
       if (json.ok) {
-        say('success', 'Message sent successfully! I will get back to you shortly. ✓');
-        form.reset();
+        showStatus('Message sent successfully! I will get back to you shortly. ✓', 'ok');
+        getContactForm()?.reset();
         if (timestampField) timestampField.value = Date.now();
         
         // Update character counter after reset
@@ -1246,12 +1261,14 @@ if (typeof module !== 'undefined' && module.exports) {
         throw new Error(json.error || 'Failed to send');
       }
     } catch (err) {
-      console.error('Contact form error:', err);
-      showContactError();
+      console.warn('[Contact] submit error:', err);
+      showStatus('Failed to send message. Please try again or email contact@vipspot.net', 'error');
     } finally {
       setSubmitState(false);
     }
-  });
+  }
+
+  form.addEventListener('submit', handleSubmit);
 
   // Enhanced form validation with visual feedback
   const inputs = form.querySelectorAll('input[required], textarea[required]');
