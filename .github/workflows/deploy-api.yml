@@ -1,0 +1,42 @@
+name: Deploy API to Heroku
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'api/**'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deploy only the api/ subfolder
+      - name: Deploy api/ to Heroku
+        uses: akhileshns/heroku-deploy@v4.1.7
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: vipspot-api
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: api
+
+      # Smoke test
+      - name: Smoke test deployed API
+        run: |
+          echo "🧪 Testing deployed API..."
+          sleep 10  # Give Heroku a moment to boot
+          
+          # Health check
+          curl -fsS https://vipspot-api-a7ce781e1397.herokuapp.com/healthz | jq .ok
+          
+          # CORS preflight test
+          curl -fsS -X OPTIONS https://vipspot-api-a7ce781e1397.herokuapp.com/contact \
+            -H 'Origin: https://vipspot.net' \
+            -H 'Access-Control-Request-Headers: content-type, x-request-id' \
+            -w '%{http_code}' -o /dev/null | grep -q 204
+          
+          echo "✅ API deployment verified"

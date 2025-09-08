@@ -251,4 +251,4 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log('API up on ' + port));
+app.listen(port, () => console.log(`🚀 VIPSpot API v${process.env.npm_package_version || '1.0'} ready on port ${port}`));
