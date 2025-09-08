@@ -38,15 +38,18 @@ morgan.token('rid', (req) => req.id);
 morgan.token('origin', (req) => req.get('Origin') || '');
 app.use(morgan(':date[iso] :method :url :status rid=:rid origin=":origin" ua=":user-agent" - :response-time ms'));
 
-// Enhanced CORS with proper headers
+// Enhanced CORS with proper headers (including preflight support)
 app.use((req, res, next) => {
   const origin = req.get('Origin');
   if (origin && ALLOWED.includes(origin)) {
     res.set('Access-Control-Allow-Origin', origin);
-    res.set('Vary', 'Origin');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, X-Request-ID, X-From-Origin');
+    res.set('Vary', 'Origin, Access-Control-Request-Headers');
     res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.set('Access-Control-Expose-Headers', 'X-Request-ID, Retry-After');
+    // CRITICAL: Allow our custom headers in preflight
+    res.set('Access-Control-Allow-Headers', 'Content-Type, X-Request-ID, X-From-Origin');
+    // Expose headers so browser can read them
+    res.set('Access-Control-Expose-Headers', 'X-Request-ID, Retry-After, Server-Timing');
+    res.set('Access-Control-Max-Age', '86400');
   }
   if (req.method === 'OPTIONS') return res.status(204).end();
   next();
