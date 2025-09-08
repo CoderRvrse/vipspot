@@ -1,0 +1,12 @@
+name: Guards
+on: [push, pull_request]
+jobs:
+  email-strings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No old emails; require new
+        run: |
+          set -e
+          ! grep -RInE '(vipspot\.us|gmail\.com|old@example\.com)' -- . || (echo "❌ Forbidden email strings" && exit 1)
+          grep -RIn 'contact@vipspot\.net' -- . >/dev/null || (echo "❌ contact@vipspot.net missing" && exit 1)
