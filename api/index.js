@@ -67,6 +67,18 @@ const limiter = rateLimit({
 });
 app.use('/contact', limiter);
 
+// ----- Idempotency (prevent double sends) -----
+const seen = new Map(); // requestId -> { ticketId, ts }
+const TTL_MS = 60_000;
+
+function gcIdempotency() {
+  const now = Date.now();
+  for (const [k, v] of seen) {
+    if (now - v.ts > TTL_MS) seen.delete(k);
+  }
+}
+setInterval(gcIdempotency, 30_000).unref();
+
 // ----- Utils -----
 const esc = s => String(s || '').replace(/[&<>"']/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -89,21 +101,44 @@ const contactHandler = async (req, res) => {
   // Prevent edge caching of dynamic responses
   res.set('Cache-Control', 'no-store');
   
+  const t0 = Date.now();
   const { name='', email='', message='', company='', timestamp, requestId } = req.body || {};
   
   try {
-    // Honeypot + timing guard (≥3s)
-    if (company) return res.status(200).json({ ok: true, requestId: req.id });
-    if (typeof timestamp === 'number' && Date.now() - timestamp < 3000)
+    // Check idempotency first
+    const prior = seen.get(req.id);
+    if (prior) {
+      res.set('Server-Timing', `idempotent;dur=${Date.now()-t0}`);
+      return res.json({ ok: true, ticketId: prior.ticketId, requestId: req.id, idempotent: true });
+    }
+
+    // Honeypot (quiet bot trap)
+    if (company && String(company).trim() !== '') {
+      // Silently accept but do nothing - don't help the bot
+      res.set('Server-Timing', `honeypot;dur=${Date.now()-t0}`);
+      return res.status(204).end();
+    }
+
+    // Timing guard (≥3s)
+    if (typeof timestamp === 'number' && Date.now() - timestamp < 3000) {
+      res.set('Server-Timing', `timing;dur=${Date.now()-t0}`);
       return res.status(429).json({ ok: false, code: 'too_fast', message: 'Too fast', retryAfter: 30, requestId: req.id });
+    }
 
     // Validation
-    if (!name || !email || !message)
+    const tValid = Date.now();
+    if (!name || !email || !message) {
+      res.set('Server-Timing', `validate;dur=${tValid-t0}`);
       return res.status(400).json({ ok: false, code: 'bad_input', message: 'Missing fields', requestId: req.id });
-    if (name.length > 120 || message.length > 4000)
+    }
+    if (name.length > 120 || message.length > 4000) {
+      res.set('Server-Timing', `validate;dur=${tValid-t0}`);
       return res.status(400).json({ ok: false, code: 'bad_input', message: 'Too long', requestId: req.id });
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      res.set('Server-Timing', `validate;dur=${tValid-t0}`);
       return res.status(400).json({ ok: false, code: 'bad_input', message: 'Invalid email', requestId: req.id });
+    }
 
     const ticketId = makeTicketId();
     const isoTime = new Date().toISOString();
@@ -164,7 +199,8 @@ const contactHandler = async (req, res) => {
       `noreply@vipspot.net`
     ].join('\n');
 
-    // Send owner notification
+    // Send emails
+    const tMailStart = Date.now();
     await resend.emails.send({
       from: CONTACT_FROM,
       to: CONTACT_TO,
@@ -174,7 +210,6 @@ const contactHandler = async (req, res) => {
       headers: { 'X-Ticket-ID': ticketId, 'X-Request-ID': req.id }
     });
 
-    // Send visitor confirmation (only if email validated)
     await resend.emails.send({
       from: CONTACT_FROM,
       to: email,
@@ -184,10 +219,19 @@ const contactHandler = async (req, res) => {
       text,
       headers: { 'X-Ticket-ID': ticketId, 'X-Request-ID': req.id }
     });
+    
+    const tMail = Date.now();
 
+    // Store for idempotency
+    seen.set(req.id, { ticketId, ts: Date.now() });
+
+    // Success with timing
+    res.set('Server-Timing', `validate;dur=${tValid-t0},mail;dur=${tMail-tMailStart},total;dur=${tMail-t0}`);
     res.json({ ok: true, ticketId, requestId: req.id });
   } catch (err) {
+    const tError = Date.now();
     console.error('[error]', req.id, err);
+    res.set('Server-Timing', `error;dur=${tError-t0}`);
     res.status(500).json({ ok: false, code: 'server_error', message: 'Internal error', requestId: req.id });
   }
 };
