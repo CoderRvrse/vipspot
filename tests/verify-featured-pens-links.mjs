@@ -54,13 +54,23 @@ for (const file of CANDIDATES) {
   if (anchors.length === 0) {
     failures.push(`[${file}] "3D Card Hover" block contains no anchors to validate.`);
   } else {
-    // All anchors in this block must point to the canonical CodePen URL
-    const bad = anchors.filter(a => a.getAttribute("href") !== CANON_URL);
+    // All anchors in this block must point to the canonical CodePen URL (base URL, UTM params allowed)
+    const bad = anchors.filter(a => {
+      const href = a.getAttribute("href") || "";
+      try {
+        const url = new URL(href);
+        // Remove query parameters for comparison
+        const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`;
+        return baseUrl !== CANON_URL;
+      } catch {
+        return href !== CANON_URL;
+      }
+    });
     if (bad.length > 0) {
       const samples = bad.slice(0, 3).map(a => a.getAttribute("href"));
       failures.push(
-        `[${file}] Found anchors in "3D Card Hover" block that do not point to canonical URL.\n` +
-        `  Expected: ${CANON_URL}\n` +
+        `[${file}] Found anchors in "3D Card Hover" block that do not point to canonical URL base.\n` +
+        `  Expected base: ${CANON_URL}\n` +
         `  Offenders (sample): ${samples.join(", ")}`
       );
     }
@@ -77,12 +87,23 @@ for (const file of CANDIDATES) {
       pattern.test(el.textContent || "") && el.children.length === 0
     );
     if (!n) continue; // not on this file
-    // We just ensure they have at least one anchor and do NOT equal the 3D card URL
+    // We just ensure they have at least one anchor and do NOT equal the 3D card base URL
     const c = n.closest("article,li") || n.parentElement;
     if (!c) continue;
     const a = c.querySelector("a[href]");
-    if (a && a.getAttribute("href") === CANON_URL) {
-      failures.push(`[${file}] Unexpected link equality: "${name}" uses the 3D Card Hover URL.`);
+    if (a) {
+      const href = a.getAttribute("href") || "";
+      try {
+        const url = new URL(href);
+        const baseUrl = `${url.protocol}//${url.hostname}${url.pathname}`;
+        if (baseUrl === CANON_URL) {
+          failures.push(`[${file}] Unexpected link equality: "${name}" uses the 3D Card Hover base URL.`);
+        }
+      } catch {
+        if (href === CANON_URL) {
+          failures.push(`[${file}] Unexpected link equality: "${name}" uses the 3D Card Hover URL.`);
+        }
+      }
     }
   }
 }

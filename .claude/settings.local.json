@@ -19,7 +19,17 @@
       "Bash(! grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' -- .)",
       "Bash(node:*)",
       "Bash(git --no-pager diff)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm run test:links:*)",
+      "Bash(npm run test:branding:*)",
+      "Bash(./scripts/smoke-grep.sh:*)",
+      "Bash(set -euo pipefail)",
+      "Bash(gh pr view:*)",
+      "Bash(gh run view:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git commit:*)",
+      "Bash(npm ci:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

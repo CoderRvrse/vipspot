@@ -14,7 +14,7 @@ const CANDIDATES = [
   "site/public/index.html"
 ].filter(fs.existsSync);
 
-const REQUIRE_UTM = false;  // toggle to true if/when you want strict UTM enforcement
+const REQUIRE_UTM = true;  // toggle to true if/when you want strict UTM enforcement
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign"];
 
 const failures = [];
