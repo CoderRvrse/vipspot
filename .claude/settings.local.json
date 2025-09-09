@@ -29,7 +29,16 @@
       "WebFetch(domain:github.com)",
       "Bash(git commit:*)",
       "Bash(npm ci:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(! grep -RIn 'ZZZZZ' -- *.html site/**/*.html)",
+      "Bash(exit 6)",
+      "Bash(if grep -RInE \"\\.pen-card[^\\{]*\\{[^}]*pointer-events\\s*:\\s*none\" -- *.css css/**/*.css)",
+      "Bash(then echo \"WARNING: .pen-card has pointer-events:none; links may be blocked. Consider removing that rule.\")",
+      "Bash(else echo \"No pointer-events blocking found on .pen-card\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []
