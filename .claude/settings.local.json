@@ -10,7 +10,16 @@
       "Bash(heroku auth:token:*)",
       "Bash(git checkout:*)",
       "Read(/D:\\vipspot/**)",
-      "Read(/D:\\vipspot/**)"
+      "Read(/D:\\vipspot/**)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(npx --yes tree-cli -l 3 -i \"node_modules|.git|dist|.next|build\")",
+      "Bash(grep:*)",
+      "Bash(! grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' -- .)",
+      "Bash(node:*)",
+      "Bash(git --no-pager diff)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
