@@ -39,7 +39,19 @@
       "Bash(done)",
       "Bash(gh pr checkout:*)",
       "Bash(git fetch:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(do echo \"Closing PR #$PR as changes are already in main...\")",
+      "Bash(gh pr close:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(gh run list:*)",
+      "Bash(CANON_BASE=\"https://codepen.io/CoderRvrse/pen/azvxEZG\")",
+      "Bash(CANON_URL=\"$CANON_URL\" node scripts/fix-matrix-links.mjs)",
+      "Bash(! grep -RInE \"(YYYYY|ZZZZZ)\" -- *.html site/**/*.html)",
+      "Bash(exit 3)",
+      "Bash(if grep -RInE \"(YYYYY|ZZZZZ)\" -- *.html site/**/*.html)",
+      "Bash(then echo \"❌ placeholder remains\")",
+      "Bash(else echo \"✅ No placeholders found\")",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []
