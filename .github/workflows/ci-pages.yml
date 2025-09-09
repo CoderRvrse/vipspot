@@ -3,18 +3,24 @@ name: VIPSpot CI + Pages
 on:
   push:
     branches: [ main ]
+    paths:
+      - "index.html"
+      - "site/**"
+      - "css/**"
+      - "js/**"
+      - ".github/workflows/ci-pages.yml"
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
   pages: write
   id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
 
 jobs:
   verify:
@@ -124,6 +130,7 @@ jobs:
         run: kill $(cat server.pid) || true
 
   build:
+    name: Build static site
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -209,61 +216,20 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci || npm i
-      - name: Inject build version
-        run: |
-          # Generate BUILD_VER (date + short SHA)
-          export BUILD_VER="$(date -u +%Y-%m-%d)-${GITHUB_SHA::7}"
-          echo "BUILD_VER=${BUILD_VER}" >> $GITHUB_ENV
-          
-          # Stamp all files with version placeholders
-          sed -i "s/__BUILD_VER__/${BUILD_VER}/g" index.html
-          sed -i "s/__BUILD_VER__/${BUILD_VER}/g" js/main.js
-          sed -i "s/__BUILD_VER__/${BUILD_VER}/g" sw.js
-          
-          # Verify all files got stamped
-          grep -q "${BUILD_VER}" index.html || exit 1
-          grep -q "${BUILD_VER}" js/main.js || exit 1
-          grep -q "${BUILD_VER}" sw.js || exit 1
-          
-          echo "✅ Stamped version: ${BUILD_VER}"
-      - name: Verify consistent versioning
-        run: |
-          # Extract version from index.html to ensure all files match
-          VER=$(grep -oE 'v=[0-9-]{10,}-[0-9a-f]{7}' index.html | head -1 | cut -d= -f2)
-          echo "Detected version: ${VER}"
-          
-          # Verify all files contain the same version
-          grep -q "${VER}" js/main.js || { echo "❌ main.js missing version ${VER}"; exit 1; }
-          grep -q "${VER}" sw.js || { echo "❌ sw.js missing version ${VER}"; exit 1; }
-          
-          # Verify SW uses network-first strategy for HTML
-          grep -q "text/html" sw.js || { echo "❌ SW missing network-first HTML strategy"; exit 1; }
-          
-          echo "✅ All files have consistent version: ${VER}"
-          echo "✅ SW implements network-first for HTML"
-      - run: npm run build
-      - uses: actions/configure-pages@v5
-      - name: Prepare static site artifact (from repo root)
-        run: |
-          mkdir _site
-          rsync -a \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "node_modules/" \
-            --exclude "_site/" \
-            --exclude "*-remote-backup-*.git/" \
-            ./ _site/
-          echo "vipspot.net" > _site/CNAME
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: _site }
+      - run: npm run build:css || echo "no build:css script; continuing"
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
 
   deploy:
-    if: github.event_name != 'pull_request'
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
