@@ -29,7 +29,17 @@
       "WebFetch(domain:github.com)",
       "Bash(git commit:*)",
       "Bash(npm ci:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(for PR in 9 10 11)",
+      "Bash(do echo \"Attempting to merge PR #$PR ...\")",
+      "Bash(if gh pr merge $PR --squash --delete-branch --subject \"merge: site fixes & deploy config\")",
+      "Bash(then echo \"✅ Merged #$PR\")",
+      "Bash(else echo \"⚠️ PR #$PR needs manual resolution\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(gh pr checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []
