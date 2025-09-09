@@ -9,6 +9,8 @@ import path from 'node:path';
 import { JSDOM } from 'jsdom';
 
 const CANON_URL = "https://codepen.io/CoderRvrse/pen/VYvNzzN";
+const MATRIX_BASE = "https://codepen.io/CoderRvrse/pen/azvxEZG";
+const REQ_UTM = ["utm_source","utm_medium","utm_campaign"];
 
 // Candidate HTML files (adjust/add if your site uses partials)
 const CANDIDATES = [
@@ -107,6 +109,33 @@ for (const file of CANDIDATES) {
     }
   }
 }
+
+// === Matrix Rain Effect block check ===
+for (const file of CANDIDATES) {
+  const html = fs.readFileSync(file,'utf8');
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+  const allElements2 = Array.from(doc.querySelectorAll("*"));
+  const matrixTitleNode = allElements2.find(el =>
+    /Matrix\s*Rain\s*Effect/i.test(el.textContent || "") && 
+    el.children.length === 0
+  );
+  if (!matrixTitleNode) continue;
+  const card = matrixTitleNode.closest('article,li') || matrixTitleNode.parentElement;
+  if (!card) { failures.push(`[${file}] Could not resolve Matrix card container.`); continue; }
+  const links = Array.from(card.querySelectorAll('a[href]'));
+  if (!links.length) { failures.push(`[${file}] Matrix card has no anchors.`); continue; }
+  for (const a of links) {
+    const href = a.getAttribute('href')||'';
+    if (!href.startsWith(MATRIX_BASE)) {
+      failures.push(`[${file}] Matrix href not starting with base ${MATRIX_BASE}: ${href}`);
+      continue;
+    }
+    const q = href.split('?')[1]||''; const u = new URLSearchParams(q);
+    for (const k of REQ_UTM) if (!u.has(k)) failures.push(`[${file}] Matrix href missing ${k}: ${href}`);
+  }
+}
+
 
 if (!foundBlock) {
   failures.push(`Could not locate "3D Card Hover" card in any candidate file: ${CANDIDATES.join(", ")}`);

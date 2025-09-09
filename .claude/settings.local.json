@@ -38,7 +38,10 @@
       "Bash(if grep -RInE \"\\.pen-card[^\\{]*\\{[^}]*pointer-events\\s*:\\s*none\" -- *.css css/**/*.css)",
       "Bash(then echo \"WARNING: .pen-card has pointer-events:none; links may be blocked. Consider removing that rule.\")",
       "Bash(else echo \"No pointer-events blocking found on .pen-card\")",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(__NEW_LINE__ echo \"== Repo sanity ==\")",
+      "Bash(npm run test:*)",
+      "Bash(__NEW_LINE__ echo \"== Commit & PR ==\")"
     ],
     "deny": [],
     "ask": []
