@@ -2,6 +2,10 @@
 
 Production-ready contact pipeline for **vipspot.net** with auto-deploys, rate limiting, timing guard, CORS/Helmet, and email routing via Cloudflare → Gmail.
 
+## Status
+
+[![Featured Pens](https://img.shields.io/badge/Featured%20Pens-passing-brightgreen)](https://github.com/CoderRvrse/vipspot/actions)
+
 ## Current Status (2025-09-08)
 - ✅ **API live:** `vipspot-api-a7ce781e1397.herokuapp.com`
 - ✅ **Contact endpoint working** (Proof: ticket `VIP-8472KR4J`)

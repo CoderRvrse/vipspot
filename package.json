@@ -21,7 +21,9 @@
     "postdev:py": "node scripts/open-browser.mjs",
     "open": "node scripts/open-browser.mjs",
     "kill-sw": "node scripts/kill-sw.mjs",
-    "fresh": "npm run start && npm run kill-sw"
+    "fresh": "npm run start && npm run kill-sw",
+    "test:links": "node tests/verify-featured-pens-links.mjs",
+    "test:branding": "node tests/verify-branding-consistency.mjs"
   },
   "keywords": [
     "portfolio",
@@ -33,11 +35,14 @@
   ],
   "author": "VIPSpot",
   "license": "MIT",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "devDependencies": {
-    "tailwindcss": "^3.4.0",
+    "jsdom": "^24.1.0",
     "simple-icons": "^13.11.0",
-    "svgo": "^3.3.2"
+    "svgo": "^3.3.2",
+    "tailwindcss": "^3.4.0"
   },
   "dependencies": {
     "compression": "^1.8.1",
