@@ -33,7 +33,9 @@ jobs:
         run: npm run test:links
 
       - name: Smoke grep (canonical exists)
-        run: ./scripts/smoke-grep.sh
+        run: |
+          chmod +x scripts/smoke-grep.sh
+          ./scripts/smoke-grep.sh
 
       - name: Branding consistency
         run: npm run test:branding
