@@ -10,3 +10,30 @@ jobs:
           set -e
           ! grep -RInE '(vipspot\.us|gmail\.com|old@example\.com)' -- . || (echo "❌ Forbidden email strings" && exit 1)
           grep -RIn 'contact@vipspot\.net' -- . >/dev/null || (echo "❌ contact@vipspot.net missing" && exit 1)
+
+  featured-pens-canon:
+    name: Featured Pens canonical links
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Verify Featured Pens links (DOM)
+        run: npm run test:links
+
+      - name: Smoke grep (canonical exists)
+        run: ./scripts/smoke-grep.sh
+
+      - name: Branding consistency
+        run: npm run test:branding

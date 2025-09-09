@@ -22,7 +22,8 @@
     "open": "node scripts/open-browser.mjs",
     "kill-sw": "node scripts/kill-sw.mjs",
     "fresh": "npm run start && npm run kill-sw",
-    "test:links": "node tests/verify-featured-pens-links.mjs"
+    "test:links": "node tests/verify-featured-pens-links.mjs",
+    "test:branding": "node tests/verify-branding-consistency.mjs"
   },
   "keywords": [
     "portfolio",
