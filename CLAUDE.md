@@ -90,7 +90,7 @@ Three main workflows in `.github/workflows/`:
 ## Quality Gates
 
 ### Email Migration Enforcement
-- Guards workflow prevents legacy emails (`vipspot.us`, `gmail.com`, `old@example.com`)
+- Guards workflow prevents legacy emails (old domains that shall not be named)
 - Requires `contact@vipspot.net` to be present in codebase
 - All contact forms route through Cloudflare Email Routing
 
