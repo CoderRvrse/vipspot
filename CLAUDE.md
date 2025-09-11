@@ -141,7 +141,8 @@ Example:
 - node_modules, dist/build artifacts  
 - Private PII
 - Smart quotes/Unicode in JS files
-- Legacy email addresses (vipspot.us, gmail.com domains)
+- Legacy email addresses (redacted legacy domains) are disallowed by guards.
+
 - Non-canonical CodePen URLs without UTM
 
 ## Mission
