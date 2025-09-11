@@ -12,7 +12,8 @@ This document teaches your AI pair (Claude/LLM) how to operate the repo with pro
 │   ├── workflows/
 │   │   ├── ci-pages.yml
 │   │   ├── deploy-api.yml
-│   │   └── guards.yml
+│   │   ├── guards.yml
+│   │   └── release.yml
 │   └── CODEOWNERS
 ├── api/
 │   ├── index.js
@@ -25,7 +26,8 @@ This document teaches your AI pair (Claude/LLM) how to operate the repo with pro
 ├── site/
 ├── index.html
 ├── package.json
-└── README.md
+├── README.md
+└── CHANGELOG.md
 ```
 
 ## Golden Rules
@@ -136,13 +138,44 @@ Example:
 - **CI failing on Unicode?** Check JS files for smart quotes, em-dashes, use ASCII equivalents.
 - **RAF handle errors?** Use `rafId` not `animationId`, ensure `VIPSpot._raf` API is present.
 
+## Release Management
+
+### Automated Releases
+- **Trigger**: Merges to main with `feat:`, `fix:`, or `docs:` commits
+- **Versioning**: Date-based (vYYYY.MM.DD-type)
+- **Types**: major, feature (-feat), fix (-fix), docs (-docs)
+
+### Manual Release
+```bash
+# Trigger manual release
+gh workflow run "Release Management" -f release_type=feature
+
+# Check release status
+gh run list --workflow="Release Management" --limit 3
+```
+
+### Release Types
+- **feat!:** or **BREAKING CHANGE** → vYYYY.MM.DD (major)
+- **feat:** → vYYYY.MM.DD-feat (feature)
+- **fix:** → vYYYY.MM.DD-fix (bug fix)  
+- **docs:** → vYYYY.MM.DD-docs (documentation)
+
+### CHANGELOG Updates
+- Automatically maintained via GitHub Actions
+- Follows [Keep a Changelog](https://keepachangelog.com/) format
+- Links to release comparisons and tags
+
+### Release Notes
+- Generated from conventional commit messages
+- Grouped by type (Features, Bug Fixes, Documentation, etc.)
+- Includes links to live site and documentation
+
 ## Do Not Commit
 - Secrets/tokens (.env with real values)
 - node_modules, dist/build artifacts  
 - Private PII
 - Smart quotes/Unicode in JS files
 - Legacy email addresses (redacted legacy domains) are disallowed by guards.
-
 - Non-canonical CodePen URLs without UTM
 
 ## Mission

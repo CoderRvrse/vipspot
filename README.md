@@ -108,7 +108,10 @@ npm run dev           # nodemon style task if defined
   - `guards.yml / email-strings`
   - `guards.yml / Featured Pens canonical links`
 - **Main:** deploys Pages; API auto-deploys on `api/**`
-- **Tags:** optional (e.g., `vYYYY.MM.DD-site`, `vYYYY.MM.DD-api`)
+- **Releases:** automated tagging and changelog generation
+  - Date-based versioning: `vYYYY.MM.DD-type`
+  - Conventional commits trigger releases automatically
+  - Professional release notes with grouped changes
 
 ## Security Posture
 - **CSP:** site whitelists API endpoint in `connect-src` and `form-action`

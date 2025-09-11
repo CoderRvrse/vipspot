@@ -1,0 +1,241 @@
+name: Release Management
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - major
+          - feature
+          - fix
+          - docs
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Get commit info
+        id: commit_info
+        run: |
+          # Get the latest commit message
+          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+          echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          
+          # Determine release type from commit message or workflow input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.release_type }}" != "auto" ]; then
+            RELEASE_TYPE="${{ github.event.inputs.release_type }}"
+          elif [[ "$COMMIT_MSG" =~ ^feat(\(.*\))?!: ]]; then
+            RELEASE_TYPE="major"
+          elif [[ "$COMMIT_MSG" =~ ^feat(\(.*\))?: ]]; then
+            RELEASE_TYPE="feature"
+          elif [[ "$COMMIT_MSG" =~ ^fix(\(.*\))?: ]]; then
+            RELEASE_TYPE="fix"
+          elif [[ "$COMMIT_MSG" =~ ^docs(\(.*\))?: ]]; then
+            RELEASE_TYPE="docs"
+          elif [[ "$COMMIT_MSG" =~ ^(ci|chore|refactor|perf|test)(\(.*\))?: ]]; then
+            RELEASE_TYPE="minor"
+          else
+            RELEASE_TYPE="patch"
+          fi
+          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Generate version tag
+        id: version
+        run: |
+          # Generate date-based version
+          DATE=$(date -u +%Y.%m.%d)
+          RELEASE_TYPE="${{ steps.commit_info.outputs.release_type }}"
+          
+          # Get existing tags for today
+          EXISTING_TAGS=$(git tag -l "v${DATE}*" | wc -l)
+          
+          if [ "$RELEASE_TYPE" = "major" ]; then
+            VERSION="v${DATE}"
+          elif [ "$RELEASE_TYPE" = "feature" ]; then
+            VERSION="v${DATE}-feat"
+          elif [ "$RELEASE_TYPE" = "fix" ]; then
+            VERSION="v${DATE}-fix"
+          elif [ "$RELEASE_TYPE" = "docs" ]; then
+            VERSION="v${DATE}-docs"
+          else
+            VERSION="v${DATE}-patch"
+          fi
+          
+          # If tag exists, append sequence number
+          if git tag -l "$VERSION" | grep -q "$VERSION"; then
+            COUNTER=1
+            while git tag -l "${VERSION}.${COUNTER}" | grep -q "${VERSION}.${COUNTER}"; do
+              COUNTER=$((COUNTER + 1))
+            done
+            VERSION="${VERSION}.${COUNTER}"
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "date=$DATE" >> $GITHUB_OUTPUT
+
+      - name: Check if release needed
+        id: should_release
+        run: |
+          # Check if this is a meaningful commit for release
+          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
+          RELEASE_TYPE="${{ steps.commit_info.outputs.release_type }}"
+          
+          # Skip releases for certain commit types unless manually triggered
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" =~ ^(feat|fix|docs|BREAKING CHANGE) ]]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          elif [[ "$COMMIT_MSG" =~ merge.*(feat|fix|docs): ]]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "Skipping release for commit type: $RELEASE_TYPE"
+          fi
+
+      - name: Generate release notes
+        id: release_notes
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          CURRENT_TAG="${{ steps.version.outputs.version }}"
+          
+          # Generate release notes
+          cat << 'EOF' > release_notes.md
+          ## What's Changed
+          
+          EOF
+          
+          if [ -n "$PREV_TAG" ]; then
+            echo "### Commits since $PREV_TAG" >> release_notes.md
+            echo "" >> release_notes.md
+            
+            # Get commits since last tag, grouped by type
+            git log ${PREV_TAG}..HEAD --oneline --pretty=format:"- %s (%h)" | \
+            while read -r line; do
+              if [[ "$line" =~ ^-\ feat(\(.*\))?:\ (.*) ]]; then
+                echo "**✨ Features:** $line" >> release_notes.md
+              elif [[ "$line" =~ ^-\ fix(\(.*\))?:\ (.*) ]]; then
+                echo "**🐛 Bug Fixes:** $line" >> release_notes.md
+              elif [[ "$line" =~ ^-\ docs(\(.*\))?:\ (.*) ]]; then
+                echo "**📝 Documentation:** $line" >> release_notes.md
+              elif [[ "$line" =~ ^-\ perf(\(.*\))?:\ (.*) ]]; then
+                echo "**⚡ Performance:** $line" >> release_notes.md
+              elif [[ "$line" =~ ^-\ ci(\(.*\))?:\ (.*) ]]; then
+                echo "**🔧 CI/CD:** $line" >> release_notes.md
+              else
+                echo "**📦 Other:** $line" >> release_notes.md
+              fi
+            done
+          else
+            echo "### Initial Release" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "- Initial VIPSpot release with comprehensive portfolio and contact pipeline" >> release_notes.md
+          fi
+          
+          echo "" >> release_notes.md
+          echo "### 🔗 Links" >> release_notes.md
+          echo "- **Live Site:** https://vipspot.net" >> release_notes.md
+          echo "- **API Health:** https://vipspot-api-a7ce781e1397.herokuapp.com/healthz" >> release_notes.md
+          echo "- **Documentation:** https://github.com/CoderRvrse/vipspot#readme" >> release_notes.md
+          
+          # Set output
+          echo "notes_file=release_notes.md" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DATE="${{ steps.version.outputs.date }}"
+          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
+          
+          # Create temporary changelog entry
+          cat << EOF > changelog_entry.md
+          ## [${VERSION#v}] - $(date -u +%Y-%m-%d)
+          
+          ### Changed
+          - $COMMIT_MSG
+          
+          EOF
+          
+          # Insert new entry after [Unreleased] section
+          if [ -f CHANGELOG.md ]; then
+            # Create new changelog with updated entry
+            awk '
+              /^## \[Unreleased\]/ { 
+                print; 
+                while ((getline line) > 0 && line !~ /^## \[/) {
+                  print line;
+                }
+                system("cat changelog_entry.md");
+                if (line ~ /^## \[/) print line;
+                next;
+              }
+              { print }
+            ' CHANGELOG.md > CHANGELOG_new.md
+            mv CHANGELOG_new.md CHANGELOG.md
+            
+            # Update the links section
+            sed -i "s|\[Unreleased\]: .*|\[Unreleased\]: https://github.com/CoderRvrse/vipspot/compare/${VERSION}...HEAD|" CHANGELOG.md
+            echo "[${VERSION#v}]: https://github.com/CoderRvrse/vipspot/releases/tag/${VERSION}" >> CHANGELOG.md
+          fi
+          
+          rm -f changelog_entry.md
+
+      - name: Commit changelog updates
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          if [ -n "$(git status --porcelain CHANGELOG.md)" ]; then
+            git add CHANGELOG.md
+            git commit -m "chore(release): update CHANGELOG for ${VERSION}"
+            git push
+          fi
+
+      - name: Create Release
+        if: steps.should_release.outputs.should_release == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: 'Release ${{ steps.version.outputs.version }}'
+          body_path: ${{ steps.release_notes.outputs.notes_file }}
+          draft: false
+          prerelease: false
+
+      - name: Summary
+        if: steps.should_release.outputs.should_release == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "🎉 Released $VERSION"
+          echo "📝 Release notes generated from commit history"
+          echo "📋 CHANGELOG.md updated"
+          echo "🔗 Release: https://github.com/CoderRvrse/vipspot/releases/tag/$VERSION"
