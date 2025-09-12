@@ -64,7 +64,8 @@
       "Bash(then echo '❌ legacy strings remain in source files')",
       "Bash(exit 1)",
       "Bash(NO_NETWORK=1 node scripts/prove-local.mjs)",
-      "Bash(! grep -RInE \"(vipspot\\.us|gmail\\.com|old@example\\.com)\" -- docs tests)"
+      "Bash(! grep -RInE \"(vipspot\\.us|gmail\\.com|old@example\\.com)\" -- docs tests)",
+      "Bash(npm run build:css:*)"
     ],
     "deny": [],
     "ask": []

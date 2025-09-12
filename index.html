@@ -543,9 +543,33 @@
     <!-- Build Stamp (hidden by default) -->
     <div id="build-stamp" hidden=""></div>
     
+    <!-- VIPSpot Back-to-Top -->
+    <button id="vipspot-top" class="vipspot-top" aria-label="Back to top" title="Back to top (T)">
+        <!-- progress ring -->
+        <svg class="ring" viewBox="0 0 56 56" aria-hidden="true">
+            <circle class="track" cx="28" cy="28" r="24" />
+            <circle class="progress" cx="28" cy="28" r="24" />
+        </svg>
+
+        <!-- rocket/arrow glyph -->
+        <span class="glyph" aria-hidden="true">
+            <!-- arrow ↑ built with CSS, but we keep a fallback glyph -->
+            ▲
+        </span>
+
+        <!-- glow + particles -->
+        <span class="glow"></span>
+        <span class="stars">
+            <i></i><i></i><i></i><i></i><i></i>
+        </span>
+
+        <span class="sr-only">Back to top</span>
+    </button>
+
     <!-- Scripts -->
     <script src="js/main.js?v=__BUILD_VER__" defer=""></script>
     <script src="js/tilt-tech.js?v=__BUILD_VER__" defer=""></script>
     <script src="js/matrix-bg.js?v=__BUILD_VER__" defer=""></script>
+    <script src="js/back-to-top.js?v=__BUILD_VER__" defer=""></script>
 
 </body></html>
