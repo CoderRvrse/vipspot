@@ -3,12 +3,9 @@ const config = {
   // Test environment
   testEnvironment: 'jsdom',
   
-  // ES Modules support
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  },
+  // ES Modules support for package.json "type": "module"
+  extensionsToTreatAsEsm: ['.js'],
+  transform: {},  // No transform needed for pure ES modules
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
