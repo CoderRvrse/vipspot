@@ -1,0 +1,12 @@
+# Global code ownership for VIPSpot
+# All files require review from the repository owner
+* @CoderRvrse
+
+# Critical API files require additional scrutiny
+/api/ @CoderRvrse
+/.github/workflows/ @CoderRvrse
+
+# Contact pipeline safety
+/api/index.js @CoderRvrse
+/.github/workflows/deploy-api.yml @CoderRvrse
+/.github/workflows/guards.yml @CoderRvrse

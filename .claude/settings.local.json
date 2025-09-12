@@ -51,7 +51,8 @@
       "Bash(if grep -RInE \"(YYYYY|ZZZZZ)\" -- *.html site/**/*.html)",
       "Bash(then echo \"❌ placeholder remains\")",
       "Bash(else echo \"✅ No placeholders found\")",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "WebFetch(domain:vipspot.net)"
     ],
     "deny": [],
     "ask": []

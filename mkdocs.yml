@@ -55,6 +55,7 @@ nav:
   - Configuration: configuration.md
   - API Reference: api.md
   - Deployment: deployment.md
+  - Analytics: analytics.md
   - Contributing: contributing.md
 
 extra:
