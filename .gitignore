@@ -3,6 +3,9 @@ node_modules/
 # builds
 dist/
 _site/
+# test coverage
+coverage/
+*.lcov
 # local / tooling
 .claude/
 *.local.json
