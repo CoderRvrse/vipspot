@@ -1,22 +1,33 @@
 # VIPSpot — Portfolio + Contact Pipeline
 
+<div align="center">
+
 [![Latest Release](https://img.shields.io/github/v/release/CoderRvrse/vipspot?label=Release&style=for-the-badge&color=00d4aa)](https://github.com/CoderRvrse/vipspot/releases/latest)
 [![Release Date](https://img.shields.io/github/release-date/CoderRvrse/vipspot?label=Released&style=for-the-badge&color=blue)](https://github.com/CoderRvrse/vipspot/releases)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/CoderRvrse/vipspot/ci-pages.yml?branch=main&label=Build&style=for-the-badge)](https://github.com/CoderRvrse/vipspot/actions)
-[![Live Site](https://img.shields.io/badge/Live_Site-vipspot.net-green?style=for-the-badge&logo=github-pages)](https://vipspot.net)
+[![Live Site](https://img.shields.io/badge/Live_Site-vipspot.net-00d4aa?style=for-the-badge&logo=github-pages)](https://vipspot.net?utm_source=github&utm_medium=readme&utm_campaign=badge_click)
+
+[![Documentation](https://img.shields.io/badge/Docs-GitHub_Pages-blue?style=for-the-badge&logo=gitbook)](https://coderrrvrse.github.io/vipspot/docs)
+[![Test Coverage](https://img.shields.io/badge/Coverage-Ready-lightgrey?style=for-the-badge&logo=codecov)](https://codecov.io/gh/CoderRvrse/vipspot)
+[![CodePen Views](https://img.shields.io/badge/CodePen-Featured_Pens-000000?style=for-the-badge&logo=codepen)](https://codepen.io/CoderRvrse?utm_source=github&utm_medium=readme&utm_campaign=profile_badge)
+[![Contact](https://img.shields.io/badge/Contact-vipspot.net-00d4aa?style=for-the-badge&logo=gmail)](mailto:contact@vipspot.net?subject=GitHub%20Inquiry&utm_source=github&utm_medium=readme&utm_campaign=contact_badge)
+
+</div>
 
 **Status:** GREEN · proof ticket **VIP-8472KR4J** (Cloudflare → Gmail) · API **v17** on Heroku
 
 VIPSpot is a fast, secure portfolio site with a hardened contact pipeline. The site runs on **GitHub Pages** with strict CSP; the **Node/Express API** on **Heroku** delivers dual emails (owner + visitor auto-reply) via **Resend**. CI enforces **zero-regression guardrails** for email migration and Featured Pens canonical links.
+
+> 📊 **Analytics Ready**: All links include UTM tracking (`github/readme/*`) for comprehensive engagement analytics. Future integrations: GitHub Pages `/docs`, Codecov coverage, and CodePen view tracking.
 
 <p align="center"><img alt="Featured Pens" src="assets/featured-pens.png" width="820"></p>
 
 ## Live Demo
 - **Site:** https://vipspot.net
 - **API health:** `https://vipspot-api-a7ce781e1397.herokuapp.com/healthz` → `{"ok":true}`
-- **Featured Pens:**  
-  - 3D Card Hover → https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=vipspot&utm_medium=featured_pens&utm_campaign=portfolio  
-  - Matrix Rain Effect → https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=vipspot&utm_medium=featured_pens&utm_campaign=portfolio
+- **Featured Pens:** *(Click to track README engagement)*  
+  - [🎨 3D Card Hover](https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_3d_card&utm_content=demo_links) → Interactive hover effects with CSS transforms  
+  - [🔮 Matrix Rain Effect](https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_matrix&utm_content=demo_links) → Animated background with digital rain
 
 ## Highlights
 - ⚡ **PWA-style UX:** neon UI, matrix visuals, accessible components
