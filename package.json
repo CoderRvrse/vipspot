@@ -7,7 +7,10 @@
     "ok": "node scripts/generate-ok.mjs",
     "prove": "node scripts/prove-local.mjs",
     "dev": "python -m http.server 8000",
-    "test": "npm run ok && npm run prove",
+    "test": "jest --coverage",
+    "test:ci": "npm run ok && npm run prove && npm run test:links && npm run test:branding && jest --coverage --ci",
+    "test:watch": "jest --watch",
+    "test:legacy": "npm run ok && npm run prove",
     "build:css": "npx tailwindcss -c tailwind.config.js -i css/input.css -o css/tailwind.css --minify",
     "build:icons": "node scripts/build-icons.mjs",
     "build": "npm run build:css && npm run build:icons",
@@ -39,6 +42,9 @@
     "node": ">=20"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "@jest/globals": "^29.7.0",
     "jsdom": "^24.1.0",
     "simple-icons": "^13.11.0",
     "svgo": "^3.3.2",

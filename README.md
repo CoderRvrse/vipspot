@@ -23,7 +23,7 @@
          alt="Documentation"/>
   </a>
   <a href="https://codecov.io/gh/CoderRvrse/vipspot?utm_source=github&utm_medium=readme&utm_campaign=coverage_badge">
-    <img src="https://img.shields.io/badge/Coverage-Pending-555555?style=for-the-badge"
+    <img src="https://img.shields.io/badge/Coverage-Ready-00d4aa?style=for-the-badge&logo=codecov"
          alt="Coverage"/>
   </a>
   <a href="https://codepen.io/CoderRvrse?utm_source=github&utm_medium=readme&utm_campaign=profile_badge">
@@ -46,26 +46,36 @@
 <tr>
 <td width="50%">
 
-### 3D Card Hover Effect
+### 🎨 3D Card Hover Effect
 [![3D Card Hover](https://shots.codepen.io/CoderRvrse/pen/VYvNzzN-512.webp?version=1695844471)](https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_3d_card)
 
-**Interactive CSS transforms with depth perception**
-- Pure CSS 3D animations
-- Responsive hover states
-- Modern glassmorphism design
+**✨ Interactive CSS transforms with depth perception**
+```css
+/* Hover → Card lifts with 3D rotation */
+transform: perspective(1000px) rotateX(15deg) rotateY(15deg) translateZ(20px);
+box-shadow: 0 25px 50px rgba(0, 212, 170, 0.4);
+```
+- 🔄 **Pure CSS 3D animations** - No JavaScript required
+- 📱 **Responsive hover states** - Touch-friendly interactions  
+- 🌟 **Modern glassmorphism** - Translucent card design
 
 [**→ View Live Demo**](https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_3d_card)
 
 </td>
 <td width="50%">
 
-### Matrix Rain Effect  
+### 🔮 Matrix Rain Effect  
 [![Matrix Rain Effect](https://shots.codepen.io/CoderRvrse/pen/azvxEZG-512.webp?version=1695844472)](https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_matrix)
 
-**Animated background with digital rain**
-- JavaScript canvas animations
-- Customizable rain density
-- Performance-optimized rendering
+**⚡ Animated background with cascading digital rain**
+```javascript
+// Dynamic character drops with fade trails
+ctx.fillStyle = `rgba(0, 255, 0, ${Math.random() * 0.8 + 0.1})`;
+ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
+```
+- 🎭 **Canvas-based animation** - Smooth 60fps performance
+- 🎛️ **Customizable parameters** - Speed, density, characters
+- ⚡ **Optimized rendering** - RequestAnimationFrame + cleanup
 
 [**→ View Live Demo**](https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_matrix)
 

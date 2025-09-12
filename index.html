@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     
-    <!-- CSP (single line, strict) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; object-src 'none'; connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self';">
+    <!-- CSP (single line, strict) with Plausible Analytics -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net; object-src 'none'; connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://api.vipspot.net https://plausible.io; img-src 'self' data:; font-src 'self' data:; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'; script-src 'self' https://plausible.io;">
     
     <!-- Cache control for HTML -->
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
@@ -69,6 +69,9 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#00f3ff">
+    
+    <!-- Plausible Analytics (Privacy-first, no cookies) -->
+    <script defer data-domain="vipspot.net" src="https://plausible.io/js/script.js"></script>
 </head>
 <body class="font-robotoMono">
     <!-- Skip Navigation Link -->
