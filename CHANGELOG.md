@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.11-feat] - 2025-09-11
+
+### Changed
+- feat(release): add automated release management with CHANGELOG and tagging
+
 ## [2025.09.11] - 2025-09-11
 
 ### Added
@@ -124,7 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.11...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.11-feat...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -132,3 +137,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2025.09.04]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.02...v2025.09.04
 [2025.09.02]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.01...v2025.09.02
 [2025.09.01]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.01
+[2025.09.11-feat]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.11-feat
