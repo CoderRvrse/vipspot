@@ -47,7 +47,7 @@ describe('VIPSpot Utilities', () => {
         'test@example.com',
         'user.name@domain.co.uk',
         'contact@vipspot.net',
-        'developer+portfolio@gmail.com'
+        'dev+portfolio@examplemail.invalid'
       ];
 
       validEmails.forEach(email => {
@@ -82,7 +82,7 @@ describe('VIPSpot Utilities', () => {
     });
 
     test('should reject legacy email domains', () => {
-      const legacyDomains = ['vipspot.us', 'gmail.com', 'old@example.com'];
+      const legacyDomains = ['legacy-domain.invalid','examplemail.invalid','old@example.invalid'];
       const contactEmail = 'contact@vipspot.net';
       
       legacyDomains.forEach(domain => {

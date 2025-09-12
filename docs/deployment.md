@@ -96,7 +96,7 @@ The API deploys automatically when `api/**` files change:
 
 3. **Configure email routing:**
    ```
-   contact@vipspot.net → your-gmail@gmail.com
+   contact@vipspot.net → your@examplemail.invalid
    ```
 
 4. **SSL/TLS settings:**
