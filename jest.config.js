@@ -4,7 +4,6 @@ const config = {
   testEnvironment: 'jsdom',
   
   // ES Modules support
-  extensionsToTreatAsEsm: ['.js'],
   globals: {
     'ts-jest': {
       useESM: true

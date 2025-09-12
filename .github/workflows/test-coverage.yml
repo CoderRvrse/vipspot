@@ -33,6 +33,8 @@ jobs:
 
       - name: Run legacy tests
         run: npm run test:legacy
+        env:
+          NO_NETWORK: '1'
 
       - name: Run Jest tests with coverage
         run: npm run test:ci
