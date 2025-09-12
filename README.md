@@ -18,8 +18,8 @@
 
 <p align="center">
   <!-- Future-ready badges -->
-  <a href="https://coderrvrse.github.io/vipspot/docs/?utm_source=github&utm_medium=readme&utm_campaign=docs_badge">
-    <img src="https://img.shields.io/badge/Docs-Coming%20Soon-555555?style=for-the-badge"
+  <a href="https://coderrvrse.github.io/vipspot/?utm_source=github&utm_medium=readme&utm_campaign=docs_badge">
+    <img src="https://img.shields.io/badge/Docs-Live-00d4aa?style=for-the-badge&logo=gitbook"
          alt="Documentation"/>
   </a>
   <a href="https://codecov.io/gh/CoderRvrse/vipspot?utm_source=github&utm_medium=readme&utm_campaign=coverage_badge">
@@ -35,6 +35,47 @@
          alt="Contact"/>
   </a>
 </p>
+
+---
+
+## 🎨 Featured Demos
+
+<div align="center">
+
+<table>
+<tr>
+<td width="50%">
+
+### 3D Card Hover Effect
+[![3D Card Hover](https://shots.codepen.io/CoderRvrse/pen/VYvNzzN-512.webp?version=1695844471)](https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_3d_card)
+
+**Interactive CSS transforms with depth perception**
+- Pure CSS 3D animations
+- Responsive hover states
+- Modern glassmorphism design
+
+[**→ View Live Demo**](https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_3d_card)
+
+</td>
+<td width="50%">
+
+### Matrix Rain Effect  
+[![Matrix Rain Effect](https://shots.codepen.io/CoderRvrse/pen/azvxEZG-512.webp?version=1695844472)](https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_matrix)
+
+**Animated background with digital rain**
+- JavaScript canvas animations
+- Customizable rain density
+- Performance-optimized rendering
+
+[**→ View Live Demo**](https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_matrix)
+
+</td>
+</tr>
+</table>
+
+</div>
+
+---
 
 **Status:** GREEN · proof ticket **VIP-8472KR4J** (Cloudflare → Gmail) · API **v17** on Heroku
 
