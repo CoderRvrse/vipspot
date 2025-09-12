@@ -1,18 +1,40 @@
 # VIPSpot — Portfolio + Contact Pipeline
 
-<div align="center">
+<p align="center">
+  <!-- Live badges -->
+  <a href="https://github.com/CoderRvrse/vipspot/releases/latest">
+    <img src="https://img.shields.io/github/v/release/CoderRvrse/vipspot?style=for-the-badge&color=00d4aa&label=Release"
+         alt="Latest Release"/>
+  </a>
+  <a href="https://github.com/CoderRvrse/vipspot/actions?query=workflow%3A%22VIPSpot+CI+%2B+Pages%22&utm_source=github&utm_medium=readme&utm_campaign=badge_click">
+    <img src="https://img.shields.io/github/actions/workflow/status/CoderRvrse/vipspot/ci-pages.yml?branch=main&style=for-the-badge&color=00d4aa&label=Build"
+         alt="Build Status"/>
+  </a>
+  <a href="https://vipspot.net/?utm_source=github&utm_medium=readme&utm_campaign=live_site_badge">
+    <img src="https://img.shields.io/badge/Live%20Site-vipspot.net-00d4aa?style=for-the-badge"
+         alt="Live Site"/>
+  </a>
+</p>
 
-[![Latest Release](https://img.shields.io/github/v/release/CoderRvrse/vipspot?label=Release&style=for-the-badge&color=00d4aa)](https://github.com/CoderRvrse/vipspot/releases/latest)
-[![Release Date](https://img.shields.io/github/release-date/CoderRvrse/vipspot?label=Released&style=for-the-badge&color=blue)](https://github.com/CoderRvrse/vipspot/releases)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/CoderRvrse/vipspot/ci-pages.yml?branch=main&label=Build&style=for-the-badge)](https://github.com/CoderRvrse/vipspot/actions)
-[![Live Site](https://img.shields.io/badge/Live_Site-vipspot.net-00d4aa?style=for-the-badge&logo=github-pages)](https://vipspot.net?utm_source=github&utm_medium=readme&utm_campaign=badge_click)
-
-[![Documentation](https://img.shields.io/badge/Docs-GitHub_Pages-blue?style=for-the-badge&logo=gitbook)](https://coderrrvrse.github.io/vipspot/docs)
-[![Test Coverage](https://img.shields.io/badge/Coverage-Ready-lightgrey?style=for-the-badge&logo=codecov)](https://codecov.io/gh/CoderRvrse/vipspot)
-[![CodePen Views](https://img.shields.io/badge/CodePen-Featured_Pens-000000?style=for-the-badge&logo=codepen)](https://codepen.io/CoderRvrse?utm_source=github&utm_medium=readme&utm_campaign=profile_badge)
-[![Contact](https://img.shields.io/badge/Contact-vipspot.net-00d4aa?style=for-the-badge&logo=gmail)](mailto:contact@vipspot.net?subject=GitHub%20Inquiry&utm_source=github&utm_medium=readme&utm_campaign=contact_badge)
-
-</div>
+<p align="center">
+  <!-- Future-ready badges -->
+  <a href="https://coderrvrse.github.io/vipspot/docs/?utm_source=github&utm_medium=readme&utm_campaign=docs_badge">
+    <img src="https://img.shields.io/badge/Docs-Coming%20Soon-555555?style=for-the-badge"
+         alt="Documentation"/>
+  </a>
+  <a href="https://codecov.io/gh/CoderRvrse/vipspot?utm_source=github&utm_medium=readme&utm_campaign=coverage_badge">
+    <img src="https://img.shields.io/badge/Coverage-Pending-555555?style=for-the-badge"
+         alt="Coverage"/>
+  </a>
+  <a href="https://codepen.io/CoderRvrse?utm_source=github&utm_medium=readme&utm_campaign=profile_badge">
+    <img src="https://img.shields.io/badge/CodePen-Demos-00d4aa?style=for-the-badge&logo=codepen"
+         alt="CodePen Profile"/>
+  </a>
+  <a href="mailto:contact@vipspot.net?subject=VIPSpot%20Inquiry&utm_source=github&utm_medium=readme&utm_campaign=contact_badge">
+    <img src="https://img.shields.io/badge/Contact-contact@vipspot.net-00d4aa?style=for-the-badge&logo=gmail"
+         alt="Contact"/>
+  </a>
+</p>
 
 **Status:** GREEN · proof ticket **VIP-8472KR4J** (Cloudflare → Gmail) · API **v17** on Heroku
 
