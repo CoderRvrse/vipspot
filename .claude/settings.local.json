@@ -52,7 +52,9 @@
       "Bash(then echo \"❌ placeholder remains\")",
       "Bash(else echo \"✅ No placeholders found\")",
       "Bash(npm run test:*)",
-      "WebFetch(domain:vipspot.net)"
+      "WebFetch(domain:vipspot.net)",
+      "Bash(npm install)",
+      "Bash(npm test:*)"
     ],
     "deny": [],
     "ask": []
