@@ -1,5 +1,10 @@
 # VIPSpot — Portfolio + Contact Pipeline
 
+[![Latest Release](https://img.shields.io/github/v/release/CoderRvrse/vipspot?label=Release&style=for-the-badge&color=00d4aa)](https://github.com/CoderRvrse/vipspot/releases/latest)
+[![Release Date](https://img.shields.io/github/release-date/CoderRvrse/vipspot?label=Released&style=for-the-badge&color=blue)](https://github.com/CoderRvrse/vipspot/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/CoderRvrse/vipspot/ci-pages.yml?branch=main&label=Build&style=for-the-badge)](https://github.com/CoderRvrse/vipspot/actions)
+[![Live Site](https://img.shields.io/badge/Live_Site-vipspot.net-green?style=for-the-badge&logo=github-pages)](https://vipspot.net)
+
 **Status:** GREEN · proof ticket **VIP-8472KR4J** (Cloudflare → Gmail) · API **v17** on Heroku
 
 VIPSpot is a fast, secure portfolio site with a hardened contact pipeline. The site runs on **GitHub Pages** with strict CSP; the **Node/Express API** on **Heroku** delivers dual emails (owner + visitor auto-reply) via **Resend**. CI enforces **zero-regression guardrails** for email migration and Featured Pens canonical links.
