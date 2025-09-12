@@ -39,3 +39,6 @@ jobs:
 
       - name: Branding consistency
         run: npm run test:branding
+
+      - name: Back-to-Top DOM markers
+        run: npm run test:ui

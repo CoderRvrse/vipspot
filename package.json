@@ -11,6 +11,7 @@
     "test:ci": "npm run ok && npm run prove && npm run test:links && npm run test:branding && jest --coverage --ci",
     "test:watch": "jest --watch",
     "test:legacy": "npm run ok && npm run prove",
+    "test:ui": "node tests/verify-back-to-top.mjs",
     "build:css": "npx tailwindcss -c tailwind.config.js -i css/input.css -o css/tailwind.css --minify",
     "build:icons": "node scripts/build-icons.mjs",
     "build": "npm run build:css && npm run build:icons",
