@@ -119,6 +119,8 @@ jobs:
           test -n "$CSP" && test -n "$LINK" && [ "$CSP" -lt "$LINK" ]
       - name: Prove DOM markers
         run: node scripts/prove-local.mjs
+        env:
+          NO_NETWORK: '1'
       - name: Stop server
         if: always()
         run: kill $(cat server.pid) || true

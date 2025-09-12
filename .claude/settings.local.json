@@ -56,7 +56,15 @@
       "Bash(npm install)",
       "Bash(npm test:*)",
       "Bash(git rm:*)",
-      "Bash(# Critical: ensure no forbidden strings remain anywhere\n! grep -RInE \"\"(vipspot\\.us|gmail\\.com|old@example\\.com)\"\" -- . || { echo ''❌ legacy strings remain''; exit 2; })"
+      "Bash(# Critical: ensure no forbidden strings remain anywhere\n! grep -RInE \"\"(vipspot\\.us|gmail\\.com|old@example\\.com)\"\" -- . || { echo ''❌ legacy strings remain''; exit 2; })",
+      "Bash(set -e)",
+      "Bash(if grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' -- .)",
+      "Bash(else echo '✅ No legacy strings found in source files')",
+      "Bash(if grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' --exclude-dir=node_modules --exclude-dir=.git -- .)",
+      "Bash(then echo '❌ legacy strings remain in source files')",
+      "Bash(exit 1)",
+      "Bash(NO_NETWORK=1 node scripts/prove-local.mjs)",
+      "Bash(! grep -RInE \"(vipspot\\.us|gmail\\.com|old@example\\.com)\" -- docs tests)"
     ],
     "deny": [],
     "ask": []
