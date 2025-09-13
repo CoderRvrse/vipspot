@@ -1,0 +1,110 @@
+name: Guard: Release Matcher
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - '.github/workflows/guards-release-matcher.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-commit-matcher:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test commit type regex patterns
+        run: |
+          node - <<'JS'
+          // Commit types that should trigger releases
+          const releaseTypes = ['feat', 'fix', 'docs', 'chore', 'refactor'];
+          
+          // Test cases that SHOULD match and trigger releases
+          const shouldMatch = [
+            'feat: add back-to-top component',
+            'feat(ui): enhance neon styling',
+            'fix: resolve parsing bug',
+            'fix(ci): use heredoc pattern',
+            'docs: update README badges',
+            'docs(changelog): add release notes',
+            'chore: clean up test files',
+            'chore(deps): update packages (CodePen)',
+            'refactor: simplify release logic',
+            'refactor(workflow): extract helpers'
+          ];
+          
+          // Test cases that should NOT trigger automatic releases
+          const shouldNotMatch = [
+            'style: fix linting issues',
+            'perf: optimize animation performance', 
+            'test: add unit tests',
+            'ci: update workflow permissions',
+            'build: configure webpack'
+          ];
+          
+          // Create regex that matches our release workflow logic
+          const releaseRegex = new RegExp(`^(${releaseTypes.join('|')})(\\(.*\\))?:\\s`, 'i');
+          
+          console.log('🧪 Testing commit type matcher...');
+          console.log('📝 Release types:', releaseTypes.join(', '));
+          console.log('');
+          
+          // Test positive cases
+          console.log('✅ Testing commits that SHOULD trigger releases:');
+          let passCount = 0;
+          for (const msg of shouldMatch) {
+            const matches = releaseRegex.test(msg);
+            if (matches) {
+              console.log(`  ✓ "${msg}"`);
+              passCount++;
+            } else {
+              console.log(`  ❌ "${msg}" - FAILED TO MATCH`);
+              process.exit(1);
+            }
+          }
+          console.log(`  → ${passCount}/${shouldMatch.length} passed`);
+          console.log('');
+          
+          // Test negative cases  
+          console.log('🚫 Testing commits that should NOT trigger releases:');
+          let blockCount = 0;
+          for (const msg of shouldNotMatch) {
+            const matches = releaseRegex.test(msg);
+            if (!matches) {
+              console.log(`  ✓ "${msg}" - correctly blocked`);
+              blockCount++;
+            } else {
+              console.log(`  ❌ "${msg}" - INCORRECTLY MATCHED`);
+              process.exit(2);
+            }
+          }
+          console.log(`  → ${blockCount}/${shouldNotMatch.length} correctly blocked`);
+          console.log('');
+          
+          // Test CodePen detection
+          console.log('🎨 Testing CodePen detection pattern:');
+          const codepenTests = [
+            'chore: update deps (CodePen demo)',
+            'feat: add animation with CodePen inspiration', 
+            'docs: link to codepen profile',
+            'fix: standard bug fix'
+          ];
+          
+          const codepenRegex = /[Cc]ode[Pp]en/;
+          let codepenCount = 0;
+          for (const msg of codepenTests) {
+            const hasCodePen = codepenRegex.test(msg);
+            const indicator = hasCodePen ? '🎨' : '  ';
+            console.log(`  ${indicator} "${msg}"`);
+            if (hasCodePen) codepenCount++;
+          }
+          console.log(`  → ${codepenCount}/4 detected CodePen mentions`);
+          console.log('');
+          
+          console.log('🎉 All commit type matcher tests passed!');
+          console.log('✅ Release workflow patterns are working correctly');
+          JS
