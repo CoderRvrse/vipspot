@@ -42,7 +42,9 @@ jobs:
         run: |
           # Get the latest commit message
           COMMIT_MSG=$(git log -1 --pretty=format:'%s')
-          echo "commit_message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "commit_message<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
           
           # Determine release type from commit message or workflow input
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.release_type }}" != "auto" ]; then
