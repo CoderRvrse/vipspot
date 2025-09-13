@@ -1571,3 +1571,22 @@ select:focus {
     transition: none; animation: none; 
   }
 }
+
+/* Footer social — Facebook */
+.social-link .icon {
+  transition: transform .2s ease, filter .2s ease, color .2s ease;
+  display: inline-block;
+}
+.social-facebook { color: #9bbbd4; }            /* base muted */
+.social-facebook:hover,
+.social-facebook:focus-visible {
+  color: #00e6c3;                                /* VIPSpot neon cyan */
+  transform: translateY(-1px) scale(1.03);
+  filter: drop-shadow(0 0 6px rgba(0, 230, 195, .45));
+  outline: none;
+}
+.social-link:focus-visible {
+  outline: 2px solid #00e6c3;
+  outline-offset: 3px;
+  border-radius: 10px;
+}

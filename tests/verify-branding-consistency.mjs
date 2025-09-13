@@ -61,6 +61,18 @@ for (const file of CANDIDATES) {
       }
     }
   }
+
+  // 2.4 Assert new Facebook link present and canonicalized with UTM
+  const FACEBOOK = 'https://www.facebook.com/people/VipSpot/100081136441464/';
+  const utm = '?utm_source=vipspot&utm_medium=footer&utm_campaign=social';
+  if (!(html.includes(FACEBOOK) && html.includes(utm))) {
+    failures.push(`[${file}] Footer must link to VIPSpot Facebook with UTM params`);
+  }
+
+  // 2.5 Assert Twitter removed
+  if (/twitter\.com/i.test(html)) {
+    failures.push(`[${file}] Legacy Twitter link should be removed from footer`);
+  }
 }
 
 if (scanned === 0) {
