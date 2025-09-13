@@ -145,16 +145,96 @@ export const TEST_CASES = {
   ]
 };
 
-// CLI interface for testing
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const testMsg = process.argv[2];
+// CLI interface for testing  
+if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) {
+  const args = process.argv.slice(2);
+  const flag = args[0];
+  
+  // Self-test mode
+  if (flag === '--self-test') {
+    console.log('🧪 Running comprehensive self-test...');
+    console.log('');
+    
+    const testSuites = [
+      {
+        name: '✅ Release Triggers',
+        tests: TEST_CASES.shouldMatch,
+        expectedTrigger: true
+      },
+      {
+        name: '🚫 Non-Release Commits', 
+        tests: TEST_CASES.shouldNotMatch,
+        expectedTrigger: false
+      }
+    ];
+    
+    let totalPassed = 0;
+    let totalTests = 0;
+    
+    for (const suite of testSuites) {
+      console.log(`### ${suite.name}`);
+      
+      for (const msg of suite.tests) {
+        const releaseType = getReleaseType(msg);
+        const versionTag = generateVersionTag(releaseType);
+        const hasCodePen = hasCodePenMention(msg);
+        const triggersRelease = RELEASE_TYPES.includes(releaseType) || releaseType === 'major';
+        
+        const passed = triggersRelease === suite.expectedTrigger;
+        const status = passed ? '✓' : '❌';
+        const codepenIcon = hasCodePen ? ' 🎨' : '';
+        
+        console.log(`  ${status} "${msg}"`);
+        console.log(`    → ${releaseType} → ${versionTag}${codepenIcon}`);
+        
+        if (!passed) {
+          console.log(`    ❌ Expected trigger: ${suite.expectedTrigger}, got: ${triggersRelease}`);
+          process.exit(1);
+        }
+        
+        totalPassed++;
+        totalTests++;
+      }
+      console.log('');
+    }
+    
+    // Test CodePen detection specifically
+    console.log('### 🎨 CodePen Detection');
+    for (const { msg, expected } of TEST_CASES.codepenTests) {
+      const detected = hasCodePenMention(msg);
+      const status = detected === expected ? '✓' : '❌';
+      const icon = detected ? ' 🎨' : '';
+      
+      console.log(`  ${status} "${msg}"${icon}`);
+      
+      if (detected !== expected) {
+        console.log(`    ❌ Expected: ${expected}, got: ${detected}`);
+        process.exit(1);
+      }
+      
+      totalPassed++;
+      totalTests++;
+    }
+    
+    console.log('');
+    console.log(`🎉 All ${totalPassed}/${totalTests} tests passed!`);
+    console.log('✅ Release pattern matrix is working correctly');
+    process.exit(0);
+  }
+  
+  // Regular usage
+  const testMsg = flag;
   if (!testMsg) {
     console.log('Usage: node release-patterns.mjs "commit message"');
+    console.log('       node release-patterns.mjs --self-test');
     console.log('');
-    console.log('Example outputs:');
+    console.log('Examples:');
     console.log('  feat: new feature     -> feat');
-    console.log('  fix!: breaking fix    -> major');  
+    console.log('  feat!: breaking fix   -> major');  
     console.log('  style: lint fixes     -> patch');
+    console.log('  chore: deps (CodePen) -> chore + CodePen');
+    console.log('');
+    console.log('Self-test validates all known commit patterns and edge cases.');
     process.exit(1);
   }
   

@@ -27,7 +27,11 @@
     "kill-sw": "node scripts/kill-sw.mjs",
     "fresh": "npm run start && npm run kill-sw",
     "test:links": "node tests/verify-featured-pens-links.mjs",
-    "test:branding": "node tests/verify-branding-consistency.mjs"
+    "test:branding": "node tests/verify-branding-consistency.mjs",
+    "lint:commits": "commitlint --from=HEAD~10 --to=HEAD",
+    "test:patterns": "node .github/scripts/release-patterns.mjs --self-test",
+    "prepare": "husky install",
+    "commit": "cz"
   },
   "keywords": [
     "portfolio",
@@ -49,10 +53,24 @@
     "jsdom": "^24.1.0",
     "simple-icons": "^13.11.0",
     "svgo": "^3.3.2",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^3.4.0",
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@commitlint/format": "^18.4.3",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.3"
   },
   "dependencies": {
     "compression": "^1.8.1",
     "express": "^5.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
   }
 }

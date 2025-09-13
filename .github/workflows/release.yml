@@ -24,9 +24,64 @@ permissions:
   pull-requests: read
 
 jobs:
+  preview:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      should_release: ${{ steps.analysis.outputs.should_release }}
+      release_type: ${{ steps.analysis.outputs.release_type }}
+      version_tag: ${{ steps.analysis.outputs.version_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Analyze commit for release preview
+        id: analysis
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+          echo "📋 **Release Preview Analysis**"
+          echo ""
+          echo "🔍 **Commit:** \`$COMMIT_MSG\`"
+          
+          # Use shared patterns for analysis
+          RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+          
+          echo "📊 **Pattern Analysis:**"
+          echo "\`\`\`json"
+          echo "$RESULT" | jq '.'
+          echo "\`\`\`"
+          
+          # Extract values
+          RELEASE_TYPE=$(echo "$RESULT" | jq -r '.releaseType')
+          VERSION_TAG=$(echo "$RESULT" | jq -r '.versionTag') 
+          TRIGGERS_RELEASE=$(echo "$RESULT" | jq -r '.triggersRelease')
+          HAS_CODEPEN=$(echo "$RESULT" | jq -r '.hasCodePen')
+          
+          echo ""
+          if [ "$TRIGGERS_RELEASE" = "true" ]; then
+            echo "✅ **Would create release:** \`$VERSION_TAG\` (type: $RELEASE_TYPE)"
+          else
+            echo "⏭️ **No release:** commit type \`$RELEASE_TYPE\` doesn't trigger releases"
+          fi
+          
+          if [ "$HAS_CODEPEN" = "true" ]; then
+            echo "🎨 **CodePen mention detected:** Release notes will include CodePen showcase section"
+          fi
+          
+          # Set outputs for dependent job
+          echo "should_release=$TRIGGERS_RELEASE" >> $GITHUB_OUTPUT
+          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+          echo "version_tag=$VERSION_TAG" >> $GITHUB_OUTPUT
+
   release:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: [preview]
+    if: (github.event_name == 'push' && needs.preview.outputs.should_release == 'true') || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -197,7 +252,7 @@ jobs:
           DATE="${{ steps.version.outputs.date }}"
           COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           
-          # Create temporary changelog entry
+          # Create temporary changelog entry with CodePen enhancement
           cat << EOF > changelog_entry.md
           ## [${VERSION#v}] - $(date -u +%Y-%m-%d)
           
@@ -205,6 +260,22 @@ jobs:
           - $COMMIT_MSG
           
           EOF
+          
+          # Add CodePen showcase section to changelog if detected
+          RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+          HAS_CODEPEN=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).hasCodePen)")
+          
+          if [ "$HAS_CODEPEN" = "true" ]; then
+            cat << EOF >> changelog_entry.md
+          ### 🎨 CodePen Showcase
+          This release includes CodePen-related enhancements:
+          - **Rocket Back-to-Top** → [Demo](https://codepen.io/CoderRvrse/pen/QwjXGom)
+          - **3D Card Hover Effect** → [Demo](https://codepen.io/CoderRvrse/pen/VYvNzzN)
+          - **Matrix Rain Effect** → [Demo](https://codepen.io/CoderRvrse/pen/azvxEZG)
+          - **Browse All Demos** → [CodePen Profile](https://codepen.io/CoderRvrse)
+          
+          EOF
+          fi
           
           # Insert new entry after [Unreleased] section
           if [ -f CHANGELOG.md ]; then

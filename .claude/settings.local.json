@@ -67,7 +67,10 @@
       "Bash(! grep -RInE \"(vipspot\\.us|gmail\\.com|old@example\\.com)\" -- docs tests)",
       "Bash(npm run build:css:*)",
       "Bash(NO_NETWORK=1 npm run test:links)",
-      "Bash(NO_NETWORK=1 npm run test:branding)"
+      "Bash(NO_NETWORK=1 npm run test:branding)",
+      "Bash(gh pr create:*)",
+      "Bash(gh release list:*)",
+      "Bash(gh release view:*)"
     ],
     "deny": [],
     "ask": []
