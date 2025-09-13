@@ -64,6 +64,9 @@ git checkout main && git pull --ff-only
 npm ci && npm run test:links && npm run test:branding && ./scripts/smoke-grep.sh
 ```
 
+### 5) New CodePen Demo: Rocket Back-to-Top
+- 🚀 **[Rocket Back-to-Top](https://codepen.io/CoderRvrse/pen/QwjXGom?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_back_to_top)** — Production-grade component with neon progress ring
+
 ## Commit & Branch Strategy
 - Branch: `feat/`, `fix/`, `docs/`, `ci/`, `chore/` + date suffix.
 - Conventional commits; examples:
