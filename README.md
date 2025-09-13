@@ -36,6 +36,14 @@
   </a>
 </p>
 
+<p align="center">
+  <!-- New Release Badge -->
+  <a href="https://codepen.io/CoderRvrse/pen/QwjXGom?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_back_to_top">
+    <img src="https://img.shields.io/badge/NEW-Rocket%20Back--to--Top-00d4aa?style=for-the-badge"
+         alt="New Pen"/>
+  </a>
+</p>
+
 ---
 
 ## 🎨 Featured Demos
@@ -84,6 +92,10 @@ ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
 </table>
 
 </div>
+
+### New on CodePen
+- 🔥 **Rocket Back-to-Top** — *Neon progress ring, launch micro-animation, particles, keyboard (T/Home)*  
+  👉 Try it: https://codepen.io/CoderRvrse/pen/QwjXGom?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_back_to_top
 
 ---
 
