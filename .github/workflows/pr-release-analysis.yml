@@ -1,0 +1,239 @@
+name: PR Release Analysis Bot
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  analyze-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Analyze PR commits for release impact
+        id: analysis
+        run: |
+          echo "🔍 **Analyzing PR commits for release impact...**"
+          echo ""
+          
+          # Get all commits in this PR
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          echo "📊 **Commit Analysis:**"
+          echo ""
+          
+          # Arrays to collect analysis data
+          RELEASE_COMMITS=()
+          NON_RELEASE_COMMITS=()
+          CODEPEN_COMMITS=()
+          MAJOR_COMMITS=()
+          RELEASE_TYPES=()
+          VERSION_TAGS=()
+          
+          # Analyze each commit in the PR
+          git log --oneline --pretty=format:"%h %s" ${BASE_SHA}..${HEAD_SHA} | while read commit_hash commit_msg; do
+            if [ -n "$commit_msg" ]; then
+              echo "🔍 Analyzing: \`$commit_msg\`"
+              
+              # Use shared patterns for analysis
+              if [ -f .github/scripts/release-patterns.mjs ]; then
+                RESULT=$(node .github/scripts/release-patterns.mjs "$commit_msg")
+                
+                RELEASE_TYPE=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).releaseType)")
+                VERSION_TAG=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).versionTag)")
+                TRIGGERS_RELEASE=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).triggersRelease)")
+                HAS_CODEPEN=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).hasCodePen)")
+                
+                # Store in respective arrays
+                if [ "$TRIGGERS_RELEASE" = "true" ]; then
+                  echo "RELEASE_COMMITS+=$commit_hash|$commit_msg|$RELEASE_TYPE|$VERSION_TAG" >> analysis_data.txt
+                  if [ "$RELEASE_TYPE" = "major" ]; then
+                    echo "MAJOR_COMMITS+=$commit_hash|$commit_msg" >> analysis_data.txt
+                  fi
+                else
+                  echo "NON_RELEASE_COMMITS+=$commit_hash|$commit_msg|$RELEASE_TYPE" >> analysis_data.txt
+                fi
+                
+                if [ "$HAS_CODEPEN" = "true" ]; then
+                  echo "CODEPEN_COMMITS+=$commit_hash|$commit_msg" >> analysis_data.txt
+                fi
+                
+                # Log the analysis
+                if [ "$TRIGGERS_RELEASE" = "true" ]; then
+                  ICON="🚀"
+                  if [ "$RELEASE_TYPE" = "major" ]; then
+                    ICON="💥"
+                  fi
+                else
+                  ICON="📝"
+                fi
+                
+                CODEPEN_ICON=""
+                if [ "$HAS_CODEPEN" = "true" ]; then
+                  CODEPEN_ICON=" 🎨"
+                fi
+                
+                echo "  $ICON \`$commit_hash\` → **$RELEASE_TYPE** → \`$VERSION_TAG\`$CODEPEN_ICON"
+              fi
+            fi
+          done
+          
+          echo ""
+          echo "✅ **PR commit analysis complete**"
+          
+      - name: Generate PR comment
+        id: comment
+        run: |
+          # Read analysis data
+          RELEASE_COUNT=0
+          NON_RELEASE_COUNT=0
+          CODEPEN_COUNT=0
+          MAJOR_COUNT=0
+          
+          if [ -f analysis_data.txt ]; then
+            RELEASE_COUNT=$(grep "RELEASE_COMMITS+=" analysis_data.txt | wc -l || echo "0")
+            NON_RELEASE_COUNT=$(grep "NON_RELEASE_COMMITS+=" analysis_data.txt | wc -l || echo "0")
+            CODEPEN_COUNT=$(grep "CODEPEN_COMMITS+=" analysis_data.txt | wc -l || echo "0") 
+            MAJOR_COUNT=$(grep "MAJOR_COMMITS+=" analysis_data.txt | wc -l || echo "0")
+          fi
+          
+          # Generate the comment body
+          cat << 'EOF' > pr_comment.md
+          ## 🤖 Release Impact Analysis
+          
+          **PR:** #${{ github.event.number }} • **Branch:** `${{ github.event.pull_request.head.ref }}`
+          
+          ### 📊 Summary
+          EOF
+          
+          if [ "$RELEASE_COUNT" -gt 0 ]; then
+            if [ "$MAJOR_COUNT" -gt 0 ]; then
+              echo "🎯 **Impact:** 💥 **MAJOR RELEASE** will be triggered" >> pr_comment.md
+            else
+              echo "🎯 **Impact:** 🚀 **Release will be triggered**" >> pr_comment.md
+            fi
+          else
+            echo "🎯 **Impact:** 📝 **No release** (development/maintenance commits)" >> pr_comment.md
+          fi
+          
+          echo "" >> pr_comment.md
+          echo "| Metric | Count | Status |" >> pr_comment.md
+          echo "|--------|-------|---------|" >> pr_comment.md
+          echo "| 🚀 Release Commits | $RELEASE_COUNT | $([ $RELEASE_COUNT -gt 0 ] && echo "✅ Will trigger release" || echo "⭐ No release") |" >> pr_comment.md
+          echo "| 📝 Dev Commits | $NON_RELEASE_COUNT | 📋 Development only |" >> pr_comment.md
+          echo "| 💥 Breaking Changes | $MAJOR_COUNT | $([ $MAJOR_COUNT -gt 0 ] && echo "⚠️ Major version bump" || echo "✅ No breaking changes") |" >> pr_comment.md
+          echo "| 🎨 CodePen Updates | $CODEPEN_COUNT | $([ $CODEPEN_COUNT -gt 0 ] && echo "🎨 Showcase sections added" || echo "📝 No CodePen changes") |" >> pr_comment.md
+          
+          # Add detailed breakdown if there are release commits
+          if [ "$RELEASE_COUNT" -gt 0 ]; then
+            echo "" >> pr_comment.md
+            echo "### 🚀 Release-Triggering Commits" >> pr_comment.md
+            echo "" >> pr_comment.md
+            
+            if [ -f analysis_data.txt ]; then
+              grep "RELEASE_COMMITS+=" analysis_data.txt | while IFS='=' read -r prefix data; do
+                IFS='|' read -r commit_hash commit_msg release_type version_tag <<< "$data"
+                ICON="🚀"
+                if [ "$release_type" = "major" ]; then
+                  ICON="💥"
+                elif [ "$release_type" = "feat" ]; then
+                  ICON="✨"
+                elif [ "$release_type" = "fix" ]; then
+                  ICON="🐛"
+                elif [ "$release_type" = "docs" ]; then
+                  ICON="📝"
+                elif [ "$release_type" = "chore" ]; then
+                  ICON="🧹"
+                elif [ "$release_type" = "refactor" ]; then
+                  ICON="♻️"
+                fi
+                
+                echo "- $ICON **\`$commit_hash\`** \`$commit_msg\`" >> pr_comment.md
+                echo "  → **Type:** $release_type → **Version:** \`$version_tag\`" >> pr_comment.md
+                echo "" >> pr_comment.md
+              done
+            fi
+          fi
+          
+          # Add CodePen section if detected
+          if [ "$CODEPEN_COUNT" -gt 0 ]; then
+            echo "" >> pr_comment.md
+            echo "### 🎨 CodePen Updates Detected" >> pr_comment.md
+            echo "" >> pr_comment.md
+            echo "This PR includes CodePen-related changes! Release notes will include:" >> pr_comment.md
+            echo "- **🎨 CodePen Showcase Section** in CHANGELOG.md" >> pr_comment.md
+            echo "- **Featured Demo Links:** [Rocket Back-to-Top](https://codepen.io/CoderRvrse/pen/QwjXGom), [3D Card](https://codepen.io/CoderRvrse/pen/VYvNzzN), [Matrix Rain](https://codepen.io/CoderRvrse/pen/azvxEZG)" >> pr_comment.md
+            echo "- **Profile Link:** [Browse All Demos](https://codepen.io/CoderRvrse)" >> pr_comment.md
+            echo "" >> pr_comment.md
+          fi
+          
+          # Add workflow information
+          echo "" >> pr_comment.md
+          echo "### ⚙️ What Happens Next?" >> pr_comment.md
+          echo "" >> pr_comment.md
+          
+          if [ "$RELEASE_COUNT" -gt 0 ]; then
+            echo "1. **✅ PR Merge** → Triggers release workflow" >> pr_comment.md
+            if [ "$MAJOR_COUNT" -gt 0 ]; then
+              echo "2. **💥 Major Release** → \`v2025.MM.DD\` (no suffix for breaking changes)" >> pr_comment.md
+            else
+              echo "2. **🚀 Automated Release** → \`vYYYY.MM.DD-type\` based on commit types" >> pr_comment.md
+            fi
+            echo "3. **📋 CHANGELOG Update** → Automatic changelog generation" >> pr_comment.md
+            if [ "$CODEPEN_COUNT" -gt 0 ]; then
+              echo "4. **🎨 CodePen Showcase** → Added to release notes and changelog" >> pr_comment.md
+            fi
+            echo "5. **🌐 Live Deployment** → Changes go live on [vipspot.net](https://vipspot.net)" >> pr_comment.md
+          else
+            echo "1. **✅ PR Merge** → No release triggered (development commits only)" >> pr_comment.md
+            echo "2. **📝 Changes Applied** → Code improvements without version bump" >> pr_comment.md
+          fi
+          
+          echo "" >> pr_comment.md
+          echo "---" >> pr_comment.md
+          echo "<sub>🤖 Auto-generated by [VIPSpot Release Bot](https://github.com/CoderRvrse/vipspot/blob/main/.github/workflows/pr-release-analysis.yml) • [Patterns](https://github.com/CoderRvrse/vipspot/blob/main/.github/scripts/release-patterns.mjs)</sub>" >> pr_comment.md
+          
+          echo "comment_body<<EOF" >> $GITHUB_OUTPUT
+          cat pr_comment.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Find existing comment
+        id: find-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '🤖 Release Impact Analysis'
+
+      - name: Create or update PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.comment.outputs.comment_body }}
+          edit-mode: replace
+          
+      - name: Summary
+        run: |
+          echo "🎉 PR analysis complete!"
+          echo "📝 Comment posted/updated on PR #${{ github.event.pull_request.number }}"
+          echo "🔗 View PR: ${{ github.event.pull_request.html_url }}"
