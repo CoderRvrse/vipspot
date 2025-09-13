@@ -26,8 +26,8 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install deps
-        run: npm ci
+      - name: Install deps (lockfile)
+        run: npm ci --ignore-scripts --prefer-offline --no-audit --no-fund
 
       - name: Verify Featured Pens links (DOM)
         run: npm run test:links
