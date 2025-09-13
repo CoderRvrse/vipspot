@@ -13,98 +13,109 @@ permissions:
 jobs:
   test-commit-matcher:
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Test commit type regex patterns
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Test shared release patterns module
         run: |
+          echo "🧪 Testing release patterns with Node.js ${{ matrix.node-version }}"
+          echo ""
+          
+          # Import and test the shared patterns module
           node - <<'JS'
-          // Commit types that should trigger releases
-          const releaseTypes = ['feat', 'fix', 'docs', 'chore', 'refactor'];
+          import { 
+            RELEASE_TYPES, 
+            TEST_CASES, 
+            getReleaseType, 
+            generateVersionTag, 
+            hasCodePenMention 
+          } from './.github/scripts/release-patterns.mjs';
           
-          // Test cases that SHOULD match and trigger releases
-          const shouldMatch = [
-            'feat: add back-to-top component',
-            'feat(ui): enhance neon styling',
-            'fix: resolve parsing bug',
-            'fix(ci): use heredoc pattern',
-            'docs: update README badges',
-            'docs(changelog): add release notes',
-            'chore: clean up test files',
-            'chore(deps): update packages (CodePen)',
-            'refactor: simplify release logic',
-            'refactor(workflow): extract helpers'
-          ];
-          
-          // Test cases that should NOT trigger automatic releases
-          const shouldNotMatch = [
-            'style: fix linting issues',
-            'perf: optimize animation performance', 
-            'test: add unit tests',
-            'ci: update workflow permissions',
-            'build: configure webpack'
-          ];
-          
-          // Create regex that matches our release workflow logic
-          const releaseRegex = new RegExp(`^(${releaseTypes.join('|')})(\\(.*\\))?:\\s`, 'i');
-          
-          console.log('🧪 Testing commit type matcher...');
-          console.log('📝 Release types:', releaseTypes.join(', '));
+          console.log('📦 Testing shared release patterns module...');
+          console.log('📝 Release types:', RELEASE_TYPES.join(', '));
           console.log('');
           
-          // Test positive cases
+          // Test positive cases from shared module
           console.log('✅ Testing commits that SHOULD trigger releases:');
           let passCount = 0;
-          for (const msg of shouldMatch) {
-            const matches = releaseRegex.test(msg);
-            if (matches) {
-              console.log(`  ✓ "${msg}"`);
+          for (const msg of TEST_CASES.shouldMatch) {
+            const releaseType = getReleaseType(msg);
+            const triggersRelease = RELEASE_TYPES.includes(releaseType) || releaseType === 'major';
+            
+            if (triggersRelease) {
+              const versionTag = generateVersionTag(releaseType);
+              console.log(`  ✓ "${msg}" → ${releaseType} → ${versionTag}`);
               passCount++;
             } else {
-              console.log(`  ❌ "${msg}" - FAILED TO MATCH`);
+              console.log(`  ❌ "${msg}" - FAILED TO MATCH (got: ${releaseType})`);
               process.exit(1);
             }
           }
-          console.log(`  → ${passCount}/${shouldMatch.length} passed`);
+          console.log(`  → ${passCount}/${TEST_CASES.shouldMatch.length} passed`);
           console.log('');
           
-          // Test negative cases  
+          // Test negative cases from shared module
           console.log('🚫 Testing commits that should NOT trigger releases:');
           let blockCount = 0;
-          for (const msg of shouldNotMatch) {
-            const matches = releaseRegex.test(msg);
-            if (!matches) {
-              console.log(`  ✓ "${msg}" - correctly blocked`);
+          for (const msg of TEST_CASES.shouldNotMatch) {
+            const releaseType = getReleaseType(msg);
+            const triggersRelease = RELEASE_TYPES.includes(releaseType) || releaseType === 'major';
+            
+            if (!triggersRelease) {
+              console.log(`  ✓ "${msg}" - correctly blocked (${releaseType})`);
               blockCount++;
             } else {
-              console.log(`  ❌ "${msg}" - INCORRECTLY MATCHED`);
+              console.log(`  ❌ "${msg}" - INCORRECTLY MATCHED (${releaseType})`);
               process.exit(2);
             }
           }
-          console.log(`  → ${blockCount}/${shouldNotMatch.length} correctly blocked`);
+          console.log(`  → ${blockCount}/${TEST_CASES.shouldNotMatch.length} correctly blocked`);
           console.log('');
           
-          // Test CodePen detection
+          // Test CodePen detection from shared module
           console.log('🎨 Testing CodePen detection pattern:');
-          const codepenTests = [
-            'chore: update deps (CodePen demo)',
-            'feat: add animation with CodePen inspiration', 
-            'docs: link to codepen profile',
-            'fix: standard bug fix'
-          ];
-          
-          const codepenRegex = /[Cc]ode[Pp]en/;
-          let codepenCount = 0;
-          for (const msg of codepenTests) {
-            const hasCodePen = codepenRegex.test(msg);
-            const indicator = hasCodePen ? '🎨' : '  ';
-            console.log(`  ${indicator} "${msg}"`);
-            if (hasCodePen) codepenCount++;
+          let codepenPassed = 0;
+          for (const { msg, expected } of TEST_CASES.codepenTests) {
+            const detected = hasCodePenMention(msg);
+            const indicator = detected ? '🎨' : '  ';
+            
+            if (detected === expected) {
+              console.log(`  ${indicator} ✓ "${msg}"`);
+              codepenPassed++;
+            } else {
+              console.log(`  ${indicator} ❌ "${msg}" - expected ${expected}, got ${detected}`);
+              process.exit(3);
+            }
           }
-          console.log(`  → ${codepenCount}/4 detected CodePen mentions`);
+          console.log(`  → ${codepenPassed}/${TEST_CASES.codepenTests.length} CodePen tests passed`);
           console.log('');
           
-          console.log('🎉 All commit type matcher tests passed!');
-          console.log('✅ Release workflow patterns are working correctly');
+          console.log('🎉 All shared pattern tests passed!');
+          console.log('✅ Release workflow and guard are perfectly synchronized');
           JS
+          
+      - name: Test CLI interface
+        run: |
+          echo "🔧 Testing CLI interface..."
+          
+          # Test various commit message types
+          node .github/scripts/release-patterns.mjs "feat: new feature"
+          echo ""
+          node .github/scripts/release-patterns.mjs "feat!: breaking change"
+          echo ""
+          node .github/scripts/release-patterns.mjs "chore: update deps (CodePen)"
+          echo ""
+          node .github/scripts/release-patterns.mjs "style: fix formatting"
+          
+          echo "✅ CLI interface working correctly"

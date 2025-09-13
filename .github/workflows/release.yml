@@ -13,9 +13,11 @@ on:
         options:
           - auto
           - major
-          - feature
+          - feat
           - fix
           - docs
+          - chore
+          - refactor
 
 permissions:
   contents: write
@@ -58,61 +60,39 @@ jobs:
           COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           echo "🔍 Analyzing commit: $COMMIT_MSG"
           
-          # Determine release type from commit message or workflow input
+          # Determine release type from commit message or workflow input using shared patterns
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.release_type }}" != "auto" ]; then
             RELEASE_TYPE="${{ github.event.inputs.release_type }}"
-          elif [[ "$COMMIT_MSG" =~ ^feat(\(.*\))?!: ]]; then
-            RELEASE_TYPE="major"
-          elif [[ "$COMMIT_MSG" =~ ^feat(\(.*\))?: ]]; then
-            RELEASE_TYPE="feature"
-          elif [[ "$COMMIT_MSG" =~ ^fix(\(.*\))?: ]]; then
-            RELEASE_TYPE="fix"
-          elif [[ "$COMMIT_MSG" =~ ^docs(\(.*\))?: ]]; then
-            RELEASE_TYPE="docs"
-          elif [[ "$COMMIT_MSG" =~ ^chore(\(.*\))?: ]]; then
-            RELEASE_TYPE="chore"
-          elif [[ "$COMMIT_MSG" =~ ^refactor(\(.*\))?: ]]; then
-            RELEASE_TYPE="refactor"
-          elif [[ "$COMMIT_MSG" =~ ^(ci|perf|test)(\(.*\))?: ]]; then
-            RELEASE_TYPE="minor"
           else
-            RELEASE_TYPE="patch"
+            # Use shared release patterns module for consistent logic
+            RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+            RELEASE_TYPE=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).releaseType)")
+            echo "📊 Pattern analysis: $RESULT"
           fi
           echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
 
       - name: Generate version tag
         id: version
         run: |
-          # Generate date-based version
-          DATE=$(date -u +%Y.%m.%d)
+          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           RELEASE_TYPE="${{ steps.release_type.outputs.release_type }}"
           
-          # Get existing tags for today
-          EXISTING_TAGS=$(git tag -l "v${DATE}*" | wc -l)
+          # Generate version using shared patterns module
+          RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+          BASE_VERSION=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).versionTag)")
+          DATE=$(date -u +%Y.%m.%d)
           
-          if [ "$RELEASE_TYPE" = "major" ]; then
-            VERSION="v${DATE}"
-          elif [ "$RELEASE_TYPE" = "feature" ]; then
-            VERSION="v${DATE}-feat"
-          elif [ "$RELEASE_TYPE" = "fix" ]; then
-            VERSION="v${DATE}-fix"
-          elif [ "$RELEASE_TYPE" = "docs" ]; then
-            VERSION="v${DATE}-docs"
-          elif [ "$RELEASE_TYPE" = "chore" ]; then
-            VERSION="v${DATE}-chore"
-          elif [ "$RELEASE_TYPE" = "refactor" ]; then
-            VERSION="v${DATE}-refactor"
-          else
-            VERSION="v${DATE}-patch"
-          fi
+          echo "📅 Base version: $BASE_VERSION"
           
           # If tag exists, append sequence number
+          VERSION="$BASE_VERSION"
           if git tag -l "$VERSION" | grep -q "$VERSION"; then
             COUNTER=1
             while git tag -l "${VERSION}.${COUNTER}" | grep -q "${VERSION}.${COUNTER}"; do
               COUNTER=$((COUNTER + 1))
             done
             VERSION="${VERSION}.${COUNTER}"
+            echo "🔢 Incremented to: $VERSION"
           fi
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -121,20 +101,25 @@ jobs:
       - name: Check if release needed
         id: should_release
         run: |
-          # Check if this is a meaningful commit for release
+          # Check if this is a meaningful commit for release using shared patterns
           COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           RELEASE_TYPE="${{ steps.release_type.outputs.release_type }}"
           
           # Skip releases for certain commit types unless manually triggered
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "should_release=true" >> $GITHUB_OUTPUT
-          elif [[ "$COMMIT_MSG" =~ ^(feat|fix|docs|chore|refactor|BREAKING CHANGE) ]]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-          elif [[ "$COMMIT_MSG" =~ merge.*(feat|fix|docs|chore|refactor): ]]; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
           else
-            echo "should_release=false" >> $GITHUB_OUTPUT
-            echo "Skipping release for commit type: $RELEASE_TYPE"
+            # Use shared patterns to determine if this should trigger a release
+            RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+            TRIGGERS_RELEASE=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).triggersRelease)")
+            
+            if [ "$TRIGGERS_RELEASE" = "true" ]; then
+              echo "should_release=true" >> $GITHUB_OUTPUT
+              echo "✅ Release triggered by commit type: $RELEASE_TYPE"
+            else
+              echo "should_release=false" >> $GITHUB_OUTPUT
+              echo "⏭️ Skipping release for commit type: $RELEASE_TYPE"
+            fi
           fi
 
       - name: Generate release notes
@@ -182,14 +167,18 @@ jobs:
             echo "- Initial VIPSpot release with comprehensive portfolio and contact pipeline" >> release_notes.md
           fi
           
-          # Check if CodePen is mentioned in commit messages
+          # Check if CodePen is mentioned in commit messages using shared patterns
           COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
-          if [[ "$COMMIT_MSG" =~ [Cc]ode[Pp]en ]]; then
+          RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
+          HAS_CODEPEN=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).hasCodePen)")
+          
+          if [ "$HAS_CODEPEN" = "true" ]; then
             echo "" >> release_notes.md
             echo "### 🎨 CodePen Updates" >> release_notes.md
             echo "This release includes CodePen-related changes! Check out our demos:" >> release_notes.md
             echo "- **CodePen Profile:** https://codepen.io/CoderRvrse" >> release_notes.md
             echo "- **Featured Demos:** See README.md for latest showcases" >> release_notes.md
+            echo "🎨 CodePen mention detected in: $COMMIT_MSG"
           fi
           
           echo "" >> release_notes.md
