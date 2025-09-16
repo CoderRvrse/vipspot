@@ -4,6 +4,44 @@
  * Description: Interactive functionality for a futuristic developer portfolio
  */
 
+// VIPSpot footer: subtle magnetic hover + optional analytics
+(() => {
+  const btn = document.querySelector('.fb-btn');
+  if (!btn) return;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let rafId = 0;
+
+  function onMove(e) {
+    if (prefersReduced) return;
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / rect.width;   // -0.5..0.5
+    const dy = (e.clientY - cy) / rect.height;
+    const tilt = 6;
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      btn.style.transform = `perspective(600px) rotateX(${(-dy * tilt).toFixed(2)}deg) rotateY(${(dx * tilt).toFixed(2)}deg) translateZ(0)`;
+    });
+  }
+
+  function resetTilt() {
+    cancelAnimationFrame(rafId);
+    btn.style.transform = 'translateZ(0)';
+  }
+
+  btn.addEventListener('mousemove', onMove, { passive: true });
+  btn.addEventListener('mouseleave', resetTilt, { passive: true });
+
+  // Optional privacy-safe analytics (if Plausible present)
+  btn.addEventListener('click', () => {
+    if (window.plausible) {
+      window.plausible('footer_facebook_click', { props: { page: location.pathname } });
+    }
+  });
+})();
+
 // ==== DEV SW GUARD (localhost) + kill-switch ====
 (function swDevGuard() {
   const isLocal =

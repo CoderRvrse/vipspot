@@ -73,6 +73,17 @@ for (const file of CANDIDATES) {
   if (/twitter\.com/i.test(html)) {
     failures.push(`[${file}] Legacy Twitter link should be removed from footer`);
   }
+
+  // 2.6 Assert new Facebook button has fb-btn class and proper UTM
+  const fbBtn = doc.querySelector('.fb-btn');
+  if (!fbBtn) {
+    failures.push(`[${file}] Footer must have Facebook button with class "fb-btn"`);
+  } else {
+    const href = fbBtn.getAttribute('href') || '';
+    if (!href.includes('utm_source=vipspot&utm_medium=footer&utm_campaign=social')) {
+      failures.push(`[${file}] Facebook button missing required UTM parameters`);
+    }
+  }
 }
 
 if (scanned === 0) {
