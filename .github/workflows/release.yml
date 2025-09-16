@@ -40,10 +40,42 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Extract commit message safely
+        id: msg
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Pull title or head commit message from the event payload safely via jq.
+          COMMIT_MSG="$(jq -r '
+            .pull_request.title //                       # PR title if PR event
+            .head_commit.message //                      # push event single commit
+            .commits[-1].message //                      # last commit on push with multiple commits
+            .workflow_run.head_commit.message //         # fallback for workflow_run dispatches
+            empty
+          ' "$GITHUB_EVENT_PATH")"
+
+          # Guard: ensure we extracted something
+          if [[ -z "${COMMIT_MSG:-}" ]]; then
+            echo "✖ Could not extract commit message from $GITHUB_EVENT_PATH" >&2
+            jq . "$GITHUB_EVENT_PATH" | head -n 120
+            exit 1
+          fi
+
+          # Export to the environment via heredoc; this preserves all special chars.
+          {
+            echo 'COMMIT_MSG<<__MSG__'
+            printf '%s\n' "$COMMIT_MSG"
+            echo '__MSG__'
+          } >> "$GITHUB_ENV"
+
+          echo "📝 Commit message extracted:"
+          printf '%s\n' "$COMMIT_MSG"
+
       - name: Analyze commit for release preview
         id: analysis
+        shell: bash
         run: |
-          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
+          set -euo pipefail
           echo "📋 **Release Preview Analysis**"
           echo ""
           echo "🔍 **Commit:** \`$COMMIT_MSG\`"
@@ -94,26 +126,64 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Get commit info
-        id: commit_info
+      - name: Extract commit message safely
+        id: msg
+        shell: bash
         run: |
-          # Get the latest commit message
-          COMMIT_MSG=$(git log -1 --pretty=format:'%s')
-          echo "commit_message<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
+          set -euo pipefail
+          # Pull title or head commit message from the event payload safely via jq.
+          COMMIT_MSG="$(jq -r '
+            .pull_request.title //                       # PR title if PR event
+            .head_commit.message //                      # push event single commit
+            .commits[-1].message //                      # last commit on push with multiple commits
+            .workflow_run.head_commit.message //         # fallback for workflow_run dispatches
+            empty
+          ' "$GITHUB_EVENT_PATH")"
+
+          # Guard: ensure we extracted something
+          if [[ -z "${COMMIT_MSG:-}" ]]; then
+            echo "✖ Could not extract commit message from $GITHUB_EVENT_PATH" >&2
+            jq . "$GITHUB_EVENT_PATH" | head -n 120
+            exit 1
+          fi
+
+          # Export to the environment via heredoc; this preserves all special chars.
+          {
+            echo 'COMMIT_MSG<<__MSG__'
+            printf '%s\n' "$COMMIT_MSG"
+            echo '__MSG__'
+          } >> "$GITHUB_ENV"
+
+          echo "📝 Commit message extracted:"
+          printf '%s\n' "$COMMIT_MSG"
+
       - name: Debug commit message
+        shell: bash
         run: |
+          set -euo pipefail
           echo "📝 Commit message received:"
-          echo "${{ steps.commit_info.outputs.commit_message }}"
+          printf '%.120s\n' "$COMMIT_MSG"
           echo "📊 Event type: ${{ github.event_name }}"
+
+      - name: Quote torture test (debug only)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          torture='feat(footer): match CodePen "Neon Facebook Hover"; magnetic hover + sparkles (#21)'
+          {
+            echo 'TEST_MSG<<__MSG__'
+            printf '%s\n' "$torture"
+            echo '__MSG__'
+          } >> "$GITHUB_ENV"
+          printf 'OK: %q\n' "$TEST_MSG" || true
           
       - name: Determine release type
         id: release_type
+        shell: bash
         run: |
-          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
-          echo "🔍 Analyzing commit: $COMMIT_MSG"
+          set -euo pipefail
+          echo "🔍 Analyzing commit: $(printf '%.80s' "$COMMIT_MSG")"
           
           # Determine release type from commit message or workflow input using shared patterns
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.release_type }}" != "auto" ]; then
@@ -128,8 +198,9 @@ jobs:
 
       - name: Generate version tag
         id: version
+        shell: bash
         run: |
-          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
+          set -euo pipefail
           RELEASE_TYPE="${{ steps.release_type.outputs.release_type }}"
           
           # Generate version using shared patterns module
@@ -155,9 +226,10 @@ jobs:
 
       - name: Check if release needed
         id: should_release
+        shell: bash
         run: |
+          set -euo pipefail
           # Check if this is a meaningful commit for release using shared patterns
-          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           RELEASE_TYPE="${{ steps.release_type.outputs.release_type }}"
           
           # Skip releases for certain commit types unless manually triggered
@@ -223,7 +295,6 @@ jobs:
           fi
           
           # Check if CodePen is mentioned in commit messages using shared patterns
-          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           RESULT=$(node .github/scripts/release-patterns.mjs "$COMMIT_MSG")
           HAS_CODEPEN=$(echo "$RESULT" | node -e "console.log(JSON.parse(require('fs').readFileSync(0)).hasCodePen)")
           
@@ -233,7 +304,7 @@ jobs:
             echo "This release includes CodePen-related changes! Check out our demos:" >> release_notes.md
             echo "- **CodePen Profile:** https://codepen.io/CoderRvrse" >> release_notes.md
             echo "- **Featured Demos:** See README.md for latest showcases" >> release_notes.md
-            echo "🎨 CodePen mention detected in: $COMMIT_MSG"
+            printf 'CodePen mention detected in: %s\n' "$COMMIT_MSG"
           fi
           
           echo "" >> release_notes.md
@@ -247,10 +318,11 @@ jobs:
 
       - name: Update CHANGELOG.md
         if: steps.should_release.outputs.should_release == 'true'
+        shell: bash
         run: |
+          set -euo pipefail
           VERSION="${{ steps.version.outputs.version }}"
           DATE="${{ steps.version.outputs.date }}"
-          COMMIT_MSG="${{ steps.commit_info.outputs.commit_message }}"
           
           # Create temporary changelog entry with CodePen enhancement
           cat << EOF > changelog_entry.md
