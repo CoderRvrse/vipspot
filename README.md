@@ -94,6 +94,8 @@ ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
 </div>
 
 ### New on CodePen
+- 📘 **Neon Facebook Hover** — *Same visual you now see in the site footer*  
+  👉 Try it: https://codepen.io/CoderRvrse/pen/ByoXrGr?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_facebook
 - 🔥 **Rocket Back-to-Top** — *Neon progress ring, launch micro-animation, particles, keyboard (T/Home)*  
   👉 Try it: https://codepen.io/CoderRvrse/pen/QwjXGom?utm_source=github&utm_medium=readme&utm_campaign=featured_pen_back_to_top
 

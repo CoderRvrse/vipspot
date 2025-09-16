@@ -1572,18 +1572,102 @@ select:focus {
   }
 }
 
-/* Footer social — Facebook */
+/* === VIPSpot Neon Facebook Hover (footer) === */
+:root {
+  --vip-bg0: #0b0f17;
+  --vip-bg1: #101927;
+  --vip-ink: #dff7ff;
+  --vip-muted: #8aa6a0;
+  --vip-cyan: #00e6c3;    /* VIP neon */
+  --vip-glare: #86fff0;
+}
+
+.fb-btn {
+  --h: 44px;
+  --pad-x: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--h);
+  padding: 0 var(--pad-x);
+  border-radius: calc(var(--h) / 2 + 6px);
+  background: radial-gradient(130% 180% at 20% 30%, rgba(0,230,195,0.08), transparent 55%),
+              linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.04));
+  color: var(--vip-ink);
+  text-decoration: none;
+  letter-spacing: .2px;
+  line-height: 1;
+  border: 1px solid rgba(255,255,255,0.08);
+  outline: none;
+  position: relative;
+  transform: translateZ(0);
+  transition: transform .25s ease, filter .25s ease, border-color .25s ease, box-shadow .25s ease;
+  will-change: transform;
+}
+
+.fb-btn .ico {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  opacity: .95;
+}
+
+.fb-btn .label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fb-btn .p {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--vip-glare), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fb-btn .p1 { left: 12%; top: -6px; animation: fbStar 2.2s ease-in-out infinite; }
+.fb-btn .p2 { right: 10%; top: -10px; animation: fbStar 2.8s ease-in-out infinite .2s; }
+.fb-btn .p3 { left: 16%; bottom: -8px; animation: fbStar 3s ease-in-out infinite .1s; }
+.fb-btn .p4 { right: 14%; bottom: -12px; animation: fbStar 2.6s ease-in-out infinite .3s; }
+
+@keyframes fbStar {
+  0%, 100% { transform: translateY(0) scale(.7); opacity: 0; }
+  30% { opacity: .7; }
+  50% { transform: translateY(-3px) scale(1); }
+}
+
+.fb-btn:hover,
+.fb-btn:focus-visible {
+  border-color: rgba(0,230,195,.35);
+  box-shadow:
+    0 0 0 2px rgba(0,230,195,.15),
+    0 6px 22px rgba(0,230,195,.16),
+    0 0 50px rgba(0,230,195,.08) inset;
+  filter: saturate(1.04);
+}
+
+.fb-btn:focus-visible {
+  outline: 2px solid rgba(0,230,195,.45);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: keep glow but disable sparkle motion */
+@media (prefers-reduced-motion: reduce) {
+  .fb-btn { transition: none; }
+  .fb-btn .p { animation: none; opacity: .35; }
+}
+
+/* Slightly smaller on narrow screens */
+@media (max-width: 520px) {
+  .fb-btn { --h: 40px; --pad-x: 14px; }
+  .fb-btn .label { font-size: 13px; }
+}
+
+/* Legacy footer social styles (for other links) */
 .social-link .icon {
   transition: transform .2s ease, filter .2s ease, color .2s ease;
   display: inline-block;
-}
-.social-facebook { color: #9bbbd4; }            /* base muted */
-.social-facebook:hover,
-.social-facebook:focus-visible {
-  color: #00e6c3;                                /* VIPSpot neon cyan */
-  transform: translateY(-1px) scale(1.03);
-  filter: drop-shadow(0 0 6px rgba(0, 230, 195, .45));
-  outline: none;
 }
 .social-link:focus-visible {
   outline: 2px solid #00e6c3;
