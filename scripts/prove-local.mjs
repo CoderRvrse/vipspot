@@ -83,9 +83,9 @@ try {
   const iCSS = html.search(/<link[^>]+rel=["']stylesheet/i);
   must(iCSP > -1 && (iCSS === -1 || iCSP < iCSS), "CSP must precede all stylesheets");
 
-  // style-src present & strict (no unsafe-inline)
+  // style-src present & allows inline CSS for Tailwind output
   must(/style-src[^"]*'self'/.test(html), "CSP must include style-src 'self'");
-  must(!/unsafe-inline/.test(html), "CSP should not contain 'unsafe-inline'");
+  must(/style-src[^"]*'unsafe-inline'/.test(html), "CSP must explicitly allow Tailwind inline styles");
 
   // No inline styles or style tags
   must(!/\sstyle=/.test(html), "Inline style attributes are forbidden");

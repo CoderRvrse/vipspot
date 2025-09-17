@@ -1,13 +1,29 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     
-    <!-- Hardened CSP: allows API + Plausible, blocks everything else -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://plausible.io; script-src-elem 'self' https://plausible.io; connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://plausible.io; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; manifest-src 'self'; form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com; frame-ancestors 'none'">
+    <!-- Authoritative Content Security Policy -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        base-uri 'self';
+        object-src 'none';
+        script-src 'self' https://plausible.io;
+        connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://plausible.io;
+        img-src 'self' data:;
+        style-src 'self' 'unsafe-inline';
+        font-src 'self' data:;
+        manifest-src 'self';
+        form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com
+      "
+    >
     
     <!-- Cache control for HTML -->
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://plausible.io" crossorigin>
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="VIPSpot 2025 - Freelance Developer specializing in Full-Stack Web Development, Game Development with Lua/Roblox, and AI Solutions. Let's build the future together.">
@@ -486,7 +502,7 @@
                 
                 <ul class="social" role="list" aria-label="Social links">
                     <li>
-                        <a href="https://github.com/CoderRvrse" class="social-link" target="_blank" rel="noopener" aria-label="GitHub — CoderRvrse" title="GitHub — CoderRvrse">
+                        <a href="https://github.com/CoderRvrse" class="social-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub — CoderRvrse" title="GitHub — CoderRvrse">
                             <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#github"></use></svg>
                             <span class="sr-only">GitHub</span>
                         </a>
@@ -498,7 +514,7 @@
                           class="vip-discord-inline"
                           href="https://discord.gg/FJxrnAcawn?utm_source=vipspot&utm_medium=footer&utm_campaign=social_discord"
                           target="_blank"
-                          rel="noopener"
+                          rel="noopener noreferrer"
                           aria-label="Join the VIPSpot Discord"
                         >
                           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -512,7 +528,7 @@
                           class="fb-btn"
                           href="https://www.facebook.com/people/VipSpot/100081136441464/?utm_source=vipspot&utm_medium=footer&utm_campaign=social"
                           target="_blank"
-                          rel="noopener"
+                          rel="noopener noreferrer"
                           aria-label="Open VIPSpot on Facebook"
                           title="Follow VIPSpot on Facebook"
                         >

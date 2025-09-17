@@ -12,8 +12,13 @@ if [ ! -f "$CSP_FILE" ]; then
     exit 1
 fi
 
-# Extract CSP content between quotes
-CSP_CONTENT=$(grep -o 'Content-Security-Policy" content="[^"]*"' "$CSP_FILE" | sed 's/.*content="//;s/".*//')
+# Extract CSP content between quotes (handles multiline attributes)
+CSP_CONTENT=$(rg -z -o '<meta[^>]*http-equiv=["'"']Content-Security-Policy["'"'][^>]*>' "$CSP_FILE" | tr -d '\0' | tr '\n' ' ')
+
+if [ -n "$CSP_CONTENT" ]; then
+    CSP_CONTENT="${CSP_CONTENT#*content=\"}"
+    CSP_CONTENT="${CSP_CONTENT%%\"*}"
+fi
 
 if [ -z "$CSP_CONTENT" ]; then
     echo "❌ No CSP meta tag found in $CSP_FILE"

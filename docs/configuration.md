@@ -135,11 +135,21 @@ const rateLimiter = rateLimit({
 The frontend implements strict CSP:
 
 ```html
-<meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-               connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com; 
-               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-               font-src https://fonts.gstatic.com;">
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
+    default-src 'self';
+    base-uri 'self';
+    object-src 'none';
+    script-src 'self' https://plausible.io;
+    connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://plausible.io;
+    img-src 'self' data:;
+    style-src 'self' 'unsafe-inline';
+    font-src 'self' data:;
+    manifest-src 'self';
+    form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com
+  "
+>
 ```
 
 ## Monitoring & Observability

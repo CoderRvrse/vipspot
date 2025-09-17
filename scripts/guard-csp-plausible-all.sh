@@ -7,13 +7,14 @@ while IFS= read -r -d '' f; do
     if ! grep -q '<meta http-equiv="Content-Security-Policy"' "$f"; then
       echo "❌ [$f] CSP meta missing while Plausible tag present"; status=1; continue
     fi
-    if ! grep -qi "script-src[^>]*plausible\.io" "$f"; then
+    CSP_CONTENT=$(rg -z -o '<meta[^>]*http-equiv=["'"']Content-Security-Policy["'"'][^>]*>' "$f" | tr -d '\0' | tr '\n' ' ')
+    if [ -z "$CSP_CONTENT" ]; then
+      echo "❌ [$f] Unable to extract CSP meta content"; status=1; continue
+    fi
+    if ! echo "$CSP_CONTENT" | grep -qi "script-src[^;]*plausible\.io"; then
       echo "❌ [$f] CSP missing plausible.io in script-src"; status=1
     fi
-    if ! grep -qi "script-src-elem[^>]*plausible\.io" "$f"; then
-      echo "❌ [$f] CSP missing plausible.io in script-src-elem"; status=1
-    fi
-    if ! grep -qi "connect-src[^>]*plausible\.io" "$f"; then
+    if ! echo "$CSP_CONTENT" | grep -qi "connect-src[^;]*plausible\.io"; then
       echo "❌ [$f] CSP missing plausible.io in connect-src"; status=1
     fi
   fi
