@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix.3] - 2025-09-17
+
+### Changed
+- fix(csp): restore working baseline with style/img/manifest + keep API & Plausible
+
+- Add default-src 'self' for baseline resource loading
+- Add style-src 'self' 'unsafe-inline' for CSS and inline styles
+- Add img-src 'self' data: for images and data URIs
+- Add manifest-src 'self' for web app manifest
+- Keep existing API host and Plausible analytics allowances
+- All guards pass (API, Plausible, Discord CTA, analytics)
+
+Fixes deployment issue where overly strict CSP blocked essential resources.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-fix.2] - 2025-09-17
 
 ### Changed
@@ -361,7 +379,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.2...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.3...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -394,3 +412,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-feat]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-feat
 [2025.09.17-chore.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.2
 [2025.09.17-fix.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.2
+[2025.09.17-fix.3]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.3
