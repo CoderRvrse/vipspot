@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix.4] - 2025-09-17
+
+### Changed
+- fix(csp): resolve Plausible script loading by removing redundant script-src
+
+- Remove duplicate script-src directive that was conflicting
+- Keep script-src-elem 'self' https://plausible.io for external scripts
+- Resolves CSP violation: "script-src-elem was not explicitly set"
+- All guards pass (API, Plausible alignment)
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-fix.3] - 2025-09-17
 
 ### Changed
@@ -379,7 +393,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.3...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.4...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -413,3 +427,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-chore.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.2
 [2025.09.17-fix.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.2
 [2025.09.17-fix.3]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.3
+[2025.09.17-fix.4]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.4
