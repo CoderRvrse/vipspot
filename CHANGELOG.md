@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix.2] - 2025-09-17
+
+### Changed
+- fix(csp): include API host in connect-src and form-action
+
+- Add https://vipspot-api-a7ce781e1397.herokuapp.com to CSP connect-src for API calls
+- Add API host to form-action for contact form submissions
+- Create guard script to ensure API origin remains in CSP
+- All existing guards pass (Plausible, Discord CTA, analytics)
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-chore.2] - 2025-09-17
 
 ### Changed
@@ -347,7 +361,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-chore.2...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.2...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -379,3 +393,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-chore.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.1
 [2025.09.17-feat]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-feat
 [2025.09.17-chore.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.2
+[2025.09.17-fix.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.2
