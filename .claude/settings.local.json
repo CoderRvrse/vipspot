@@ -77,7 +77,8 @@
       "Bash(continue)",
       "Bash(chmod:*)",
       "Bash(./scripts/guard-no-linkedin.sh:*)",
-      "Bash(./tests/check-discord-cta.sh:*)"
+      "Bash(./tests/check-discord-cta.sh:*)",
+      "Bash(./tests/assert-discord-url-exact.sh:*)"
     ],
     "deny": [],
     "ask": []
