@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-chore.2] - 2025-09-17
+
+### Changed
+- chore(ci): nudge Pages build for analytics
+
 ## [2025.09.17-feat] - 2025-09-17
 
 ### Changed
@@ -342,7 +347,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-feat...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-chore.2...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -373,3 +378,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-fix.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.1
 [2025.09.17-chore.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.1
 [2025.09.17-feat]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-feat
+[2025.09.17-chore.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.2
