@@ -1,0 +1,231 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner:
+    - navigation "Main navigation" [ref=e3]:
+      - link "VIPSpot Home" [ref=e5] [cursor=pointer]:
+        - /url: "#"
+        - text: VIPSpot
+  - main [ref=e6]:
+    - generic [ref=e9]:
+      - heading "Welcome to VIPSpot Welcome to VIPSpot Welcome to VIPSpot" [level=1] [ref=e10]:
+        - text: Welcome to VIPSpot
+        - generic [ref=e11]: Welcome to VIPSpot
+        - text: Welcome to VIPSpot
+      - paragraph [ref=e12]: The Future of Code, Development, and Games
+      - paragraph [ref=e13]: Freelance Developer | Full-Stack Web | Game Dev | Advanced AI Architect
+      - link "Contact me to build the future together" [ref=e14] [cursor=pointer]:
+        - /url: "#contact"
+        - text: Let's Build The Future Together
+    - generic [ref=e16]:
+      - heading "The Developer's Universe" [level=2] [ref=e17]
+      - generic [ref=e18]:
+        - img "The user — developer portrait" [ref=e22]
+        - generic [ref=e23]:
+          - heading "About My Journey" [level=3] [ref=e24]
+          - paragraph [ref=e25]: "I'm a freelance developer with a vision: to create impactful code, sleek websites, and immersive game experiences. From building lightning-fast full-stack apps to designing complex AI-driven game mechanics, I thrive on solving problems and innovating the web."
+          - list "Technology stack" [ref=e26]:
+            - listitem [ref=e27]:
+              - generic [ref=e28]: JS
+              - generic [ref=e29]: JavaScript
+            - listitem [ref=e30]:
+              - generic [ref=e31]: ⚛
+              - generic [ref=e32]: React
+            - listitem [ref=e33]:
+              - generic [ref=e34]: ⬢
+              - generic [ref=e35]: Node.js
+            - listitem [ref=e36]:
+              - generic [ref=e37]: 🐍
+              - generic [ref=e38]: Python
+            - listitem [ref=e39]:
+              - generic [ref=e40]: 🤖
+              - generic [ref=e41]: AI
+            - listitem [ref=e42]:
+              - generic [ref=e43]: 🎮
+              - generic [ref=e44]: Game Dev
+    - region "Work That Speaks for Itself" [ref=e45]:
+      - generic [ref=e46]:
+        - heading "Work That Speaks for Itself" [level=2] [ref=e47]
+        - generic [ref=e48]:
+          - article "Roblox Game Development" [ref=e49] [cursor=pointer]:
+            - generic [ref=e50] [cursor=pointer]:
+              - generic [ref=e51] [cursor=pointer]:
+                - generic [ref=e52] [cursor=pointer]: 🎮
+                - heading "Roblox Game Development" [level=3] [ref=e53] [cursor=pointer]
+                - paragraph [ref=e54] [cursor=pointer]: Immersive gaming experiences with Lua
+              - generic [ref=e55] [cursor=pointer]:
+                - heading "Roblox Adventure Game" [level=3] [ref=e56] [cursor=pointer]
+                - paragraph [ref=e57] [cursor=pointer]: Created an immersive multiplayer game with custom Lua scripts, AI enemies, and interactive environments.
+                - generic [ref=e58] [cursor=pointer]:
+                  - generic [ref=e59] [cursor=pointer]: Lua
+                  - generic [ref=e60] [cursor=pointer]: Roblox Studio
+                  - generic [ref=e61] [cursor=pointer]: Multiplayer
+                - button "View Roblox project details" [ref=e62] [cursor=pointer]: View Project →
+          - article "React E-Commerce App" [ref=e63] [cursor=pointer]:
+            - generic [ref=e64] [cursor=pointer]:
+              - generic [ref=e65] [cursor=pointer]:
+                - generic [ref=e66] [cursor=pointer]: 💻
+                - heading "React E-Commerce App" [level=3] [ref=e67] [cursor=pointer]
+                - paragraph [ref=e68] [cursor=pointer]: Full-stack shopping experience
+              - generic [ref=e69] [cursor=pointer]:
+                - heading "React E-Commerce Platform" [level=3] [ref=e70] [cursor=pointer]
+                - paragraph [ref=e71] [cursor=pointer]: Built a responsive e-commerce solution with React frontend, Node.js backend, and MongoDB database.
+                - generic [ref=e72] [cursor=pointer]:
+                  - generic [ref=e73] [cursor=pointer]: React
+                  - generic [ref=e74] [cursor=pointer]: Node.js
+                  - generic [ref=e75] [cursor=pointer]: MongoDB
+                - button "View React e-commerce project details" [ref=e76] [cursor=pointer]: View Project →
+          - article "AI Prediction System" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78] [cursor=pointer]:
+              - generic [ref=e79] [cursor=pointer]:
+                - generic [ref=e80] [cursor=pointer]: 🧠
+                - heading "AI Prediction System" [level=3] [ref=e81] [cursor=pointer]
+                - paragraph [ref=e82] [cursor=pointer]: Machine learning for data analysis
+              - generic [ref=e83] [cursor=pointer]:
+                - heading "AI Prediction System" [level=3] [ref=e84] [cursor=pointer]
+                - paragraph [ref=e85] [cursor=pointer]: Developed a machine learning model for predictive analytics with Python, TensorFlow, and data visualization.
+                - generic [ref=e86] [cursor=pointer]:
+                  - generic [ref=e87] [cursor=pointer]: Python
+                  - generic [ref=e88] [cursor=pointer]: TensorFlow
+                  - generic [ref=e89] [cursor=pointer]: Data Science
+                - button "View AI prediction system project details" [ref=e90] [cursor=pointer]: View Project →
+    - generic [ref=e92]:
+      - heading "Services I Offer" [level=2] [ref=e93]
+      - generic [ref=e94]:
+        - article [ref=e95]:
+          - generic [ref=e96]: ⌨️
+          - heading "Full-Stack Web Development" [level=3] [ref=e97]
+          - paragraph [ref=e98]: Cutting-edge apps, from front-end interfaces to robust back-end APIs with modern frameworks and technologies.
+        - article [ref=e99]:
+          - generic [ref=e100]: 🎮
+          - heading "Game Development" [level=3] [ref=e101]
+          - paragraph [ref=e102]: Using Lua for Roblox or designing interactive game mechanics with AI, physics, and multiplayer systems.
+        - article [ref=e103]:
+          - generic [ref=e104]: 🤖
+          - heading "Custom AI Solutions" [level=3] [ref=e105]
+          - paragraph [ref=e106]: Creating intelligent bots, predictive systems, and data-driven automation for various applications.
+        - article [ref=e107]:
+          - generic [ref=e108]: ⚡
+          - heading "Web & App Optimization" [level=3] [ref=e109]
+          - paragraph [ref=e110]: Make your code fast and light with advanced performance tuning and optimization techniques.
+    - region "Tech Stack & Tools" [ref=e111]:
+      - generic [ref=e112]:
+        - heading "Tech Stack & Tools" [level=2] [ref=e113]
+        - list [ref=e114]:
+          - listitem "Laravel" [ref=e115] [cursor=pointer]:
+            - img [ref=e116] [cursor=pointer]
+            - generic [ref=e118] [cursor=pointer]: Laravel
+          - listitem "React" [ref=e119] [cursor=pointer]:
+            - img [ref=e120] [cursor=pointer]
+            - generic [ref=e122] [cursor=pointer]: React
+          - listitem "TypeScript" [ref=e123] [cursor=pointer]:
+            - img [ref=e124] [cursor=pointer]
+            - generic [ref=e126] [cursor=pointer]: TypeScript
+          - listitem "JavaScript" [ref=e127] [cursor=pointer]:
+            - img [ref=e128] [cursor=pointer]
+            - generic [ref=e130] [cursor=pointer]: JavaScript
+          - listitem "WordPress" [ref=e131] [cursor=pointer]:
+            - img [ref=e132] [cursor=pointer]
+            - generic [ref=e134] [cursor=pointer]: WordPress
+          - listitem "Angular" [ref=e135] [cursor=pointer]:
+            - img [ref=e136] [cursor=pointer]
+            - generic [ref=e138] [cursor=pointer]: Angular
+          - listitem "Node.js" [ref=e139] [cursor=pointer]:
+            - img [ref=e140] [cursor=pointer]
+            - generic [ref=e142] [cursor=pointer]: Node.js
+          - listitem "Next.js" [ref=e143] [cursor=pointer]:
+            - img [ref=e144] [cursor=pointer]
+            - generic [ref=e146] [cursor=pointer]: Next.js
+          - listitem "Tailwind CSS" [ref=e147] [cursor=pointer]:
+            - img [ref=e148] [cursor=pointer]
+            - generic [ref=e150] [cursor=pointer]: Tailwind
+          - listitem "Vue.js" [ref=e151] [cursor=pointer]:
+            - img [ref=e152] [cursor=pointer]
+            - generic [ref=e154] [cursor=pointer]: Vue.js
+          - listitem "Nuxt" [ref=e155] [cursor=pointer]:
+            - img [ref=e156] [cursor=pointer]
+            - generic [ref=e158] [cursor=pointer]: Nuxt
+    - region "Featured Pens" [ref=e159]:
+      - generic [ref=e160]:
+        - heading "Featured Pens" [level=2] [ref=e161]
+        - list [ref=e162]:
+          - listitem [ref=e163]:
+            - 'link "Open CodePen: Neon Button Kit" [ref=e164] [cursor=pointer]':
+              - /url: https://codepen.io/CoderRvrse/pen/myeaKBj?utm_source=vipspot&utm_medium=featured_pens&utm_campaign=portfolio
+              - img "Preview of Neon Button Kit pen" [ref=e165] [cursor=pointer]
+              - generic [ref=e166] [cursor=pointer]:
+                - generic [ref=e167] [cursor=pointer]: Neon Button Kit
+                - generic [ref=e168] [cursor=pointer]: View on CodePen →
+          - listitem [ref=e169]:
+            - 'link "Open CodePen: Matrix Rain Effect" [ref=e170] [cursor=pointer]':
+              - /url: https://codepen.io/CoderRvrse/pen/azvxEZG?utm_source=vipspot&utm_medium=featured_pens&utm_campaign=portfolio
+              - img "Preview of Matrix Rain Effect pen" [ref=e171] [cursor=pointer]
+              - generic [ref=e172] [cursor=pointer]:
+                - generic [ref=e173] [cursor=pointer]: Matrix Rain Effect
+                - generic [ref=e174] [cursor=pointer]: View on CodePen →
+          - listitem [ref=e175]:
+            - 'link "Open CodePen: 3D Card Hover" [ref=e176] [cursor=pointer]':
+              - /url: https://codepen.io/CoderRvrse/pen/VYvNzzN?utm_source=vipspot&utm_medium=featured_pens&utm_campaign=portfolio
+              - img "Preview of 3D Card Hover pen" [ref=e177] [cursor=pointer]
+              - generic [ref=e178] [cursor=pointer]:
+                - generic [ref=e179] [cursor=pointer]: 3D Card Hover
+                - generic [ref=e180] [cursor=pointer]: View on CodePen →
+    - generic [ref=e182]:
+      - generic [ref=e183]:
+        - heading "Ready to Build the Future?" [level=2] [ref=e184]
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - textbox "Your Name" [ref=e188]
+            - generic: Your Name
+          - generic [ref=e189]:
+            - textbox "Your Email" [ref=e190]
+            - generic: Your Email
+          - generic [ref=e191]:
+            - textbox "Your Message" [ref=e192]
+            - generic: Your Message
+            - generic [ref=e194]: 0 / 4000
+          - generic:
+            - generic: Company
+            - textbox
+          - generic [ref=e195]:
+            - button "Send Message" [ref=e196] [cursor=pointer]:
+              - generic [ref=e197] [cursor=pointer]: Send Message
+            - paragraph [ref=e198]: Response in 1–2 business days. Professional consultation available.
+            - status
+      - list "Social links" [ref=e199]:
+        - listitem [ref=e200]:
+          - link "GitHub — CoderRvrse" [ref=e201] [cursor=pointer]:
+            - /url: https://github.com/CoderRvrse
+            - img [ref=e202] [cursor=pointer]
+            - generic [ref=e204] [cursor=pointer]: GitHub
+        - listitem [ref=e205]:
+          - link "Join the VIPSpot Discord" [ref=e206] [cursor=pointer]:
+            - /url: https://discord.gg/FJxrnAcawn?utm_source=vipspot&utm_medium=footer&utm_campaign=social_discord
+            - img [ref=e207] [cursor=pointer]
+            - generic [ref=e209] [cursor=pointer]: Join our Discord
+        - listitem [ref=e210]:
+          - link "Open VIPSpot on Facebook" [ref=e211] [cursor=pointer]:
+            - /url: https://www.facebook.com/people/VipSpot/100081136441464/?utm_source=vipspot&utm_medium=footer&utm_campaign=social
+            - img [ref=e212] [cursor=pointer]
+            - generic [ref=e214] [cursor=pointer]: Follow on Facebook
+        - listitem [ref=e215]:
+          - link "CodePen" [ref=e216] [cursor=pointer]:
+            - /url: https://codepen.io/CoderRvrse?utm_source=vipspot.net&utm_medium=site&utm_campaign=social_bar
+            - img [ref=e217] [cursor=pointer]
+            - generic [ref=e219] [cursor=pointer]: CodePen
+  - contentinfo [ref=e220]:
+    - generic [ref=e222]:
+      - paragraph [ref=e223]: © 2025 VIPSpot | Crafting the Future of Code
+      - generic [ref=e224]:
+        - link "📖 Docs" [ref=e225] [cursor=pointer]:
+          - /url: https://github.com/CoderRvrse/vipspot/blob/main/README.md
+        - link "🛠️ Engineering Guide" [ref=e226] [cursor=pointer]:
+          - /url: https://github.com/CoderRvrse/vipspot/blob/main/CLAUDE.md
+  - button "Back to top" [ref=e227] [cursor=pointer]:
+    - img [ref=e228] [cursor=pointer]
+    - generic [ref=e231] [cursor=pointer]: ▲
+    - generic [ref=e232] [cursor=pointer]: Back to top
+```

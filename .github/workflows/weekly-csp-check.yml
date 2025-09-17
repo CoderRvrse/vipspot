@@ -1,0 +1,91 @@
+name: Weekly CSP & Analytics Check
+
+on:
+  schedule:
+    - cron: "0 15 * * 1"  # Mondays at 3 PM UTC
+  workflow_dispatch:
+
+jobs:
+  csp-verification:
+    name: CSP & Analytics Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run CSP guard checks
+        run: |
+          ./scripts/guard-csp-plausible-all.sh
+          ./scripts/guard-analytics-universal.sh
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E CSP tests
+        run: npm run test:e2e
+
+      - name: Run link and branding verification
+        run: |
+          npm run test:links
+          npm run test:branding
+
+      - name: Run smoke tests
+        run: ./scripts/smoke-grep.sh
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'weekly-csp-check',
+              state: 'open'
+            });
+
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Weekly CSP Check Failed - ${new Date().toISOString().split('T')[0]}`,
+                labels: ['weekly-csp-check', 'bug'],
+                body: `
+## Weekly CSP & Analytics Check Failed
+
+**Date:** ${new Date().toISOString()}
+**Workflow:** [${context.workflow}](${context.payload.repository.html_url}/actions/runs/${context.runId})
+
+### Failed Checks
+The weekly verification of CSP directives and analytics functionality has failed.
+
+### Action Required
+1. Check the workflow logs for specific failure details
+2. Verify CSP configuration in production
+3. Test Plausible analytics functionality manually
+4. Fix any identified issues and close this issue
+
+### Test Results
+See attached artifacts in the failed workflow run for detailed test output.
+                `.trim()
+              });
+            }

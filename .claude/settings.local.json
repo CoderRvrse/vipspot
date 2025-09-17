@@ -103,7 +103,11 @@
       "Bash(if [ -f \"./scripts/smoke-grep.sh\" ])",
       "Bash(then ./scripts/smoke-grep.sh)",
       "Bash(else echo \"Smoke grep script not found\")",
-      "Bash(if grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=coverage -- .)"
+      "Bash(if grep -RInE '(vipspot\\.us|gmail\\.com|old@example\\.com)' --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=coverage -- .)",
+      "Bash(git log:*)",
+      "Bash(gh pr list:*)",
+      "Bash(npm pkg set:*)",
+      "Bash(npx playwright install:*)"
     ],
     "deny": [],
     "ask": []
