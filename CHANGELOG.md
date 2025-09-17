@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix] - 2025-09-17
+
+### Changed
+- fix(footer): compact Discord CTA; remove LinkedIn icon; keep UTM canonical (#26)
+
+- Replace LinkedIn icon in footer social row with compact Discord CTA (pill-only)
+- Remove all remaining LinkedIn markup from footer
+- Add discord-cta-inline component with proper sizing for icon row
+- Ensure no big-orb CTA accidentally placed in footer
+- Maintain canonical Discord URL with UTM parameters
+- All guards pass (no LinkedIn, CTA present, UTM exact)
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-chore] - 2025-09-17
 
 ### Changed
@@ -256,7 +272,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-chore...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -283,3 +299,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.13-feat.4]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.13-feat.4
 [2025.09.16-fix]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.16-fix
 [2025.09.17-chore]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore
+[2025.09.17-fix]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix
