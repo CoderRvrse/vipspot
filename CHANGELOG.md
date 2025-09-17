@@ -11,6 +11,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-feat] - 2025-09-17
+
+### Changed
+- feat(analytics): featured_pen_click + engagement heartbeat; universal analytics guard (#29)
+
+* feat(analytics): runtime Plausible ping + discord_cta_click; add multi-page CSP/Plausible guard
+
+- Add js/analytics-hooks.js for runtime Plausible events without inline handlers
+- Log "Plausible ready for vipspot.net" once loaded
+- Send discord_cta_click event with placement:footer props on CTA click
+- Add scripts/guard-csp-plausible-all.sh to enforce CSP/Plausible alignment across all HTML pages
+- Add tests/check-analytics-hooks.sh to verify analytics script references
+- Maintain CSP cleanliness with no inline JavaScript
+- All existing guards retained and passing
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* feat(analytics): featured_pen_click + engagement heartbeat; universal analytics guard
+
+- Extend js/analytics-hooks.js with enhanced event tracking:
+  • featured_pen_click on CodePen cards/links with pen_id and placement props
+  • reading_time heartbeat every 30s with duration_seconds and page props
+  • page_focus/page_blur on visibility change for engagement quality
+- Add scripts/guard-analytics-universal.sh to ensure all site pages have analytics
+- Maintain CSP compliance with no inline JavaScript
+- All existing guards pass and analytics coverage is universal
+
+Events added:
+- discord_cta_click: { placement: 'footer' }
+- featured_pen_click: { pen_id: 'abc123', placement: 'portfolio' }
+- reading_time: { duration_seconds: 30, page: '/path' }
+- page_focus/page_blur: engagement quality tracking
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
+### 🎨 CodePen Showcase
+This release includes CodePen-related enhancements:
+- **Rocket Back-to-Top** → [Demo](https://codepen.io/CoderRvrse/pen/QwjXGom)
+- **3D Card Hover Effect** → [Demo](https://codepen.io/CoderRvrse/pen/VYvNzzN)
+- **Matrix Rain Effect** → [Demo](https://codepen.io/CoderRvrse/pen/azvxEZG)
+- **Browse All Demos** → [CodePen Profile](https://codepen.io/CoderRvrse)
+
 ## [2025.09.17-chore.1] - 2025-09-17
 
 ### Changed
@@ -292,7 +342,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-chore.1...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-feat...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -322,3 +372,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-fix]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix
 [2025.09.17-fix.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.1
 [2025.09.17-chore.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore.1
+[2025.09.17-feat]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-feat
