@@ -98,11 +98,21 @@ Add chosen script to `index.html` before closing `</head>` tag:
 Add analytics domain to Content Security Policy:
 
 ```html
-<meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self'; 
-               connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://plausible.io; 
-               script-src 'self' https://plausible.io;
-               ...">
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
+    default-src 'self';
+    base-uri 'self';
+    object-src 'none';
+    script-src 'self' https://plausible.io;
+    connect-src 'self' https://vipspot-api-a7ce781e1397.herokuapp.com https://plausible.io;
+    img-src 'self' data:;
+    style-src 'self' 'unsafe-inline';
+    font-src 'self' data:;
+    manifest-src 'self';
+    form-action 'self' https://vipspot-api-a7ce781e1397.herokuapp.com
+  "
+>
 ```
 
 ### Step 4: Verify UTM Tracking
