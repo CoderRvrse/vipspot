@@ -1,0 +1,67 @@
+:root{
+  --bg-0:#0b0f17;
+  --bg-1:#0f1527;
+  --ink:#e8fbff;
+  --muted:#9fb3c1;
+  --vip-cyan:#00e6c3;
+  --ring:#0ef;
+  --glare:#86fff0;
+  --pill-ink:#00312d;
+}
+.vip-discord{
+  --size: 300px; position:relative; display:grid; place-items:center;
+  width:var(--size); height:var(--size); text-decoration:none;
+  transform-style:preserve-3d; perspective:900px; color:var(--ink);
+}
+.orb{ position:absolute; inset:0; border-radius:50%; z-index:0;
+  background:
+    radial-gradient(55% 45% at 35% 35%, rgba(0,255,235,.22), transparent 60%),
+    radial-gradient(65% 55% at 65% 60%, rgba(0,130,255,.18), transparent 65%),
+    radial-gradient(100% 85% at 50% 60%, rgba(0,0,0,.55), rgba(0,0,0,.25));
+  box-shadow:0 0 0 1px rgba(160,240,255,.25) inset, 0 18px 36px rgba(0,255,235,.14);
+}
+.ring{ position:absolute; inset:10px; border-radius:50%;
+  background: conic-gradient(from 0deg, transparent 0 330deg, rgba(0,255,255,.28) 360deg);
+  box-shadow:0 0 0 1px rgba(160,240,255,.35) inset, 0 0 32px rgba(0,255,255,.15);
+  animation: discord_spin 24s linear infinite;
+}
+@keyframes discord_spin { to { transform: rotate(360deg); } }
+.sheen{ position:absolute; inset:0; border-radius:50%;
+  background: radial-gradient(120px 60px at 50% 8%, rgba(255,255,255,.25), transparent 60%);
+  mix-blend-mode: screen; pointer-events:none;
+}
+.dot{ position:absolute; left:50%; top:50%; width:8px; height:8px; margin:-4px 0 0 -4px;
+  border-radius:50%; background:var(--glare); box-shadow:0 0 16px 6px rgba(134,255,240,.25);
+  transform-origin:-112px 0; animation: discord_orbit 12s linear infinite; z-index:0;
+}
+.d1{ transform-origin:-120px 0; animation-duration:12s; }
+.d2{ transform-origin:-108px 0; animation-duration:10s; }
+.d3{ transform-origin:-116px 0; animation-duration:14s; }
+@keyframes discord_orbit { to { transform: rotate(360deg); } }
+
+.btn-core{ --lift:0px; --sca:1; position:relative; z-index:2;
+  transform: translateZ(1px) translateY(calc(-2px - var(--lift))) scale(var(--sca));
+  transition: transform .28s cubic-bezier(.2,.7,.2,1);
+}
+.pill{
+  display:inline-grid; grid-auto-flow:column; align-items:center; gap:.6rem;
+  padding:.95rem 1.25rem; min-width:180px; border-radius:999px;
+  color:var(--pill-ink); text-align:center; font-weight:700; letter-spacing:.2px; line-height:1;
+  background:linear-gradient(180deg, #2fffe3, var(--vip-cyan));
+  box-shadow:0 16px 28px rgba(0,255,235,.24), 0 2px 0 rgba(0,0,0,.18) inset, 0 -2px 10px rgba(255,255,255,.38) inset;
+  filter: drop-shadow(0 8px 18px rgba(0,255,235,.35));
+  animation: discord_breathe 3s ease-in-out infinite;
+}
+.ico{ width:26px; height:26px; color:#eaffff; flex:0 0 26px;
+  filter: drop-shadow(0 6px 12px rgba(255,255,255,.25));
+  transition: transform .25s ease, filter .25s ease;
+}
+@keyframes discord_breathe { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.02) } }
+
+.vip-discord:hover .btn-core, .vip-discord:focus-visible .btn-core { --lift:6px; --sca:1.04; }
+.vip-discord:hover .ico, .vip-discord:focus-visible .ico { transform:translateY(-1px) scale(1.06); filter: drop-shadow(0 10px 22px rgba(255,255,255,.35)); }
+.vip-discord:focus-visible{ outline:none; }
+
+@media (prefers-reduced-motion:reduce){
+  .ring,.dot,.pill{ animation:none; }
+}
