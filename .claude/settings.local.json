@@ -78,7 +78,11 @@
       "Bash(chmod:*)",
       "Bash(./scripts/guard-no-linkedin.sh:*)",
       "Bash(./tests/check-discord-cta.sh:*)",
-      "Bash(./tests/assert-discord-url-exact.sh:*)"
+      "Bash(./tests/assert-discord-url-exact.sh:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh pr merge:*)",
+      "Bash(gh run watch:*)",
+      "Bash(./scripts/guard-csp-plausible.sh:*)"
     ],
     "deny": [],
     "ask": []
