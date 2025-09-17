@@ -82,7 +82,10 @@
       "Bash(gh pr checks:*)",
       "Bash(gh pr merge:*)",
       "Bash(gh run watch:*)",
-      "Bash(./scripts/guard-csp-plausible.sh:*)"
+      "Bash(./scripts/guard-csp-plausible.sh:*)",
+      "Bash(git pull:*)",
+      "Bash(./scripts/guard-csp-plausible-all.sh:*)",
+      "Bash(./tests/check-analytics-hooks.sh:*)"
     ],
     "deny": [],
     "ask": []
