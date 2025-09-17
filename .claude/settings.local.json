@@ -70,7 +70,15 @@
       "Bash(NO_NETWORK=1 npm run test:branding)",
       "Bash(gh pr create:*)",
       "Bash(gh release list:*)",
-      "Bash(gh release view:*)"
+      "Bash(gh release view:*)",
+      "Bash(for f in site/index.html site/public/index.html)",
+      "Bash(do)",
+      "Bash([ -f \"$f\" ])",
+      "Bash(continue)",
+      "Bash(chmod:*)",
+      "Bash(./scripts/guard-no-linkedin.sh:*)",
+      "Bash(./tests/check-discord-cta.sh:*)",
+      "Bash(./tests/assert-discord-url-exact.sh:*)"
     ],
     "deny": [],
     "ask": []
