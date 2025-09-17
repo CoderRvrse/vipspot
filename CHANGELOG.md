@@ -11,6 +11,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-chore] - 2025-09-17
+
+### Changed
+- chore(site): add UTM drift guard for Discord CTA (#25)
+
+* feat(site): add neon Discord CTA, remove LinkedIn references
+
+- Add Discord CTA component with orbital animations and magnetic hover
+- Remove all LinkedIn references from site footer
+- Create guard scripts to prevent LinkedIn regression
+- Add tests to verify Discord CTA implementation
+- Maintain CSP safety with inline styles and scripts
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* chore(site): add strict UTM drift guard for Discord CTA
+
+- Add assert-discord-url-exact.sh test to prevent UTM parameter drift
+- Ensures all Discord CTAs maintain exact canonical URL format
+- Integrates with existing LinkedIn and presence guards
+- Prevents regression of carefully crafted UTM tracking parameters
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.16-fix] - 2025-09-16
 
 ### Changed
@@ -224,7 +256,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.16-fix...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-chore...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -250,3 +282,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.13-fix.1]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.13-fix.1
 [2025.09.13-feat.4]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.13-feat.4
 [2025.09.16-fix]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.16-fix
+[2025.09.17-chore]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-chore
