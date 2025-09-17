@@ -1,0 +1,21 @@
+:root{
+  --ctaH: 40px;           /* match your social bar height */
+  --ctaPadX: 12px;
+  --ctaGap: 8px;
+  --ctaNeon: #00e6c3;
+}
+.vip-discord-inline{
+  display:inline-flex; align-items:center; gap:var(--ctaGap);
+  height:var(--ctaH); padding:0 var(--ctaPadX);
+  border-radius:999px; text-decoration:none; font-weight:700;
+  color:#04211e; background: linear-gradient(180deg, #2fffe3, var(--ctaNeon));
+  box-shadow: 0 6px 18px rgba(0,255,235,.25);
+  line-height:1; white-space:nowrap;
+}
+.vip-discord-inline .ico{
+  width:20px; height:20px; color:#ecffff;
+  filter: drop-shadow(0 4px 10px rgba(255,255,255,.25));
+}
+.vip-discord-inline .txt{ font-size:14px; letter-spacing:.2px; }
+.vip-discord-inline:hover{ transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,255,235,.3); }
+.vip-discord-inline:active{ transform: translateY(0); }
