@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix.6] - 2025-09-17
+
+### Changed
+- fix(security): update CSP to allow Plausible analytics
+
+* fix(csp): restore working script-src for Plausible and API
+
+- Add script-src 'self' https://plausible.io (authoritative baseline)
+- Add script-src-elem mirror for clarity/future-proofing
+- Keep connect-src including API + plausible.io
+- Preserve tight defaults: object-src none, frame-ancestors none, etc.
+
+Validates with: npm run ok && npm run prove && npm run test:links && npm run test:branding
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+
+* chore: update Claude settings and generated assets from CSP fix session
+
+---------
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-fix.5] - 2025-09-17
 
 ### Changed
@@ -407,7 +431,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.5...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.6...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -443,3 +467,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-fix.3]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.3
 [2025.09.17-fix.4]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.4
 [2025.09.17-fix.5]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.5
+[2025.09.17-fix.6]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.6
