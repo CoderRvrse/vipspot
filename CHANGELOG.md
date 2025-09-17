@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional release management system
 - Automated changelog generation
 
+## [2025.09.17-fix.5] - 2025-09-17
+
+### Changed
+- fix(csp): add script-src directive for Plausible script loading
+
+- Add script-src 'self' https://plausible.io for inline script fallback
+- Keep script-src-elem 'self' https://plausible.io for external scripts
+- Both directives needed: script-src-elem for external, script-src for fallback
+- Resolves CSP blocking: "https://plausible.io/js/script.js blocked script-src-elem"
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2025.09.17-fix.4] - 2025-09-17
 
 ### Changed
@@ -393,7 +407,7 @@ Co-authored-by: Claude <noreply@anthropic.com>
 - **Fix** (vYYYY.MM.DD-fix): Bug fixes and security patches
 - **Docs** (vYYYY.MM.DD-docs): Documentation updates and improvements
 
-[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.4...HEAD
+[Unreleased]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.17-fix.5...HEAD
 [2025.09.11]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.10...v2025.09.11
 [2025.09.10]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.09...v2025.09.10
 [2025.09.09]: https://github.com/CoderRvrse/vipspot/compare/v2025.09.08...v2025.09.09
@@ -428,3 +442,4 @@ Co-authored-by: Claude <noreply@anthropic.com>
 [2025.09.17-fix.2]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.2
 [2025.09.17-fix.3]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.3
 [2025.09.17-fix.4]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.4
+[2025.09.17-fix.5]: https://github.com/CoderRvrse/vipspot/releases/tag/v2025.09.17-fix.5
