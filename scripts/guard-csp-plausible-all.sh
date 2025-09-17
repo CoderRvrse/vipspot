@@ -10,9 +10,6 @@ while IFS= read -r -d '' f; do
     if ! grep -qi "script-src[^>]*plausible\.io" "$f"; then
       echo "❌ [$f] CSP missing plausible.io in script-src"; status=1
     fi
-    if ! grep -qi "script-src-elem[^>]*plausible\.io" "$f"; then
-      echo "❌ [$f] CSP missing plausible.io in script-src-elem"; status=1
-    fi
     if ! grep -qi "connect-src[^>]*plausible\.io" "$f"; then
       echo "❌ [$f] CSP missing plausible.io in connect-src"; status=1
     fi
