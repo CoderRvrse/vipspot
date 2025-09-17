@@ -85,7 +85,8 @@
       "Bash(./scripts/guard-csp-plausible.sh:*)",
       "Bash(git pull:*)",
       "Bash(./scripts/guard-csp-plausible-all.sh:*)",
-      "Bash(./tests/check-analytics-hooks.sh:*)"
+      "Bash(./tests/check-analytics-hooks.sh:*)",
+      "Bash(./scripts/guard-analytics-universal.sh:*)"
     ],
     "deny": [],
     "ask": []
